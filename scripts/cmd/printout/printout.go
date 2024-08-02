@@ -83,3 +83,7 @@ func PrintMd(format string, a ...interface{}) {
 
 	fmt.Println(str)
 }
+
+func Println(str string) {
+	fmt.Println(str)
+}
