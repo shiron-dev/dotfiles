@@ -2,6 +2,7 @@ package printout
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
 
 	"github.com/fatih/color"
@@ -86,4 +87,14 @@ func PrintMd(format string, a ...interface{}) {
 
 func Println(str string) {
 	fmt.Println(str)
+}
+
+func PrintObj(obj interface{}) {
+	t := reflect.TypeOf(obj)
+	v := reflect.ValueOf(obj)
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		Println(field.Name + ": " + v.Field(i).String())
+	}
 }
