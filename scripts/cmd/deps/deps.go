@@ -14,16 +14,11 @@ import (
 
 func InstallDeps() {
 	printout.PrintMd(`
-## Installing dependencies
-
-- Homebrew
+## Installing Homebrew
 `)
-
-	printout.PrintMd("### Installing Homebrew")
 	if checkInstalled("brew") {
 		printout.Println("Homebrew is already installed")
 	} else {
-		printout.Println("Installing Homebrew")
 		installHomebrew()
 	}
 

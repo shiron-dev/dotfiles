@@ -118,7 +118,9 @@ func SetLogOutput() *os.File {
 	log.SetFlags(log.Ldate | log.Ltime)
 
 	Out = io.MultiWriter(os.Stdout, logfile)
+	Error = io.MultiWriter(os.Stderr, logfile)
 	return logfile
 }
 
 var Out io.Writer
+var Error io.Writer

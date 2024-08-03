@@ -2,44 +2,108 @@ package deps
 
 import (
 	"bufio"
+	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/user"
+	"runtime"
 	"strings"
 
 	"github.com/shiron-dev/dotfiles/scripts/cmd/printout"
 )
 
 func installHomebrew() {
-	cmd := exec.Command("/bin/bash", "-c", "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)")
+	printout.PrintMd(`
+### Installing Homebrew
+`)
+
+	url := "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
+
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	bytes, _ := io.ReadAll(resp.Body)
+
+	cmd := exec.Command("/bin/bash", "-c", string(bytes))
 	cmd.Stdout = printout.Out
-	cmd.Run()
+	cmd.Stderr = printout.Error
+	err = cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	printout.PrintMd(`
+### Set Homebrew environment
+`)
+
+	var brewPath string
+	switch runtime.GOOS {
+	case "darwin":
+		brewPath = "/opt/homebrew/bin/brew"
+	case "linux":
+		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
+	}
+	cmd = exec.Command("/bin/bash", "-c", `(echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> ~/.bashrc`)
+	cmd.Stdout = printout.Out
+	cmd.Stderr = printout.Error
+	err = cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	cmd = exec.Command(brewPath, "shellenv")
+	shellenv, _ := cmd.Output()
+	for _, line := range strings.Split(string(shellenv), "\n") {
+		if strings.HasPrefix(line, "export PATH=") {
+			cmd = exec.Command("sh", "-c", "echo "+strings.Replace(line, "export PATH=", "", 1))
+			out, _ := cmd.Output()
+			os.Setenv("PATH", strings.Trim(string(out), "\""))
+		}
+	}
 }
 
 func installWithBrew(pkg string) {
 	cmd := exec.Command("brew", "install", pkg)
-	cmd.Run()
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func dumpTmpBrewBundle() {
 	usr, _ := user.Current()
 	cmd := exec.Command("brew", "bundle", "dump", "--tap", "--formula", "--cask", "--mas", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp")
 	cmd.Stdout = printout.Out
-	cmd.Run()
+	cmd.Stderr = printout.Error
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func installBrewBundle() {
 	usr, _ := user.Current()
 	cmd := exec.Command("brew", "bundle", "--no-lock", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
 	cmd.Stdout = printout.Out
-	cmd.Run()
+	cmd.Stderr = printout.Error
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func checkBrewBundle() {
 	usr, _ := user.Current()
 	cmd := exec.Command("brew", "bundle", "check", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
 	cmd.Stdout = printout.Out
-	cmd.Run()
+	cmd.Stderr = printout.Error
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func cleanupBrewBundle(isForce bool) {
@@ -50,7 +114,11 @@ func cleanupBrewBundle(isForce bool) {
 	}
 	cmd := exec.Command("brew", "bundle", "cleanup", forceFlag, "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
 	cmd.Stdout = printout.Out
-	cmd.Run()
+	cmd.Stderr = printout.Error
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
 }
 
 type BrewBundleType uint
