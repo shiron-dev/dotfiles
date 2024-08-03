@@ -31,14 +31,19 @@ This script will install dependencies and setup dotfiles.
 	printout.PrintMd(`
 ### Setup mode
 `)
-	fmt.Print("What mode do you use? [standard]: ")
 
 	var mode string
-	scanner := bufio.NewScanner(os.Stdin)
-	if scanner.Scan() {
-		mode = strings.ToLower(strings.TrimSpace(scanner.Text()))
-		if mode == "" {
-			mode = "standard"
+	if len(os.Args) > 1 {
+		mode = strings.ToLower(os.Args[1])
+		fmt.Println("The mode is set by command line arguments.")
+	} else {
+		fmt.Print("What mode do you use? [standard]: ")
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			mode = strings.ToLower(strings.TrimSpace(scanner.Text()))
+			if mode == "" {
+				mode = "standard"
+			}
 		}
 	}
 

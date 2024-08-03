@@ -19,7 +19,7 @@ dotfiles repository already exists.
 Run setup from '~/projects/dotfiles'.
 
 EOM
-  go run ~/projects/dotfiles/scripts/main.go
+  cd ~/projects/dotfiles/scripts/ && go run ~/projects/dotfiles/scripts/main.go
 else
   cat <<EOM
 
