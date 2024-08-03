@@ -6,11 +6,13 @@ import (
 	"os/exec"
 	"os/user"
 	"strings"
+
+	"github.com/shiron-dev/dotfiles/scripts/cmd/printout"
 )
 
 func installHomebrew() {
 	cmd := exec.Command("/bin/bash", "-c", "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)")
-	cmd.Stdout = os.Stdout
+	cmd.Stdout = printout.Out
 	cmd.Run()
 }
 
@@ -22,21 +24,21 @@ func installWithBrew(pkg string) {
 func dumpTmpBrewBundle() {
 	usr, _ := user.Current()
 	cmd := exec.Command("brew", "bundle", "dump", "--tap", "--formula", "--cask", "--mas", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp")
-	cmd.Stdout = os.Stdout
+	cmd.Stdout = printout.Out
 	cmd.Run()
 }
 
 func installBrewBundle() {
 	usr, _ := user.Current()
 	cmd := exec.Command("brew", "bundle", "--no-lock", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
-	cmd.Stdout = os.Stdout
+	cmd.Stdout = printout.Out
 	cmd.Run()
 }
 
 func checkBrewBundle() {
 	usr, _ := user.Current()
 	cmd := exec.Command("brew", "bundle", "check", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
-	cmd.Stdout = os.Stdout
+	cmd.Stdout = printout.Out
 	cmd.Run()
 }
 
@@ -47,7 +49,7 @@ func cleanupBrewBundle(isForce bool) {
 		forceFlag = "--force"
 	}
 	cmd := exec.Command("brew", "bundle", "cleanup", forceFlag, "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
-	cmd.Stdout = os.Stdout
+	cmd.Stdout = printout.Out
 	cmd.Run()
 }
 

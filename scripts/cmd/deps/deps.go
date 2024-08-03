@@ -2,7 +2,6 @@ package deps
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"os/exec"
 	"os/user"
@@ -79,7 +78,7 @@ Install the packages using Homebrew Bundle.
 		for _, diff := range diffTmpBundles {
 			diffNames += "- " + diff.name + "\n"
 		}
-		fmt.Println(color.RedString("The dotfiles Brewfile and the currently installed package are different."))
+		printout.Println(color.RedString("The dotfiles Brewfile and the currently installed package are different."))
 		printout.PrintMd(`
 ### Update Brewfile
 
@@ -93,7 +92,7 @@ What will you do to resolve the diff?
 3. do nothing
 4. exit
 `)
-		fmt.Print("What do you run? [1-4]: ")
+		printout.Print("What do you run? [1-4]: ")
 		scanner := bufio.NewScanner(os.Stdin)
 		if scanner.Scan() {
 			switch strings.TrimSpace(scanner.Text()) {

@@ -2,6 +2,9 @@ package printout
 
 import (
 	"fmt"
+	"io"
+	"log"
+	"os"
 	"reflect"
 	"regexp"
 
@@ -82,11 +85,17 @@ func PrintMd(format string, a ...interface{}) {
 		}
 	}
 
-	fmt.Println(str)
+	Println(str)
 }
 
 func Println(str string) {
+	log.Println(str)
 	fmt.Println(str)
+}
+
+func Print(str string) {
+	log.Print(str)
+	fmt.Print(str)
 }
 
 func PrintObj(obj interface{}) {
@@ -98,3 +107,18 @@ func PrintObj(obj interface{}) {
 		Println(field.Name + ": " + v.Field(i).String())
 	}
 }
+
+func SetLogOutput() *os.File {
+	logfile, err := os.OpenFile("./dotfiles.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		panic("cannnot open ./dotfiles.log:" + err.Error())
+	}
+	log.SetOutput(logfile)
+
+	log.SetFlags(log.Ldate | log.Ltime)
+
+	Out = io.MultiWriter(os.Stdout, logfile)
+	return logfile
+}
+
+var Out io.Writer

@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strings"
 
@@ -12,6 +11,9 @@ import (
 )
 
 func main() {
+	logfile := printout.SetLogOutput()
+	defer logfile.Close()
+
 	printout.PrintMd(`
 
 # shiron-dev dotfiles setup script
@@ -35,9 +37,9 @@ This script will install dependencies and setup dotfiles.
 	var mode string
 	if len(os.Args) > 1 {
 		mode = strings.ToLower(os.Args[1])
-		fmt.Println("The mode is set by command line arguments.")
+		printout.Println("The mode is set by command line arguments.")
 	} else {
-		fmt.Print("What mode do you use? [standard]: ")
+		printout.Print("What mode do you use? [standard]: ")
 		scanner := bufio.NewScanner(os.Stdin)
 		if scanner.Scan() {
 			mode = strings.ToLower(strings.TrimSpace(scanner.Text()))
