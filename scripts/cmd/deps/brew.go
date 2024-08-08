@@ -75,7 +75,13 @@ func installWithBrew(pkg string) {
 
 func dumpTmpBrewBundle() {
 	usr, _ := user.Current()
-	cmd := exec.Command("brew", "bundle", "dump", "--tap", "--formula", "--cask", "--mas", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp")
+	path := usr.HomeDir + "/projects/dotfiles/data/Brewfile.tmp"
+
+	if _, err := os.Stat(path); err == nil {
+		os.Remove(path)
+	}
+
+	cmd := exec.Command("brew", "bundle", "dump", "--tap", "--formula", "--cask", "--mas", "--file", path)
 	cmd.Stdout = printout.Out
 	cmd.Stderr = printout.Error
 	err := cmd.Run()
