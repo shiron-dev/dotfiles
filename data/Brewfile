@@ -7,13 +7,17 @@ tap "hashicorp/tap"
 tap "sdkman/tap"
 tap "shyiko/ktlint"
 tap "teamookla/speedtest"
+tap "VOICEVOX/voicevox"
 
 # Core Tools
+brew "mas"
 cask "google-chrome"
 cask "arc"
 cask "1password"
 cask "raycast"
 cask "rectangle"
+cask "openinterminal"
+cask "battery"
 
 # Core Dev Tools
 brew "git"
@@ -22,6 +26,9 @@ cask "iterm2"
 cask "visual-studio-code"
 cask "docker"
 cask "firefox@developer-edition"
+cask "jetbrains-toolbox"
+cask "gitify"
+mas "Xcode", id: 497799835
 
 # Dev Tools
 brew "act"
@@ -56,6 +63,7 @@ brew "watch"
 brew "wget"
 brew "yamllint"
 brew "yq"
+brew "rbenv"
 brew "hashicorp/tap/terraform"
 brew "sdkman/tap/sdkman-cli"
 brew "shyiko/ktlint/ktlint"
@@ -64,17 +72,42 @@ cask "arduino-ide"
 cask "postman"
 cask "utm"
 cask "wireshark"
-cask "astah-professional"
+cask "amazon-q"
+cask "tailscale"
+cask "postman"
+cask "raspberry-pi-imager"
+cask "unity-hub"
+# cask "astah-professional"
 
 # Tools Internet
 cask "slack"
 cask "discord"
 cask "notion"
 cask "tor-browser"
+cask "zoom"
+mas "LINE", id: 539883307
 
-# Tools Audio/Video
+# Tools creatives
 cask "audacity"
 cask "vlc"
+cask "clip-studio-paint"
+cask "gimp"
+cask "inkscape"
+mas "DaVinci Resolve", id: 571213070
 
 # Tools
 cask "whisky"
+cask "appcleaner"
+cask "android-file-transfer"
+cask "betterdisplay"
+cask "obs"
+cask "webtorrent"
+cask "voicevox"
+mas "Amphetamine", id: 937984704
+mas "Goodnotes", id: 1444383602
+mas "AmorphousDiskMark", id: 1168254295
+
+# Office
+cask "microsoft-excel"
+cask "microsoft-powerpoint"
+cask "microsoft-word"
