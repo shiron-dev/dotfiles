@@ -22,7 +22,7 @@ func InitializeControllerSet() (*ControllersSet, error) {
 	configUsecaseImpl := usecase.NewConfigUsecase(configInfrastructureImpl)
 	depsInfrastructureImpl := infrastructure.NewDepsInfrastructure()
 	brewInfrastructureImpl := infrastructure.NewBrewInfrastructure()
-	brewUsecaseImpl := usecase.NewBrewUsecase(brewInfrastructureImpl, printOutUsecaseImpl, configUsecaseImpl)
+	brewUsecaseImpl := usecase.NewBrewUsecase(brewInfrastructureImpl, depsInfrastructureImpl, printOutUsecaseImpl, configUsecaseImpl)
 	depsUsecaseImpl := usecase.NewDepsUsecase(depsInfrastructureImpl, printOutUsecaseImpl, brewUsecaseImpl)
 	dofyControllerImpl := controller.NewDofyController(printOutUsecaseImpl, configUsecaseImpl, depsUsecaseImpl)
 	controllersSet := &ControllersSet{

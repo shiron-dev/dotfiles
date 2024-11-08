@@ -16,7 +16,9 @@ type BrewInfrastructure interface {
 	InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) error
 	SetHomebrewEnv(brewPath string) error
 	InstallFormula(pkg string) error
+	DumpTmpBrewBundle(sout io.Writer, serror io.Writer) error
 	InstallBrewBundle(sout io.Writer, serror io.Writer) error
+	CleanupBrewBundle(isForce bool, sout io.Writer, serror io.Writer) error
 }
 
 type BrewInfrastructureImpl struct{}
@@ -82,24 +84,24 @@ func (b *BrewInfrastructureImpl) InstallFormula(formula string) error {
 	return nil
 }
 
-// func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(sout io.Writer, serror io.Writer) error {
-// 	usr, _ := user.Current()
-// 	path := usr.HomeDir + "/projects/dotfiles/data/Brewfile.tmp"
+func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(sout io.Writer, serror io.Writer) error {
+	usr, _ := user.Current()
+	path := usr.HomeDir + "/projects/dotfiles/data/Brewfile.tmp"
 
-// 	if _, err := os.Stat(path); err == nil {
-// 		os.Remove(path)
-// 	}
+	if _, err := os.Stat(path); err == nil {
+		os.Remove(path)
+	}
 
-// 	cmd := exec.Command("brew", "bundle", "dump", "--tap", "--formula", "--cask", "--mas", "--file", path)
-// 	cmd.Stdout = sout
-// 	cmd.Stderr = serror
+	cmd := exec.Command("brew", "bundle", "dump", "--tap", "--formula", "--cask", "--mas", "--file", path)
+	cmd.Stdout = sout
+	cmd.Stderr = serror
 
-// 	if err := cmd.Run(); err != nil {
-// 		return &BrewError{err}
-// 	}
+	if err := cmd.Run(); err != nil {
+		return errors.Wrap(err, "brew infrastructure: failed to run brew bundle dump command")
+	}
 
-// 	return nil
-// }
+	return nil
+}
 
 func (b *BrewInfrastructureImpl) InstallBrewBundle(sout io.Writer, serror io.Writer) error {
 	usr, _ := user.Current()
@@ -126,94 +128,23 @@ func (b *BrewInfrastructureImpl) InstallBrewBundle(sout io.Writer, serror io.Wri
 // 	}
 // }
 
-// func cleanupBrewBundle(isForce bool) {
-// 	usr, _ := user.Current()
-// 	forceFlag := ""
-// 	if isForce {
-// 		forceFlag = "--force"
-// 	}
-// 	cmd := exec.Command("brew", "bundle", "cleanup", forceFlag, "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
-// 	cmd.Stdout = infrastructure.Out
-// 	cmd.Stderr = infrastructure.Error
-// 	err := cmd.Run()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
+func (b *BrewInfrastructureImpl) CleanupBrewBundle(isForce bool, sout io.Writer, serror io.Writer) error {
+	usr, _ := user.Current()
+	forceFlag := ""
 
-// type BrewBundleType uint
+	if isForce {
+		forceFlag = "--force"
+	}
 
-// const (
-// 	BrewBundleTypeTap BrewBundleType = iota
-// 	BrewBundleTypeFormula
-// 	BrewBundleTypeCask
-// 	BrewBundleTypeMas
-// )
+	//nolint:gosec
+	cmd := exec.Command("brew", "bundle", "cleanup", forceFlag, "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
+	cmd.Stdout = sout
+	cmd.Stderr = serror
+	err := cmd.Run()
 
-// type BrewBundle struct {
-// 	name       string
-// 	bundleType BrewBundleType
-// }
+	if err != nil {
+		return errors.Wrap(err, "brew infrastructure: failed to run brew bundle cleanup command")
+	}
 
-// func checkDiffBrewBundle(bundlePath string, tmpPath string) ([]BrewBundle, []BrewBundle) {
-// 	bundles := readBrewBundle(bundlePath)
-// 	tmpBundles := readBrewBundle(tmpPath)
-// 	tmpBundlesMap := make(map[string]bool)
-// 	var diffBundles []BrewBundle
-// 	for _, bundle := range bundles {
-// 		isFound := false
-// 		for _, tmpBundle := range tmpBundles {
-// 			if bundle.name == tmpBundle.name && bundle.bundleType == tmpBundle.bundleType {
-// 				isFound = true
-// 				tmpBundlesMap[bundle.name] = true
-// 				break
-// 			}
-// 		}
-// 		if !isFound {
-// 			diffBundles = append(diffBundles, bundle)
-// 		}
-// 	}
-// 	var diffTmpBundles []BrewBundle
-// 	for _, tmpBundle := range tmpBundles {
-// 		if _, ok := tmpBundlesMap[tmpBundle.name]; !ok {
-// 			diffTmpBundles = append(diffTmpBundles, tmpBundle)
-// 		}
-// 	}
-
-// 	return diffBundles, diffTmpBundles
-// }
-
-// func readBrewBundle(path string) []BrewBundle {
-// 	file, err := os.Open(path)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	defer file.Close()
-// 	scanner := bufio.NewScanner(file)
-// 	var bundles []BrewBundle
-// 	for scanner.Scan() {
-// 		line := scanner.Text()
-// 		sp := strings.Split(line, " ")
-// 		if len(sp) < 2 || sp[0] == "#" {
-// 			continue
-// 		}
-// 		var bundleType BrewBundleType
-// 		switch sp[0] {
-// 		case "tap":
-// 			bundleType = BrewBundleTypeTap
-// 		case "brew":
-// 			bundleType = BrewBundleTypeFormula
-// 		case "cask":
-// 			bundleType = BrewBundleTypeCask
-// 		case "mas":
-// 			bundleType = BrewBundleTypeMas
-// 		default:
-// 			continue
-// 		}
-// 		bundles = append(bundles, BrewBundle{
-// 			name:       strings.Trim(sp[1], "\""),
-// 			bundleType: bundleType,
-// 		})
-// 	}
-// 	return bundles
-// }
+	return nil
+}

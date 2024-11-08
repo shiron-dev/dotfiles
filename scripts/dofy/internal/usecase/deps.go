@@ -1,12 +1,15 @@
 package usecase
 
 import (
+	"bufio"
 	"context"
 	"os"
 	"os/exec"
 	"os/user"
 	"path/filepath"
+	"strings"
 
+	"github.com/fatih/color"
 	"github.com/pkg/errors"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 )
@@ -69,7 +72,11 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 https://github.com/shiron-dev/dotfiles.git
 `)
 
-	usr, _ := user.Current()
+	usr, err := user.Current()
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to get current user")
+	}
+
 	if _, err := os.Stat(usr.HomeDir + "/projects/dotfiles"); err == nil {
 		d.printOutUC.Println("dotfiles directory already exists")
 	} else {
@@ -91,73 +98,95 @@ https://github.com/shiron-dev/dotfiles.git
 }
 
 func (d *DepsUsecaseImpl) brewBundle() error {
+	usr, err := user.Current()
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to get current user")
+	}
+
 	d.printOutUC.PrintMdf(`
 ## Installing brew packages
 
 Install the packages using Homebrew Bundle.
 `)
 
-	d.printOutUC.PrintMdf(`
-### Install brew packages with Brewfile
-	`)
+	err = d.brewUC.DumpTmpBrewBundle()
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to dump tmp Brewfile")
+	}
 
-	if err := d.brewUC.InstallBrewBundle(); err != nil {
-		return errors.Wrap(err, "deps usecase: failed to install brew packages")
+	diffBundle, diffTmpBundles, err := d.brewUC.CheckDiffBrewBundle(
+		usr.HomeDir+"/projects/dotfiles/data/Brewfile",
+		usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
+	)
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to check diff Brewfile")
+	}
+
+	if len(diffBundle) > 0 {
+		d.printOutUC.PrintMdf(`
+### Install brew packages with Brewfile
+`)
+
+		if err := d.brewUC.InstallBrewBundle(); err != nil {
+			return errors.Wrap(err, "deps usecase: failed to install brew packages")
+		}
+	} else {
+		d.printOutUC.Println("No new packages to install")
+	}
+
+	if len(diffTmpBundles) > 0 {
+		var diffNames string
+		for _, diff := range diffTmpBundles {
+			diffNames += color.GreenString("+ " + diff.Name + "\n")
+		}
+
+		for _, diff := range diffBundle {
+			diffNames += color.RedString("- " + diff.Name + "\n")
+		}
+
+		d.printOutUC.Println(color.RedString("The dotfiles Brewfile and the currently installed package are different."))
+		d.printOutUC.PrintMdf(`
+### Update Brewfile
+
+diff:
+` + diffNames + `
+
+What will you do to resolve the diff?
+
+1. run ` + "`brew bundlecleanup`" + `
+2. update the Brewfile with the currently installed packages
+3. do nothing
+4. exit
+`)
+		d.printOutUC.Print("What do you run? [1-4]: ")
+
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			switch strings.TrimSpace(scanner.Text()) {
+			case "1":
+				d.printOutUC.Println("Running `brew bundle cleanup`")
+
+				err = d.brewUC.CleanupBrewBundle(true)
+				if err != nil {
+					return errors.Wrap(err, "deps usecase: failed to run brew bundle cleanup")
+				}
+			case "2":
+				d.printOutUC.Println("Open Brewfile with code")
+
+				if err := d.depsInfrastructure.OpenWithCode(
+					usr.HomeDir+"/projects/dotfiles/data/Brewfile",
+					usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
+				); err != nil {
+					return errors.Wrap(err, "deps usecase: failed to open with code")
+				}
+			case "3":
+				d.printOutUC.Println("Do nothing")
+			default:
+				d.printOutUC.Println("Exit")
+				os.Exit(0)
+			}
+		}
 	}
 
 	return nil
 }
-
-// 	dumpTmpBrewBundle()
-// 	diffBundle, diffTmpBundles := checkDiffBrewBundle(
-// 		usr.HomeDir+"/projects/dotfiles/data/Brewfile",
-// 		usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
-// 	)
-
-// 	if len(diffBundle) > 0 {
-// 		d.printOutUC.Println("Installing brew packages")
-// 		installBrewBundle()
-// 	} else {
-// 		d.printOutUC.Println("No new packages to install")
-// 	}
-
-// 	if len(diffTmpBundles) > 0 {
-// 		var diffNames string
-// 		for _, diff := range diffTmpBundles {
-// 			diffNames += "- " + diff.name + "\n"
-// 		}
-// 		d.printOutUC.Println(color.RedString("The dotfiles Brewfile and the currently installed package are different."))
-// 		d.printOutUC.PrintMdf(`
-// ### Update Brewfile
-
-// diff:
-// ` + diffNames + `
-
-// What will you do to resolve the diff?
-
-// 1. run ` + "`brew bundlecleanup`" + `
-// 2. update the Brewfile with the currently installed packages
-// 3. do nothing
-// 4. exit
-// `)
-// 		d.printOutUC.Print("What do you run? [1-4]: ")
-// 		scanner := bufio.NewScanner(os.Stdin)
-// 		if scanner.Scan() {
-// 			switch strings.TrimSpace(scanner.Text()) {
-// 			case "1":
-// 				d.printOutUC.Println("Running `brew bundle cleanup`")
-// 				cleanupBrewBundle(true)
-// 			case "2":
-// 				d.printOutUC.Println("Open Brewfile with code")
-// 				utils.OpenWithCode(
-// 					usr.HomeDir+"/projects/dotfiles/data/Brewfile",
-// 					usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
-// 				)
-// 			case "3":
-// 				d.printOutUC.Println("Do nothing")
-// 			default:
-// 				d.printOutUC.Println("Exit")
-// 				os.Exit(0)
-// 			}
-// 		}
-// 	}
