@@ -1,18 +1,30 @@
 package usecase
 
-import "context"
+import (
+	"context"
+
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
+)
 
 type DepsUsecase interface {
 	InstallDeps(ctx context.Context) error
 }
 
 type DepsUsecaseImpl struct {
-	brewUC BrewUsecase
+	depsInfrastructure infrastructure.DepsInfrastructure
+	printOutUC         PrintOutUsecase
+	brewUC             BrewUsecase
 }
 
-func NewDepsUsecase(brewUC BrewUsecase) *DepsUsecaseImpl {
+func NewDepsUsecase(
+	depsInfrastructure infrastructure.DepsInfrastructure,
+	printOutUC PrintOutUsecase,
+	brewUC BrewUsecase,
+) *DepsUsecaseImpl {
 	return &DepsUsecaseImpl{
-		brewUC: brewUC,
+		depsInfrastructure: depsInfrastructure,
+		printOutUC:         printOutUC,
+		brewUC:             brewUC,
 	}
 }
 
@@ -25,23 +37,23 @@ func (e *DepsError) Error() string {
 }
 
 func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
-	err := d.brewUC.InstallHomebrew(ctx)
-	if err != nil {
-		return &DepsError{err}
+	d.printOutUC.PrintMdf(`
+## Installing Homebrew
+`)
+
+	if d.depsInfrastructure.CheckInstalled("brew") {
+		d.printOutUC.Println("Homebrew is already installed")
+	} else {
+		err := d.brewUC.InstallHomebrew(ctx)
+		if err != nil {
+			return &DepsError{err}
+		}
 	}
 
 	return nil
 }
 
 // func InstallDeps() {
-// 	infrastructure.PrintMd(`
-// ## Installing Homebrew
-// `)
-// 	if checkInstalled("brew") {
-// 		infrastructure.Println("Homebrew is already installed")
-// 	} else {
-// 		installHomebrew()
-// 	}
 
 // 	infrastructure.PrintMd(`
 // ## Installing required packages with Homebrew

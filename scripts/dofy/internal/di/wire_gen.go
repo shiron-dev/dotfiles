@@ -20,9 +20,10 @@ func InitializeControllerSet() (*ControllersSet, error) {
 	printOutUsecaseImpl := usecase.NewPrintOutUsecase(printOutInfrastructureImpl)
 	configInfrastructureImpl := infrastructure.NewConfigInfrastructure()
 	configUsecaseImpl := usecase.NewConfigUsecase(configInfrastructureImpl)
+	depsInfrastructureImpl := infrastructure.NewDepsInfrastructure()
 	brewInfrastructureImpl := infrastructure.NewBrewInfrastructure()
 	brewUsecaseImpl := usecase.NewBrewUsecase(brewInfrastructureImpl, printOutUsecaseImpl, configUsecaseImpl)
-	depsUsecaseImpl := usecase.NewDepsUsecase(brewUsecaseImpl)
+	depsUsecaseImpl := usecase.NewDepsUsecase(depsInfrastructureImpl, printOutUsecaseImpl, brewUsecaseImpl)
 	dofyControllerImpl := controller.NewDofyController(printOutUsecaseImpl, configUsecaseImpl, depsUsecaseImpl)
 	controllersSet := &ControllersSet{
 		DofyController: dofyControllerImpl,
@@ -36,7 +37,7 @@ func InitializeControllerSet() (*ControllersSet, error) {
 var controllerSet = wire.NewSet(wire.Bind(new(controller.DofyController), new(*controller.DofyControllerImpl)), controller.NewDofyController)
 
 // Infrastructure
-var infrastructureSet = wire.NewSet(wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)), infrastructure.NewPrintOutInfrastructure, wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)), infrastructure.NewConfigInfrastructure, wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)), infrastructure.NewBrewInfrastructure)
+var infrastructureSet = wire.NewSet(wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)), infrastructure.NewPrintOutInfrastructure, wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)), infrastructure.NewConfigInfrastructure, wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)), infrastructure.NewBrewInfrastructure, wire.Bind(new(infrastructure.DepsInfrastructure), new(*infrastructure.DepsInfrastructureImpl)), infrastructure.NewDepsInfrastructure)
 
 // Usecase
 var usecaseSet = wire.NewSet(wire.Bind(new(usecase.PrintOutUsecase), new(*usecase.PrintOutUsecaseImpl)), usecase.NewPrintOutUsecase, wire.Bind(new(usecase.ConfigUsecase), new(*usecase.ConfigUsecaseImpl)), usecase.NewConfigUsecase, wire.Bind(new(usecase.BrewUsecase), new(*usecase.BrewUsecaseImpl)), usecase.NewBrewUsecase, wire.Bind(new(usecase.DepsUsecase), new(*usecase.DepsUsecaseImpl)), usecase.NewDepsUsecase)
