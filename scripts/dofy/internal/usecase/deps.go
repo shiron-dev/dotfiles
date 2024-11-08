@@ -12,6 +12,7 @@ import (
 
 type DepsUsecase interface {
 	InstallDeps(ctx context.Context) error
+	brewBundle() error
 }
 
 type DepsUsecaseImpl struct {
@@ -93,32 +94,46 @@ https://github.com/shiron-dev/dotfiles.git
 		}
 	}
 
-	return nil
+	return d.brewBundle()
 }
 
-// 	d.printOutUC.PrintMdf(`
-// ## Installing brew packages
+func (d *DepsUsecaseImpl) brewBundle() error {
+	d.printOutUC.PrintMdf(`
+## Installing brew packages
 
-// Install the packages using Homebrew Bundle.
-// `)
+Install the packages using Homebrew Bundle.
+`)
+
+	d.printOutUC.PrintMdf(`
+### Install brew packages with Brewfile
+	`)
+
+	if err := d.brewUC.InstallBrewBundle(); err != nil {
+		return &DepsError{err}
+	}
+
+	return nil
+}
 
 // 	dumpTmpBrewBundle()
 // 	diffBundle, diffTmpBundles := checkDiffBrewBundle(
 // 		usr.HomeDir+"/projects/dotfiles/data/Brewfile",
 // 		usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
 // 	)
+
 // 	if len(diffBundle) > 0 {
-// 		infrastructure.Println("Installing brew packages")
+// 		d.printOutUC.Println("Installing brew packages")
 // 		installBrewBundle()
 // 	} else {
-// 		infrastructure.Println("No new packages to install")
+// 		d.printOutUC.Println("No new packages to install")
 // 	}
+
 // 	if len(diffTmpBundles) > 0 {
 // 		var diffNames string
 // 		for _, diff := range diffTmpBundles {
 // 			diffNames += "- " + diff.name + "\n"
 // 		}
-// 		infrastructure.Println(color.RedString("The dotfiles Brewfile and the currently installed package are different."))
+// 		d.printOutUC.Println(color.RedString("The dotfiles Brewfile and the currently installed package are different."))
 // 		d.printOutUC.PrintMdf(`
 // ### Update Brewfile
 
@@ -132,29 +147,24 @@ https://github.com/shiron-dev/dotfiles.git
 // 3. do nothing
 // 4. exit
 // `)
-// 		infrastructure.Print("What do you run? [1-4]: ")
+// 		d.printOutUC.Print("What do you run? [1-4]: ")
 // 		scanner := bufio.NewScanner(os.Stdin)
 // 		if scanner.Scan() {
 // 			switch strings.TrimSpace(scanner.Text()) {
 // 			case "1":
-// 				infrastructure.Println("Running `brew bundle cleanup`")
+// 				d.printOutUC.Println("Running `brew bundle cleanup`")
 // 				cleanupBrewBundle(true)
 // 			case "2":
-// 				infrastructure.Println("Open Brewfile with code")
+// 				d.printOutUC.Println("Open Brewfile with code")
 // 				utils.OpenWithCode(
 // 					usr.HomeDir+"/projects/dotfiles/data/Brewfile",
 // 					usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
 // 				)
 // 			case "3":
-// 				infrastructure.Println("Do nothing")
+// 				d.printOutUC.Println("Do nothing")
 // 			default:
-// 				infrastructure.Println("Exit")
+// 				d.printOutUC.Println("Exit")
 // 				os.Exit(0)
 // 			}
 // 		}
 // 	}
-
-// 	d.printOutUC.PrintMdf(`
-// ### Install brew packages with Brewfile
-// 	`)
-// 	installBrewBundle()

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 )
 
@@ -13,6 +14,7 @@ type BrewInfrastructure interface {
 	InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) error
 	SetHomebrewEnv(brewPath string) error
 	InstallFormula(pkg string) error
+	InstallBrewBundle(sout io.Writer, serror io.Writer) error
 }
 
 type BrewInfrastructureImpl struct{}
@@ -86,7 +88,7 @@ func (b *BrewInfrastructureImpl) InstallFormula(formula string) error {
 	return nil
 }
 
-// func dumpTmpBrewBundle() {
+// func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(sout io.Writer, serror io.Writer) error {
 // 	usr, _ := user.Current()
 // 	path := usr.HomeDir + "/projects/dotfiles/data/Brewfile.tmp"
 
@@ -95,24 +97,29 @@ func (b *BrewInfrastructureImpl) InstallFormula(formula string) error {
 // 	}
 
 // 	cmd := exec.Command("brew", "bundle", "dump", "--tap", "--formula", "--cask", "--mas", "--file", path)
-// 	cmd.Stdout = infrastructure.Out
-// 	cmd.Stderr = infrastructure.Error
-// 	err := cmd.Run()
-// 	if err != nil {
-// 		panic(err)
+// 	cmd.Stdout = sout
+// 	cmd.Stderr = serror
+
+// 	if err := cmd.Run(); err != nil {
+// 		return &BrewError{err}
 // 	}
+
+// 	return nil
 // }
 
-// func installBrewBundle() {
-// 	usr, _ := user.Current()
-// 	cmd := exec.Command("brew", "bundle", "--no-lock", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
-// 	cmd.Stdout = infrastructure.Out
-// 	cmd.Stderr = infrastructure.Error
-// 	err := cmd.Run()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
+func (b *BrewInfrastructureImpl) InstallBrewBundle(sout io.Writer, serror io.Writer) error {
+	usr, _ := user.Current()
+	//nolint:gosec
+	cmd := exec.Command("brew", "bundle", "--no-lock", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
+	cmd.Stdout = sout
+	cmd.Stderr = serror
+
+	if err := cmd.Run(); err != nil {
+		return &BrewError{err}
+	}
+
+	return nil
+}
 
 // func checkBrewBundle() {
 // 	usr, _ := user.Current()

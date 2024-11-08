@@ -9,6 +9,8 @@ import (
 type BrewUsecase interface {
 	InstallHomebrew(ctx context.Context) error
 	InstallFormula(formula string) error
+
+	InstallBrewBundle() error
 }
 
 type BrewUsecaseImpl struct {
@@ -79,6 +81,15 @@ func (b *BrewUsecaseImpl) InstallFormula(formula string) error {
 `, formula)
 
 	err := b.brewInfrastructure.InstallFormula(formula)
+	if err != nil {
+		return &BrewError{err}
+	}
+
+	return nil
+}
+
+func (b *BrewUsecaseImpl) InstallBrewBundle() error {
+	err := b.brewInfrastructure.InstallBrewBundle(*b.printOutUC.GetOut(), *b.printOutUC.GetError())
 	if err != nil {
 		return &BrewError{err}
 	}
