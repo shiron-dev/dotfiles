@@ -90,7 +90,6 @@ mas "LINE", id: 539883307
 # Tools creatives
 cask "audacity"
 cask "vlc"
-cask "clip-studio-paint"
 cask "gimp"
 cask "inkscape"
 mas "DaVinci Resolve", id: 571213070
