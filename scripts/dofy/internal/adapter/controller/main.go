@@ -1,6 +1,12 @@
 package controller
 
-import "github.com/shiron-dev/dotfiles/scripts/dofy/internal/usecase"
+import (
+	"bufio"
+	"os"
+	"strings"
+
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/usecase"
+)
 
 type DofyController interface {
 	Start()
@@ -42,26 +48,28 @@ This script will install dependencies and setup dotfiles.
 		panic(err)
 	}
 
-	// 	infrastructure.PrintMdf(`
-	// ### Setup mode
-	// `)
+	c.printoutUC.PrintMdf(`
+	### Setup mode
+	`)
 
-	// 	var mode string
-	// 	if len(os.Args) > 1 {
-	// 		mode = strings.ToLower(os.Args[1])
-	// 		infrastructure.Println("The mode is set by command line arguments.")
-	// 	} else {
-	// 		infrastructure.Print("What mode do you use? [standard]: ")
-	// 		scanner := bufio.NewScanner(os.Stdin)
-	// 		if scanner.Scan() {
-	// 			mode = strings.ToLower(strings.TrimSpace(scanner.Text()))
-	// 			if mode == "" {
-	// 				mode = "standard"
-	// 			}
-	// 		}
-	// 	}
+	var mode string
+	if len(os.Args) > 1 {
+		mode = strings.ToLower(os.Args[1])
 
-	// 	infrastructure.PrintMdf("Start setup in `" + mode + "` mode.")
+		c.printoutUC.Println("The mode is set by command line arguments.")
+	} else {
+		c.printoutUC.Print("What mode do you use? [standard]: ")
+
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			mode = strings.ToLower(strings.TrimSpace(scanner.Text()))
+			if mode == "" {
+				mode = "standard"
+			}
+		}
+	}
+
+	c.printoutUC.PrintMdf("Start setup in `" + mode + "` mode.")
 
 	// deps.InstallDeps()
 }
