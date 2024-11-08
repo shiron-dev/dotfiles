@@ -1,9 +1,9 @@
 package utils
 
-import "os/exec"
+// import "os/exec"
 
-func OpenWithCode(path ...string) {
-	args := []string{"-n", "-w"}
-	args = append(args, path...)
-	exec.Command("code", args...).Run()
-}
+// func OpenWithCode(path ...string) {
+// 	args := []string{"-n", "-w"}
+// 	args = append(args, path...)
+// 	exec.Command("code", args...).Run()
+// }
