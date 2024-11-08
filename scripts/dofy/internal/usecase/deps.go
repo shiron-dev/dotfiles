@@ -2,6 +2,10 @@ package usecase
 
 import (
 	"context"
+	"os"
+	"os/exec"
+	"os/user"
+	"path/filepath"
 
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 )
@@ -65,23 +69,32 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 		}
 	}
 
+	d.printOutUC.PrintMdf(`
+## Git clone dotfiles repository
+
+https://github.com/shiron-dev/dotfiles.git
+`)
+
+	usr, _ := user.Current()
+	if _, err := os.Stat(usr.HomeDir + "/projects/dotfiles"); err == nil {
+		d.printOutUC.Println("dotfiles directory already exists")
+	} else {
+		d.printOutUC.Println("Cloning dotfiles repository")
+
+		//nolint:gosec
+		cmd := exec.Command(
+			"git",
+			"clone",
+			"https://github.com/shiron-dev/dotfiles.git",
+			filepath.Join(usr.HomeDir, "/projects/dotfiles"),
+		)
+		if err := cmd.Run(); err != nil {
+			return &DepsError{err}
+		}
+	}
+
 	return nil
 }
-
-// 	d.printOutUC.PrintMdf(`
-// ## Git clone dotfiles repository
-
-// https://github.com/shiron-dev/dotfiles.git
-// `)
-
-// 	usr, _ := user.Current()
-// 	if _, err := os.Stat(usr.HomeDir + "/projects/dotfiles"); err == nil {
-// 		infrastructure.Println("dotfiles directory already exists")
-// 	} else {
-// 		infrastructure.Println("Cloning dotfiles repository")
-// 		cmd := exec.Command("git", "clone", "https://github.com/shiron-dev/dotfiles.git", usr.HomeDir+"/projects/dotfiles")
-// 		cmd.Run()
-// 	}
 
 // 	d.printOutUC.PrintMdf(`
 // ## Installing brew packages
