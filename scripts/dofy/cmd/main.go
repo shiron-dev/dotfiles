@@ -2,19 +2,18 @@ package main
 
 import (
 	"bufio"
+	"dofy/internal/infrastructure"
+	"dofy/internal/infrastructure/conf"
+	"dofy/internal/infrastructure/deps"
 	"os"
 	"strings"
-
-	"github.com/shiron-dev/dotfiles/scripts/cmd/conf"
-	"github.com/shiron-dev/dotfiles/scripts/cmd/deps"
-	"github.com/shiron-dev/dotfiles/scripts/cmd/printout"
 )
 
 func main() {
-	logfile := printout.SetLogOutput()
+	logfile := infrastructure.SetLogOutput()
 	defer logfile.Close()
 
-	printout.PrintMd(`
+	infrastructure.PrintMd(`
 
 # shiron-dev dotfiles setup script
 
@@ -22,24 +21,24 @@ This script will install dependencies and setup dotfiles.
 
 `)
 
-	printout.PrintMd(`
+	infrastructure.PrintMd(`
 ## Load environment information
 
 ### Environment information
 `)
 	envInfo := conf.ScanEnvInfo()
-	printout.PrintObj(*envInfo)
+	infrastructure.PrintObj(*envInfo)
 
-	printout.PrintMd(`
+	infrastructure.PrintMd(`
 ### Setup mode
 `)
 
 	var mode string
 	if len(os.Args) > 1 {
 		mode = strings.ToLower(os.Args[1])
-		printout.Println("The mode is set by command line arguments.")
+		infrastructure.Println("The mode is set by command line arguments.")
 	} else {
-		printout.Print("What mode do you use? [standard]: ")
+		infrastructure.Print("What mode do you use? [standard]: ")
 		scanner := bufio.NewScanner(os.Stdin)
 		if scanner.Scan() {
 			mode = strings.ToLower(strings.TrimSpace(scanner.Text()))
@@ -49,7 +48,7 @@ This script will install dependencies and setup dotfiles.
 		}
 	}
 
-	printout.PrintMd("Start setup in `" + mode + "` mode.")
+	infrastructure.PrintMd("Start setup in `" + mode + "` mode.")
 
 	deps.InstallDeps()
 }

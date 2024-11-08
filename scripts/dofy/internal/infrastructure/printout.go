@@ -1,4 +1,4 @@
-package printout
+package infrastructure
 
 import (
 	"fmt"

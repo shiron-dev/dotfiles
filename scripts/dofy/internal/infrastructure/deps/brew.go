@@ -2,6 +2,7 @@ package deps
 
 import (
 	"bufio"
+	"dofy/internal/infrastructure"
 	"io"
 	"net/http"
 	"os"
@@ -9,12 +10,10 @@ import (
 	"os/user"
 	"runtime"
 	"strings"
-
-	"github.com/shiron-dev/dotfiles/scripts/cmd/printout"
 )
 
 func installHomebrew() {
-	printout.PrintMd(`
+	infrastructure.PrintMd(`
 ### Installing Homebrew
 `)
 
@@ -28,14 +27,14 @@ func installHomebrew() {
 	bytes, _ := io.ReadAll(resp.Body)
 
 	cmd := exec.Command("/bin/bash", "-c", string(bytes))
-	cmd.Stdout = printout.Out
-	cmd.Stderr = printout.Error
+	cmd.Stdout = infrastructure.Out
+	cmd.Stderr = infrastructure.Error
 	err = cmd.Run()
 	if err != nil {
 		panic(err)
 	}
 
-	printout.PrintMd(`
+	infrastructure.PrintMd(`
 ### Set Homebrew environment
 `)
 
@@ -47,8 +46,8 @@ func installHomebrew() {
 		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
 	}
 	cmd = exec.Command("/bin/bash", "-c", `(echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> ~/.bashrc`)
-	cmd.Stdout = printout.Out
-	cmd.Stderr = printout.Error
+	cmd.Stdout = infrastructure.Out
+	cmd.Stderr = infrastructure.Error
 	err = cmd.Run()
 	if err != nil {
 		panic(err)
@@ -82,8 +81,8 @@ func dumpTmpBrewBundle() {
 	}
 
 	cmd := exec.Command("brew", "bundle", "dump", "--tap", "--formula", "--cask", "--mas", "--file", path)
-	cmd.Stdout = printout.Out
-	cmd.Stderr = printout.Error
+	cmd.Stdout = infrastructure.Out
+	cmd.Stderr = infrastructure.Error
 	err := cmd.Run()
 	if err != nil {
 		panic(err)
@@ -93,8 +92,8 @@ func dumpTmpBrewBundle() {
 func installBrewBundle() {
 	usr, _ := user.Current()
 	cmd := exec.Command("brew", "bundle", "--no-lock", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
-	cmd.Stdout = printout.Out
-	cmd.Stderr = printout.Error
+	cmd.Stdout = infrastructure.Out
+	cmd.Stderr = infrastructure.Error
 	err := cmd.Run()
 	if err != nil {
 		panic(err)
@@ -104,8 +103,8 @@ func installBrewBundle() {
 func checkBrewBundle() {
 	usr, _ := user.Current()
 	cmd := exec.Command("brew", "bundle", "check", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
-	cmd.Stdout = printout.Out
-	cmd.Stderr = printout.Error
+	cmd.Stdout = infrastructure.Out
+	cmd.Stderr = infrastructure.Error
 	err := cmd.Run()
 	if err != nil {
 		panic(err)
@@ -119,8 +118,8 @@ func cleanupBrewBundle(isForce bool) {
 		forceFlag = "--force"
 	}
 	cmd := exec.Command("brew", "bundle", "cleanup", forceFlag, "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
-	cmd.Stdout = printout.Out
-	cmd.Stderr = printout.Error
+	cmd.Stdout = infrastructure.Out
+	cmd.Stderr = infrastructure.Error
 	err := cmd.Run()
 	if err != nil {
 		panic(err)
