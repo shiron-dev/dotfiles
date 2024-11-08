@@ -1,6 +1,9 @@
 package usecase
 
-import "github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
+import (
+	"github.com/pkg/errors"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
+)
 
 type ConfigUsecase interface {
 	ScanEnvInfo() (*EnvInfo, error)
@@ -22,28 +25,20 @@ type EnvInfo struct {
 	arch      string
 }
 
-type configError struct {
-	err error
-}
-
-func (e *configError) Error() string {
-	return "ConfigUC: " + e.err.Error()
-}
-
 func (c *ConfigUsecaseImpl) ScanEnvInfo() (*EnvInfo, error) {
 	gos, err := c.configInfrastructure.GetOS()
 	if err != nil {
-		return nil, &configError{err}
+		return nil, errors.Wrap(err, "config usecase: failed to get os")
 	}
 
 	osVersion, err := c.configInfrastructure.GetOSVersion()
 	if err != nil {
-		return nil, &configError{err}
+		return nil, errors.Wrap(err, "config usecase: failed to get os version")
 	}
 
 	arch, err := c.configInfrastructure.GetArch()
 	if err != nil {
-		return nil, &configError{err}
+		return nil, errors.Wrap(err, "config usecase: failed to get arch")
 	}
 
 	return &EnvInfo{

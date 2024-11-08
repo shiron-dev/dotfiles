@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"os/user"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type BrewInfrastructure interface {
@@ -23,25 +25,17 @@ func NewBrewInfrastructure() *BrewInfrastructureImpl {
 	return &BrewInfrastructureImpl{}
 }
 
-type BrewError struct {
-	err error
-}
-
-func (e *BrewError) Error() string {
-	return "BrewUC: " + e.err.Error()
-}
-
 func (b *BrewInfrastructureImpl) InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) error {
 	url := "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew infrastructure: failed to create request")
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew infrastructure: failed to send request")
 	}
 	defer resp.Body.Close()
 
@@ -53,7 +47,7 @@ func (b *BrewInfrastructureImpl) InstallHomebrew(ctx context.Context, sout io.Wr
 	cmd.Stderr = serror
 
 	if err = cmd.Run(); err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew infrastructure: failed to run command")
 	}
 
 	return nil
@@ -64,7 +58,7 @@ func (b *BrewInfrastructureImpl) SetHomebrewEnv(brewPath string) error {
 
 	shellenv, err := cmd.Output()
 	if err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew infrastructure: failed to get shellenv")
 	}
 
 	for _, line := range strings.Split(string(shellenv), "\n") {
@@ -82,7 +76,7 @@ func (b *BrewInfrastructureImpl) SetHomebrewEnv(brewPath string) error {
 func (b *BrewInfrastructureImpl) InstallFormula(formula string) error {
 	cmd := exec.Command("brew", "install", formula)
 	if err := cmd.Run(); err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew infrastructure: failed to run brew install command")
 	}
 
 	return nil
@@ -115,7 +109,7 @@ func (b *BrewInfrastructureImpl) InstallBrewBundle(sout io.Writer, serror io.Wri
 	cmd.Stderr = serror
 
 	if err := cmd.Run(); err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew infrastructure: failed to run brew bundle command")
 	}
 
 	return nil

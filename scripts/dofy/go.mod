@@ -5,6 +5,7 @@ go 1.23.2
 require (
 	github.com/fatih/color v1.18.0
 	github.com/google/wire v0.6.0
+	github.com/pkg/errors v0.9.1
 )
 
 require (

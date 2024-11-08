@@ -7,6 +7,7 @@ import (
 	"os/user"
 	"path/filepath"
 
+	"github.com/pkg/errors"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 )
 
@@ -33,14 +34,6 @@ func NewDepsUsecase(
 	}
 }
 
-type DepsError struct {
-	err error
-}
-
-func (e *DepsError) Error() string {
-	return "DepsUC: " + e.err.Error()
-}
-
 func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 	d.printOutUC.PrintMdf(`
 ## Installing Homebrew
@@ -51,7 +44,7 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 	} else {
 		err := d.brewUC.InstallHomebrew(ctx)
 		if err != nil {
-			return &DepsError{err}
+			return errors.Wrap(err, "deps usecase: failed to install Homebrew")
 		}
 	}
 
@@ -66,7 +59,7 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 	} else {
 		err := d.brewUC.InstallFormula("git")
 		if err != nil {
-			return &DepsError{err}
+			return errors.Wrap(err, "deps usecase: failed to install git")
 		}
 	}
 
@@ -90,7 +83,7 @@ https://github.com/shiron-dev/dotfiles.git
 			filepath.Join(usr.HomeDir, "/projects/dotfiles"),
 		)
 		if err := cmd.Run(); err != nil {
-			return &DepsError{err}
+			return errors.Wrap(err, "deps usecase: failed to clone dotfiles repository")
 		}
 	}
 
@@ -109,7 +102,7 @@ Install the packages using Homebrew Bundle.
 	`)
 
 	if err := d.brewUC.InstallBrewBundle(); err != nil {
-		return &DepsError{err}
+		return errors.Wrap(err, "deps usecase: failed to install brew packages")
 	}
 
 	return nil

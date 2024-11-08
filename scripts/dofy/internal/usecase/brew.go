@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/pkg/errors"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 )
 
@@ -31,14 +32,6 @@ func NewBrewUsecase(
 	}
 }
 
-type BrewError struct {
-	err error
-}
-
-func (e *BrewError) Error() string {
-	return "BrewUC: " + e.err.Error()
-}
-
 func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 	b.printOutUC.PrintMdf(`
 ### Installing Homebrew
@@ -46,7 +39,7 @@ func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 
 	err := b.brewInfrastructure.InstallHomebrew(ctx, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
 	if err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew usecase: failed to install Homebrew")
 	}
 
 	b.printOutUC.PrintMdf(`
@@ -57,7 +50,7 @@ func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 
 	cfg, err := b.configUC.ScanEnvInfo()
 	if err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew usecase: failed to get environment info")
 	}
 
 	switch cfg.os {
@@ -69,7 +62,7 @@ func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 
 	err = b.brewInfrastructure.SetHomebrewEnv(brewPath)
 	if err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew usecase: failed to set Homebrew environment")
 	}
 
 	return nil
@@ -82,7 +75,7 @@ func (b *BrewUsecaseImpl) InstallFormula(formula string) error {
 
 	err := b.brewInfrastructure.InstallFormula(formula)
 	if err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew usecase: failed to install formula")
 	}
 
 	return nil
@@ -91,7 +84,7 @@ func (b *BrewUsecaseImpl) InstallFormula(formula string) error {
 func (b *BrewUsecaseImpl) InstallBrewBundle() error {
 	err := b.brewInfrastructure.InstallBrewBundle(*b.printOutUC.GetOut(), *b.printOutUC.GetError())
 	if err != nil {
-		return &BrewError{err}
+		return errors.Wrap(err, "brew usecase: failed to install Brewfile")
 	}
 
 	return nil
