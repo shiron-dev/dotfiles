@@ -11,7 +11,6 @@ https://github.com/shiron-dev/dotfiles
 
 EOM
 
-
 if [ -d ~/projects/dotfiles ]; then 
   cat <<EOM
 
