@@ -18,7 +18,9 @@ import (
 func InitializeControllerSet() (*ControllersSet, error) {
 	printOutInfrastructure := infrastructure.NewPrintOutInfrastructure()
 	printOutUsecase := usecase.NewPrintOutUsecase(printOutInfrastructure)
-	controllerController := controller.NewController(printOutUsecase)
+	configInfrastructure := infrastructure.NewConfigInfrastructure()
+	configUsecase := usecase.NewConfigUsecase(configInfrastructure)
+	controllerController := controller.NewController(printOutUsecase, configUsecase)
 	controllersSet := &ControllersSet{
 		Controller: controllerController,
 	}
@@ -31,10 +33,10 @@ func InitializeControllerSet() (*ControllersSet, error) {
 var controllerSet = wire.NewSet(controller.NewController)
 
 // Infrastructure
-var infrastructureSet = wire.NewSet(infrastructure.NewPrintOutInfrastructure)
+var infrastructureSet = wire.NewSet(infrastructure.NewPrintOutInfrastructure, infrastructure.NewConfigInfrastructure)
 
 // Usecase
-var usecaseSet = wire.NewSet(usecase.NewPrintOutUsecase)
+var usecaseSet = wire.NewSet(usecase.NewPrintOutUsecase, usecase.NewConfigUsecase)
 
 type ControllersSet struct {
 	Controller controller.Controller

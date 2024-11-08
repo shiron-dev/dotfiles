@@ -8,11 +8,13 @@ type Controller interface {
 
 type ControllerImpl struct {
 	printoutUC usecase.PrintOutUsecase
+	configUC   usecase.ConfigUsecase
 }
 
-func NewController(printoutUC usecase.PrintOutUsecase) Controller {
+func NewController(printoutUC usecase.PrintOutUsecase, configUC usecase.ConfigUsecase) Controller {
 	return &ControllerImpl{
 		printoutUC: printoutUC,
+		configUC:   configUC,
 	}
 }
 
@@ -28,13 +30,16 @@ This script will install dependencies and setup dotfiles.
 
 `)
 
-	// 	infrastructure.PrintMd(`
-	// ## Load environment information
+	c.printoutUC.PrintMd(`
+## Load environment information
 
-	// ### Environment information
-	// `)
-	// 	envInfo := conf.ScanEnvInfo()
-	// 	infrastructure.PrintObj(*envInfo)
+### Environment information
+`)
+	envInfo, err := c.configUC.ScanEnvInfo()
+	if err != nil {
+		panic(err)
+	}
+	c.printoutUC.PrintObj(*envInfo)
 
 	// 	infrastructure.PrintMd(`
 	// ### Setup mode

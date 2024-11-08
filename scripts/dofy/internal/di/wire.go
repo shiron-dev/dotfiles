@@ -19,11 +19,13 @@ var controllerSet = wire.NewSet(
 // Infrastructure
 var infrastructureSet = wire.NewSet(
 	infrastructure.NewPrintOutInfrastructure,
+	infrastructure.NewConfigInfrastructure,
 )
 
 // Usecase
 var usecaseSet = wire.NewSet(
 	usecase.NewPrintOutUsecase,
+	usecase.NewConfigUsecase,
 )
 
 type ControllersSet struct {
