@@ -50,26 +50,25 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 		}
 	}
 
+	d.printOutUC.PrintMdf(`
+## Installing required packages with Homebrew
+
+- git
+`)
+
+	if d.depsInfrastructure.CheckInstalled("git") {
+		d.printOutUC.Println("git is already installed")
+	} else {
+		err := d.brewUC.InstallFormula("git")
+		if err != nil {
+			return &DepsError{err}
+		}
+	}
+
 	return nil
 }
 
-// func InstallDeps() {
-
-// 	infrastructure.PrintMd(`
-// ## Installing required packages with Homebrew
-
-// - git
-// `)
-
-// 	infrastructure.PrintMd("### Installing git")
-// 	if checkInstalled("git") {
-// 		infrastructure.Println("git is already installed")
-// 	} else {
-// 		infrastructure.Println("Installing git")
-// 		installWithBrew("git")
-// 	}
-
-// 	infrastructure.PrintMd(`
+// 	d.printOutUC.PrintMdf(`
 // ## Git clone dotfiles repository
 
 // https://github.com/shiron-dev/dotfiles.git
@@ -84,7 +83,7 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 // 		cmd.Run()
 // 	}
 
-// 	infrastructure.PrintMd(`
+// 	d.printOutUC.PrintMdf(`
 // ## Installing brew packages
 
 // Install the packages using Homebrew Bundle.
@@ -107,7 +106,7 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 // 			diffNames += "- " + diff.name + "\n"
 // 		}
 // 		infrastructure.Println(color.RedString("The dotfiles Brewfile and the currently installed package are different."))
-// 		infrastructure.PrintMd(`
+// 		d.printOutUC.PrintMdf(`
 // ### Update Brewfile
 
 // diff:
@@ -142,8 +141,7 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 // 		}
 // 	}
 
-// 	infrastructure.PrintMd(`
+// 	d.printOutUC.PrintMdf(`
 // ### Install brew packages with Brewfile
 // 	`)
 // 	installBrewBundle()
-// }

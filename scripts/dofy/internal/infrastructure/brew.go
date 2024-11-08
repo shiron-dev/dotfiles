@@ -10,8 +10,9 @@ import (
 )
 
 type BrewInfrastructure interface {
-	InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer)
-	SetHomebrewEnv(brewPath string)
+	InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) error
+	SetHomebrewEnv(brewPath string) error
+	InstallFormula(pkg string) error
 }
 
 type BrewInfrastructureImpl struct{}
@@ -20,17 +21,25 @@ func NewBrewInfrastructure() *BrewInfrastructureImpl {
 	return &BrewInfrastructureImpl{}
 }
 
-func (b *BrewInfrastructureImpl) InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) {
+type BrewError struct {
+	err error
+}
+
+func (e *BrewError) Error() string {
+	return "BrewUC: " + e.err.Error()
+}
+
+func (b *BrewInfrastructureImpl) InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) error {
 	url := "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		panic(err)
+		return &BrewError{err}
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		panic(err)
+		return &BrewError{err}
 	}
 	defer resp.Body.Close()
 
@@ -42,13 +51,19 @@ func (b *BrewInfrastructureImpl) InstallHomebrew(ctx context.Context, sout io.Wr
 	cmd.Stderr = serror
 
 	if err = cmd.Run(); err != nil {
-		panic(err)
+		return &BrewError{err}
 	}
+
+	return nil
 }
 
-func (b *BrewInfrastructureImpl) SetHomebrewEnv(brewPath string) {
+func (b *BrewInfrastructureImpl) SetHomebrewEnv(brewPath string) error {
 	cmd := exec.Command(brewPath, "shellenv")
-	shellenv, _ := cmd.Output()
+
+	shellenv, err := cmd.Output()
+	if err != nil {
+		return &BrewError{err}
+	}
 
 	for _, line := range strings.Split(string(shellenv), "\n") {
 		if strings.HasPrefix(line, "export PATH=") {
@@ -58,15 +73,18 @@ func (b *BrewInfrastructureImpl) SetHomebrewEnv(brewPath string) {
 			os.Setenv("PATH", strings.Trim(string(out), "\""))
 		}
 	}
+
+	return nil
 }
 
-// func installWithBrew(pkg string) {
-// 	cmd := exec.Command("brew", "install", pkg)
-// 	err := cmd.Run()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
+func (b *BrewInfrastructureImpl) InstallFormula(formula string) error {
+	cmd := exec.Command("brew", "install", formula)
+	if err := cmd.Run(); err != nil {
+		return &BrewError{err}
+	}
+
+	return nil
+}
 
 // func dumpTmpBrewBundle() {
 // 	usr, _ := user.Current()

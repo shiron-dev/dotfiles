@@ -56,8 +56,8 @@ This script will install dependencies and setup dotfiles.
 	}
 
 	c.printoutUC.PrintMdf(`
-	### Setup mode
-	`)
+### Setup mode
+`)
 
 	var mode string
 	if len(os.Args) > 1 {

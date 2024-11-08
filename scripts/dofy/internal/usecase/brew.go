@@ -8,6 +8,7 @@ import (
 
 type BrewUsecase interface {
 	InstallHomebrew(ctx context.Context) error
+	InstallFormula(formula string) error
 }
 
 type BrewUsecaseImpl struct {
@@ -41,7 +42,10 @@ func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 ### Installing Homebrew
 `)
 
-	b.brewInfrastructure.InstallHomebrew(ctx, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	err := b.brewInfrastructure.InstallHomebrew(ctx, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	if err != nil {
+		return &BrewError{err}
+	}
 
 	b.printOutUC.PrintMdf(`
 ### Set Homebrew environment
@@ -61,7 +65,23 @@ func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
 	}
 
-	b.brewInfrastructure.SetHomebrewEnv(brewPath)
+	err = b.brewInfrastructure.SetHomebrewEnv(brewPath)
+	if err != nil {
+		return &BrewError{err}
+	}
+
+	return nil
+}
+
+func (b *BrewUsecaseImpl) InstallFormula(formula string) error {
+	b.printOutUC.PrintMdf(`
+### Installing %s (with Homebrew)
+`, formula)
+
+	err := b.brewInfrastructure.InstallFormula(formula)
+	if err != nil {
+		return &BrewError{err}
+	}
 
 	return nil
 }
