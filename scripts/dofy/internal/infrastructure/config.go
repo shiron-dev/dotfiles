@@ -12,11 +12,18 @@ type ConfigInfrastructure interface {
 	GetArch() (string, error)
 }
 
-type ConfigInfrastructureImpl struct {
+type ConfigInfrastructureImpl struct{}
+
+func NewConfigInfrastructure() *ConfigInfrastructureImpl {
+	return &ConfigInfrastructureImpl{}
 }
 
-func NewConfigInfrastructure() ConfigInfrastructure {
-	return &ConfigInfrastructureImpl{}
+type configError struct {
+	err error
+}
+
+func (e *configError) Error() string {
+	return "ConfigInfrastructure: " + e.err.Error()
 }
 
 func (c *ConfigInfrastructureImpl) GetOS() (string, error) {
@@ -26,15 +33,17 @@ func (c *ConfigInfrastructureImpl) GetOS() (string, error) {
 func (c *ConfigInfrastructureImpl) GetOSVersion() (string, error) {
 	osVersion, err := exec.Command("uname", "-r").Output()
 	if err != nil {
-		return "", err
+		return "", &configError{err}
 	}
+
 	return strings.TrimSpace(string(osVersion)), nil
 }
 
 func (c *ConfigInfrastructureImpl) GetArch() (string, error) {
 	arch, err := exec.Command("uname", "-p").Output()
 	if err != nil {
-		return "", err
+		return "", &configError{err}
 	}
+
 	return strings.TrimSpace(string(arch)), nil
 }

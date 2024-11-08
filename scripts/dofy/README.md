@@ -62,6 +62,16 @@ Requires: init
 golangci-lint run
 ```
 
+### lint:fix
+
+Lint and fix golang code.
+
+Requires: init
+
+```bash
+golangci-lint run --fix
+```
+
 ### vet
 
 Vet golang code.

@@ -1,6 +1,6 @@
 package main
 
-import "dofy/internal/di"
+import "github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
 
 func main() {
 	controllerSet, err := di.InitializeControllerSet()
@@ -8,5 +8,6 @@ func main() {
 		panic(err)
 	}
 
-	controllerSet.Controller.Start()
+	dofyController := controllerSet.DofyController
+	dofyController.Start()
 }

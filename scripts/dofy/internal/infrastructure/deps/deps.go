@@ -2,8 +2,8 @@ package deps
 
 // import (
 // 	"bufio"
-// 	"dofy/internal/infrastructure"
-// 	"dofy/internal/utils"
+// 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
+// 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/utils"
 // 	"os"
 // 	"os/exec"
 // 	"os/user"

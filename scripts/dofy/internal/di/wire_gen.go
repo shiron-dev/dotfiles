@@ -7,22 +7,22 @@
 package di
 
 import (
-	"dofy/internal/adapter/controller"
-	"dofy/internal/infrastructure"
-	"dofy/internal/usecase"
 	"github.com/google/wire"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/adapter/controller"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/usecase"
 )
 
 // Injectors from wire.go:
 
 func InitializeControllerSet() (*ControllersSet, error) {
-	printOutInfrastructure := infrastructure.NewPrintOutInfrastructure()
-	printOutUsecase := usecase.NewPrintOutUsecase(printOutInfrastructure)
-	configInfrastructure := infrastructure.NewConfigInfrastructure()
-	configUsecase := usecase.NewConfigUsecase(configInfrastructure)
-	controllerController := controller.NewController(printOutUsecase, configUsecase)
+	printOutInfrastructureImpl := infrastructure.NewPrintOutInfrastructure()
+	printOutUsecaseImpl := usecase.NewPrintOutUsecase(printOutInfrastructureImpl)
+	configInfrastructureImpl := infrastructure.NewConfigInfrastructure()
+	configUsecaseImpl := usecase.NewConfigUsecase(configInfrastructureImpl)
+	dofyControllerImpl := controller.NewDofyController(printOutUsecaseImpl, configUsecaseImpl)
 	controllersSet := &ControllersSet{
-		Controller: controllerController,
+		DofyController: dofyControllerImpl,
 	}
 	return controllersSet, nil
 }
@@ -30,14 +30,14 @@ func InitializeControllerSet() (*ControllersSet, error) {
 // wire.go:
 
 // Adapter
-var controllerSet = wire.NewSet(controller.NewController)
+var controllerSet = wire.NewSet(wire.Bind(new(controller.DofyController), new(*controller.DofyControllerImpl)), controller.NewDofyController)
 
 // Infrastructure
-var infrastructureSet = wire.NewSet(infrastructure.NewPrintOutInfrastructure, infrastructure.NewConfigInfrastructure)
+var infrastructureSet = wire.NewSet(wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)), infrastructure.NewPrintOutInfrastructure, wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)), infrastructure.NewConfigInfrastructure)
 
 // Usecase
-var usecaseSet = wire.NewSet(usecase.NewPrintOutUsecase, usecase.NewConfigUsecase)
+var usecaseSet = wire.NewSet(wire.Bind(new(usecase.PrintOutUsecase), new(*usecase.PrintOutUsecaseImpl)), usecase.NewPrintOutUsecase, wire.Bind(new(usecase.ConfigUsecase), new(*usecase.ConfigUsecaseImpl)), usecase.NewConfigUsecase)
 
 type ControllersSet struct {
-	Controller controller.Controller
+	DofyController controller.DofyController
 }

@@ -1,4 +1,4 @@
-module dofy
+module github.com/shiron-dev/dotfiles/scripts/dofy
 
 go 1.23.2
 

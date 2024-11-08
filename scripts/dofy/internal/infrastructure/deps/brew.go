@@ -2,7 +2,7 @@ package deps
 
 // import (
 // 	"bufio"
-// 	"dofy/internal/infrastructure"
+// 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 // 	"io"
 // 	"net/http"
 // 	"os"

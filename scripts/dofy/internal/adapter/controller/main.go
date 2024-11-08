@@ -1,28 +1,28 @@
 package controller
 
-import "dofy/internal/usecase"
+import "github.com/shiron-dev/dotfiles/scripts/dofy/internal/usecase"
 
-type Controller interface {
+type DofyController interface {
 	Start()
 }
 
-type ControllerImpl struct {
+type DofyControllerImpl struct {
 	printoutUC usecase.PrintOutUsecase
 	configUC   usecase.ConfigUsecase
 }
 
-func NewController(printoutUC usecase.PrintOutUsecase, configUC usecase.ConfigUsecase) Controller {
-	return &ControllerImpl{
+func NewDofyController(printoutUC usecase.PrintOutUsecase, configUC usecase.ConfigUsecase) *DofyControllerImpl {
+	return &DofyControllerImpl{
 		printoutUC: printoutUC,
 		configUC:   configUC,
 	}
 }
 
-func (c *ControllerImpl) Start() {
+func (c *DofyControllerImpl) Start() {
 	logfile := c.printoutUC.SetLogOutput()
 	defer logfile.Close()
 
-	c.printoutUC.PrintMd(`
+	c.printoutUC.PrintMdf(`
 
 # shiron-dev dotfiles setup script
 
@@ -30,18 +30,19 @@ This script will install dependencies and setup dotfiles.
 
 `)
 
-	c.printoutUC.PrintMd(`
+	c.printoutUC.PrintMdf(`
 ## Load environment information
 
 ### Environment information
 `)
-	envInfo, err := c.configUC.ScanEnvInfo()
-	if err != nil {
+
+	if envInfo, err := c.configUC.ScanEnvInfo(); err == nil {
+		c.printoutUC.PrintObj(*envInfo)
+	} else {
 		panic(err)
 	}
-	c.printoutUC.PrintObj(*envInfo)
 
-	// 	infrastructure.PrintMd(`
+	// 	infrastructure.PrintMdf(`
 	// ### Setup mode
 	// `)
 
@@ -60,7 +61,7 @@ This script will install dependencies and setup dotfiles.
 	// 		}
 	// 	}
 
-	// 	infrastructure.PrintMd("Start setup in `" + mode + "` mode.")
+	// 	infrastructure.PrintMdf("Start setup in `" + mode + "` mode.")
 
 	// deps.InstallDeps()
 }

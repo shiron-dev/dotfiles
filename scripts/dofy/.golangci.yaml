@@ -8,3 +8,4 @@ linters:
     - execinquery
     - gomnd
     - exportloopref
+    - depguard

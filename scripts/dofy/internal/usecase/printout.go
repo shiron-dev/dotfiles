@@ -1,15 +1,16 @@
 package usecase
 
 import (
-	"dofy/internal/domain"
-	"dofy/internal/infrastructure"
 	"fmt"
 	"os"
 	"reflect"
+
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/domain"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 )
 
 type PrintOutUsecase interface {
-	PrintMd(format string, a ...interface{})
+	PrintMdf(format string, a ...interface{})
 	Println(str string)
 	Print(str string)
 	PrintObj(obj interface{})
@@ -20,23 +21,23 @@ type PrintOutUsecaseImpl struct {
 	printOutInfrastructure infrastructure.PrintOutInfrastructure
 }
 
-func NewPrintOutUsecase(printOutInfrastructure infrastructure.PrintOutInfrastructure) PrintOutUsecase {
+func NewPrintOutUsecase(printOutInfrastructure infrastructure.PrintOutInfrastructure) *PrintOutUsecaseImpl {
 	return &PrintOutUsecaseImpl{
 		printOutInfrastructure: printOutInfrastructure,
 	}
 }
 
-func (p *PrintOutUsecaseImpl) PrintMd(format string, a ...interface{}) {
+func (p *PrintOutUsecaseImpl) PrintMdf(format string, a ...interface{}) {
 	str := fmt.Sprintf(format, a...)
 
-	for _, p := range domain.MdPrinter {
-		if p.Name == "underline" {
-			str = p.Reg.ReplaceAllStringFunc(str, func(s string) string {
-				return p.Reg.ReplaceAllString(s, p.Col.Sprint("$1"))
+	for _, printer := range domain.GetMdPrinter() {
+		if printer.Name == "underline" {
+			str = printer.Reg.ReplaceAllStringFunc(str, func(s string) string {
+				return printer.Reg.ReplaceAllString(s, printer.Col.Sprint("$1"))
 			})
 		} else {
-			str = p.Reg.ReplaceAllStringFunc(str, func(s string) string {
-				return p.Col.SprintFunc()(s)
+			str = printer.Reg.ReplaceAllStringFunc(str, func(s string) string {
+				return printer.Col.SprintFunc()(s)
 			})
 		}
 	}
@@ -48,7 +49,7 @@ func (p *PrintOutUsecaseImpl) PrintObj(obj interface{}) {
 	t := reflect.TypeOf(obj)
 	v := reflect.ValueOf(obj)
 
-	for i := 0; i < t.NumField(); i++ {
+	for i := range t.NumField() {
 		field := t.Field(i)
 		p.Println(field.Name + ": " + v.Field(i).String())
 	}
