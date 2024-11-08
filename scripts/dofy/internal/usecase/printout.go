@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"reflect"
 
@@ -15,6 +16,9 @@ type PrintOutUsecase interface {
 	Print(str string)
 	PrintObj(obj interface{})
 	SetLogOutput() *os.File
+
+	GetOut() *io.Writer
+	GetError() *io.Writer
 }
 
 type PrintOutUsecaseImpl struct {
@@ -65,4 +69,12 @@ func (p *PrintOutUsecaseImpl) Print(str string) {
 
 func (p *PrintOutUsecaseImpl) SetLogOutput() *os.File {
 	return p.printOutInfrastructure.SetLogOutput()
+}
+
+func (p *PrintOutUsecaseImpl) GetOut() *io.Writer {
+	return p.printOutInfrastructure.GetOut()
+}
+
+func (p *PrintOutUsecaseImpl) GetError() *io.Writer {
+	return p.printOutInfrastructure.GetError()
 }

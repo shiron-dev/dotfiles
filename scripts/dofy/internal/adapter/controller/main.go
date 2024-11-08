@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bufio"
+	"context"
 	"os"
 	"strings"
 
@@ -15,12 +16,18 @@ type DofyController interface {
 type DofyControllerImpl struct {
 	printoutUC usecase.PrintOutUsecase
 	configUC   usecase.ConfigUsecase
+	depsUC     usecase.DepsUsecase
 }
 
-func NewDofyController(printoutUC usecase.PrintOutUsecase, configUC usecase.ConfigUsecase) *DofyControllerImpl {
+func NewDofyController(
+	printoutUC usecase.PrintOutUsecase,
+	configUC usecase.ConfigUsecase,
+	depsUC usecase.DepsUsecase,
+) *DofyControllerImpl {
 	return &DofyControllerImpl{
 		printoutUC: printoutUC,
 		configUC:   configUC,
+		depsUC:     depsUC,
 	}
 }
 
@@ -71,5 +78,8 @@ This script will install dependencies and setup dotfiles.
 
 	c.printoutUC.PrintMdf("Start setup in `" + mode + "` mode.")
 
-	// deps.InstallDeps()
+	err := c.depsUC.InstallDeps(context.Background())
+	if err != nil {
+		panic(err)
+	}
 }

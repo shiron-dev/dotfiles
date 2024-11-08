@@ -23,6 +23,8 @@ var infrastructureSet = wire.NewSet(
 	infrastructure.NewPrintOutInfrastructure,
 	wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)),
 	infrastructure.NewConfigInfrastructure,
+	wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)),
+	infrastructure.NewBrewInfrastructure,
 )
 
 // Usecase
@@ -31,6 +33,10 @@ var usecaseSet = wire.NewSet(
 	usecase.NewPrintOutUsecase,
 	wire.Bind(new(usecase.ConfigUsecase), new(*usecase.ConfigUsecaseImpl)),
 	usecase.NewConfigUsecase,
+	wire.Bind(new(usecase.BrewUsecase), new(*usecase.BrewUsecaseImpl)),
+	usecase.NewBrewUsecase,
+	wire.Bind(new(usecase.DepsUsecase), new(*usecase.DepsUsecaseImpl)),
+	usecase.NewDepsUsecase,
 )
 
 type ControllersSet struct {

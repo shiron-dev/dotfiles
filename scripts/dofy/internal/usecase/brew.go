@@ -1,80 +1,67 @@
 package usecase
 
-// import (
-// 	"io"
-// 	"net/http"
-// 	"os"
-// 	"os/exec"
-// 	"runtime"
-// 	"strings"
+import (
+	"context"
 
-// 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
-// )
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
+)
 
-// type BrewUsecase interface {
-// 	InstallHomebrew()
-// }
+type BrewUsecase interface {
+	InstallHomebrew(ctx context.Context) error
+}
 
-// type BrewUsecaseImpl struct {
-// 	brewInfrastructure infrastructure.BrewInfrastructure
-// 	printOutUC         PrintOutUsecase
-// }
+type BrewUsecaseImpl struct {
+	brewInfrastructure infrastructure.BrewInfrastructure
+	printOutUC         PrintOutUsecase
+	configUC           ConfigUsecase
+}
 
-// func NewBrewUsecase(brewInfrastructure infrastructure.BrewInfrastructure, printOutUC PrintOutUsecase) BrewUsecase {
-// 	return &BrewUsecaseImpl{
-// 		brewInfrastructure: brewInfrastructure,
-// 		printOutUC:         printOutUC,
-// 	}
-// }
+func NewBrewUsecase(
+	brewInfrastructure infrastructure.BrewInfrastructure,
+	printOutUC PrintOutUsecase,
+	configUC ConfigUsecase,
+) *BrewUsecaseImpl {
+	return &BrewUsecaseImpl{
+		brewInfrastructure: brewInfrastructure,
+		printOutUC:         printOutUC,
+		configUC:           configUC,
+	}
+}
 
-// func (b *BrewUsecaseImpl) InstallHomebrew() {
-// 	b.printOutUC.PrintMd(`
-// ### Installing Homebrew
-// `)
+type BrewError struct {
+	err error
+}
 
-// 	url := "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
+func (e *BrewError) Error() string {
+	return "BrewUC: " + e.err.Error()
+}
 
-// 	resp, err := http.Get(url)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	defer resp.Body.Close()
-// 	bytes, _ := io.ReadAll(resp.Body)
+func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
+	b.printOutUC.PrintMdf(`
+### Installing Homebrew
+`)
 
-// 	cmd := exec.Command("/bin/bash", "-c", string(bytes))
-// 	cmd.Stdout = *b.printOutUC.GetOut()
-// 	cmd.Stderr = *b.printOutUC.GetError()
-// 	err = cmd.Run()
-// 	if err != nil {
-// 		panic(err)
-// 	}
+	b.brewInfrastructure.InstallHomebrew(ctx, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
 
-// 	b.printOutUC.PrintMd(`
-// ### Set Homebrew environment
-// `)
+	b.printOutUC.PrintMdf(`
+### Set Homebrew environment
+`)
 
-// 	var brewPath string
-// 	switch runtime.GOOS {
-// 	case "darwin":
-// 		brewPath = "/opt/homebrew/bin/brew"
-// 	case "linux":
-// 		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
-// 	}
-// 	cmd = exec.Command("/bin/bash", "-c", `(echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> ~/.bashrc`)
-// 	cmd.Stdout = *b.printOutUC.GetOut()
-// 	cmd.Stderr = *b.printOutUC.GetError()
-// 	err = cmd.Run()
-// 	if err != nil {
-// 		panic(err)
-// 	}
+	var brewPath string
 
-// 	cmd = exec.Command(brewPath, "shellenv")
-// 	shellenv, _ := cmd.Output()
-// 	for _, line := range strings.Split(string(shellenv), "\n") {
-// 		if strings.HasPrefix(line, "export PATH=") {
-// 			cmd = exec.Command("sh", "-c", "echo "+strings.Replace(line, "export PATH=", "", 1))
-// 			out, _ := cmd.Output()
-// 			os.Setenv("PATH", strings.Trim(string(out), "\""))
-// 		}
-// 	}
-// }
+	cfg, err := b.configUC.ScanEnvInfo()
+	if err != nil {
+		return &BrewError{err}
+	}
+
+	switch cfg.os {
+	case "darwin":
+		brewPath = "/opt/homebrew/bin/brew"
+	case "linux":
+		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
+	}
+
+	b.brewInfrastructure.SetHomebrewEnv(brewPath)
+
+	return nil
+}

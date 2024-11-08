@@ -1,68 +1,64 @@
-package deps
+package infrastructure
 
-// import (
-// 	"bufio"
-// 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
-// 	"io"
-// 	"net/http"
-// 	"os"
-// 	"os/exec"
-// 	"os/user"
-// 	"runtime"
-// 	"strings"
-// )
+import (
+	"context"
+	"io"
+	"net/http"
+	"os"
+	"os/exec"
+	"strings"
+)
 
-// func installHomebrew() {
-// 	infrastructure.PrintMd(`
-// ### Installing Homebrew
-// `)
+type BrewInfrastructure interface {
+	InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer)
+	SetHomebrewEnv(brewPath string)
+}
 
-// 	url := "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
+type BrewInfrastructureImpl struct{}
 
-// 	resp, err := http.Get(url)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	defer resp.Body.Close()
-// 	bytes, _ := io.ReadAll(resp.Body)
+func NewBrewInfrastructure() *BrewInfrastructureImpl {
+	return &BrewInfrastructureImpl{}
+}
 
-// 	cmd := exec.Command("/bin/bash", "-c", string(bytes))
-// 	cmd.Stdout = infrastructure.Out
-// 	cmd.Stderr = infrastructure.Error
-// 	err = cmd.Run()
-// 	if err != nil {
-// 		panic(err)
-// 	}
+func (b *BrewInfrastructureImpl) InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) {
+	url := "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
 
-// 	infrastructure.PrintMd(`
-// ### Set Homebrew environment
-// `)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		panic(err)
+	}
 
-// 	var brewPath string
-// 	switch runtime.GOOS {
-// 	case "darwin":
-// 		brewPath = "/opt/homebrew/bin/brew"
-// 	case "linux":
-// 		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
-// 	}
-// 	cmd = exec.Command("/bin/bash", "-c", `(echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> ~/.bashrc`)
-// 	cmd.Stdout = infrastructure.Out
-// 	cmd.Stderr = infrastructure.Error
-// 	err = cmd.Run()
-// 	if err != nil {
-// 		panic(err)
-// 	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
 
-// 	cmd = exec.Command(brewPath, "shellenv")
-// 	shellenv, _ := cmd.Output()
-// 	for _, line := range strings.Split(string(shellenv), "\n") {
-// 		if strings.HasPrefix(line, "export PATH=") {
-// 			cmd = exec.Command("sh", "-c", "echo "+strings.Replace(line, "export PATH=", "", 1))
-// 			out, _ := cmd.Output()
-// 			os.Setenv("PATH", strings.Trim(string(out), "\""))
-// 		}
-// 	}
-// }
+	bytes, _ := io.ReadAll(resp.Body)
+
+	//nolint:gosec
+	cmd := exec.Command("/bin/bash", "-c", string(bytes))
+	cmd.Stdout = sout
+	cmd.Stderr = serror
+
+	if err = cmd.Run(); err != nil {
+		panic(err)
+	}
+}
+
+func (b *BrewInfrastructureImpl) SetHomebrewEnv(brewPath string) {
+	cmd := exec.Command(brewPath, "shellenv")
+	shellenv, _ := cmd.Output()
+
+	for _, line := range strings.Split(string(shellenv), "\n") {
+		if strings.HasPrefix(line, "export PATH=") {
+			//nolint:gosec
+			cmd = exec.Command("sh", "-c", "echo "+strings.Replace(line, "export PATH=", "", 1))
+			out, _ := cmd.Output()
+			os.Setenv("PATH", strings.Trim(string(out), "\""))
+		}
+	}
+}
 
 // func installWithBrew(pkg string) {
 // 	cmd := exec.Command("brew", "install", pkg)

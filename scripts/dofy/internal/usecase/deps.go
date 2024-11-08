@@ -1,16 +1,37 @@
-package deps
+package usecase
 
-// import (
-// 	"bufio"
-// 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
-// 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/utils"
-// 	"os"
-// 	"os/exec"
-// 	"os/user"
-// 	"strings"
+import "context"
 
-// 	"github.com/fatih/color"
-// )
+type DepsUsecase interface {
+	InstallDeps(ctx context.Context) error
+}
+
+type DepsUsecaseImpl struct {
+	brewUC BrewUsecase
+}
+
+func NewDepsUsecase(brewUC BrewUsecase) *DepsUsecaseImpl {
+	return &DepsUsecaseImpl{
+		brewUC: brewUC,
+	}
+}
+
+type DepsError struct {
+	err error
+}
+
+func (e *DepsError) Error() string {
+	return "DepsUC: " + e.err.Error()
+}
+
+func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
+	err := d.brewUC.InstallHomebrew(ctx)
+	if err != nil {
+		return &DepsError{err}
+	}
+
+	return nil
+}
 
 // func InstallDeps() {
 // 	infrastructure.PrintMd(`

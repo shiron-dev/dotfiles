@@ -12,6 +12,9 @@ const filePermission = 0o666
 type PrintOutInfrastructure interface {
 	Print(str string)
 	SetLogOutput() *os.File
+
+	GetOut() *io.Writer
+	GetError() *io.Writer
 }
 
 type PrintOutInfrastructureImpl struct {
@@ -45,4 +48,12 @@ func (p *PrintOutInfrastructureImpl) SetLogOutput() *os.File {
 	p.error = io.MultiWriter(os.Stderr, logfile)
 
 	return logfile
+}
+
+func (p *PrintOutInfrastructureImpl) GetOut() *io.Writer {
+	return &p.out
+}
+
+func (p *PrintOutInfrastructureImpl) GetError() *io.Writer {
+	return &p.error
 }
