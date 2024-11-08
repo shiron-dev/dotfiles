@@ -1,0 +1,17 @@
+name: Setup Golang
+description: Setup Golang
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: go.mod
+        cache-dependency-path: go.sum
+    - name: Set up xc
+      uses: joerdav/setup-xc@eaed99ccd40453d5ab8fe50e7dfd033e6f302e98 # v1
+    - name: Run `xc init`
+      shell: bash
+      run: |
+        xc init
