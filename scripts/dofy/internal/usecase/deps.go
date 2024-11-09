@@ -11,12 +11,18 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/domain"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 )
 
 type DepsUsecase interface {
-	InstallDeps(ctx context.Context) error
-	brewBundle() error
+	InstallHomebrew(ctx context.Context) error
+	InstallGit() error
+	CloneDotfiles() error
+	InstallBrewBundle() error
+
+	showBrewDiff(diffBundles []domain.BrewBundle, diffTmpBundles []domain.BrewBundle) error
+	updateBrewfile() error
 }
 
 type DepsUsecaseImpl struct {
@@ -37,7 +43,7 @@ func NewDepsUsecase(
 	}
 }
 
-func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
+func (d *DepsUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 	d.printOutUC.PrintMdf(`
 ## Installing Homebrew
 `)
@@ -51,6 +57,10 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 		}
 	}
 
+	return nil
+}
+
+func (d *DepsUsecaseImpl) InstallGit() error {
 	d.printOutUC.PrintMdf(`
 ## Installing required packages with Homebrew
 
@@ -66,6 +76,10 @@ func (d *DepsUsecaseImpl) InstallDeps(ctx context.Context) error {
 		}
 	}
 
+	return nil
+}
+
+func (d *DepsUsecaseImpl) CloneDotfiles() error {
 	d.printOutUC.PrintMdf(`
 ## Git clone dotfiles repository
 
@@ -94,10 +108,10 @@ https://github.com/shiron-dev/dotfiles.git
 		}
 	}
 
-	return d.brewBundle()
+	return nil
 }
 
-func (d *DepsUsecaseImpl) brewBundle() error {
+func (d *DepsUsecaseImpl) InstallBrewBundle() error {
 	usr, err := user.Current()
 	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to get current user")
@@ -114,7 +128,7 @@ Install the packages using Homebrew Bundle.
 		return errors.Wrap(err, "deps usecase: failed to dump tmp Brewfile")
 	}
 
-	diffBundle, diffTmpBundles, err := d.brewUC.CheckDiffBrewBundle(
+	diffBundles, diffTmpBundles, err := d.brewUC.CheckDiffBrewBundle(
 		usr.HomeDir+"/projects/dotfiles/data/Brewfile",
 		usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
 	)
@@ -122,7 +136,7 @@ Install the packages using Homebrew Bundle.
 		return errors.Wrap(err, "deps usecase: failed to check diff Brewfile")
 	}
 
-	if len(diffBundle) > 0 {
+	if len(diffBundles) > 0 {
 		d.printOutUC.PrintMdf(`
 ### Install brew packages with Brewfile
 `)
@@ -135,17 +149,27 @@ Install the packages using Homebrew Bundle.
 	}
 
 	if len(diffTmpBundles) > 0 {
-		var diffNames string
-		for _, diff := range diffTmpBundles {
-			diffNames += color.GreenString("+ " + diff.Name + "\n")
+		err := d.showBrewDiff(diffBundles, diffTmpBundles)
+		if err != nil {
+			return errors.Wrap(err, "deps usecase: failed to update Brewfile")
 		}
+	}
 
-		for _, diff := range diffBundle {
-			diffNames += color.RedString("- " + diff.Name + "\n")
-		}
+	return nil
+}
 
-		d.printOutUC.Println(color.RedString("The dotfiles Brewfile and the currently installed package are different."))
-		d.printOutUC.PrintMdf(`
+func (d *DepsUsecaseImpl) showBrewDiff(diffBundles []domain.BrewBundle, diffTmpBundles []domain.BrewBundle) error {
+	var diffNames string
+	for _, diff := range diffTmpBundles {
+		diffNames += color.GreenString("+ " + diff.Name + "\n")
+	}
+
+	for _, diff := range diffBundles {
+		diffNames += color.RedString("- " + diff.Name + "\n")
+	}
+
+	d.printOutUC.Println(color.RedString("The dotfiles Brewfile and the currently installed package are different."))
+	d.printOutUC.PrintMdf(`
 ### Update Brewfile
 
 diff:
@@ -158,33 +182,41 @@ What will you do to resolve the diff?
 3. do nothing
 4. exit
 `)
-		d.printOutUC.Print("What do you run? [1-4]: ")
+	d.printOutUC.Print("What do you run? [1-4]: ")
 
-		scanner := bufio.NewScanner(os.Stdin)
-		if scanner.Scan() {
-			switch strings.TrimSpace(scanner.Text()) {
-			case "1":
-				d.printOutUC.Println("Running `brew bundle cleanup`")
+	return d.updateBrewfile()
+}
 
-				err = d.brewUC.CleanupBrewBundle(true)
-				if err != nil {
-					return errors.Wrap(err, "deps usecase: failed to run brew bundle cleanup")
-				}
-			case "2":
-				d.printOutUC.Println("Open Brewfile with code")
+func (d *DepsUsecaseImpl) updateBrewfile() error {
+	usr, err := user.Current()
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to get current user")
+	}
 
-				if err := d.depsInfrastructure.OpenWithCode(
-					usr.HomeDir+"/projects/dotfiles/data/Brewfile",
-					usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
-				); err != nil {
-					return errors.Wrap(err, "deps usecase: failed to open with code")
-				}
-			case "3":
-				d.printOutUC.Println("Do nothing")
-			default:
-				d.printOutUC.Println("Exit")
-				os.Exit(0)
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		switch strings.TrimSpace(scanner.Text()) {
+		case "1":
+			d.printOutUC.Println("Running `brew bundle cleanup`")
+
+			err := d.brewUC.CleanupBrewBundle(true)
+			if err != nil {
+				return errors.Wrap(err, "deps usecase: failed to run brew bundle cleanup")
 			}
+		case "2":
+			d.printOutUC.Println("Open Brewfile with code")
+
+			if err := d.depsInfrastructure.OpenWithCode(
+				usr.HomeDir+"/projects/dotfiles/data/Brewfile",
+				usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
+			); err != nil {
+				return errors.Wrap(err, "deps usecase: failed to open with code")
+			}
+		case "3":
+			d.printOutUC.Println("Do nothing")
+		default:
+			d.printOutUC.Println("Exit")
+			os.Exit(0)
 		}
 	}
 

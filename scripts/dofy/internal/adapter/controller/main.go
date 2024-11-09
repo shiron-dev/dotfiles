@@ -11,6 +11,7 @@ import (
 
 type DofyController interface {
 	Start()
+	getMode() string
 }
 
 type DofyControllerImpl struct {
@@ -59,6 +60,32 @@ This script will install dependencies and setup dotfiles.
 ### Setup mode
 `)
 
+	mode := c.getMode()
+
+	c.printoutUC.PrintMdf("Start setup in `" + mode + "` mode.")
+
+	err := c.depsUC.InstallHomebrew(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
+	err = c.depsUC.InstallGit()
+	if err != nil {
+		panic(err)
+	}
+
+	err = c.depsUC.CloneDotfiles()
+	if err != nil {
+		panic(err)
+	}
+
+	err = c.depsUC.InstallBrewBundle()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (c *DofyControllerImpl) getMode() string {
 	var mode string
 	if len(os.Args) > 1 {
 		mode = strings.ToLower(os.Args[1])
@@ -76,10 +103,5 @@ This script will install dependencies and setup dotfiles.
 		}
 	}
 
-	c.printoutUC.PrintMdf("Start setup in `" + mode + "` mode.")
-
-	err := c.depsUC.InstallDeps(context.Background())
-	if err != nil {
-		panic(err)
-	}
+	return mode
 }

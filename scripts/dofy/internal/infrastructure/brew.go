@@ -140,9 +140,8 @@ func (b *BrewInfrastructureImpl) CleanupBrewBundle(isForce bool, sout io.Writer,
 	cmd := exec.Command("brew", "bundle", "cleanup", forceFlag, "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
 	cmd.Stdout = sout
 	cmd.Stderr = serror
-	err := cmd.Run()
 
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return errors.Wrap(err, "brew infrastructure: failed to run brew bundle cleanup command")
 	}
 
