@@ -21,9 +21,11 @@ func InitializeControllerSet() (*ControllersSet, error) {
 	configInfrastructureImpl := infrastructure.NewConfigInfrastructure()
 	configUsecaseImpl := usecase.NewConfigUsecase(configInfrastructureImpl)
 	depsInfrastructureImpl := infrastructure.NewDepsInfrastructure()
+	fileInfrastructureImpl := infrastructure.NewFileInfrastructure()
+	gitInfrastructureImpl := infrastructure.NewGitInfrastructure()
 	brewInfrastructureImpl := infrastructure.NewBrewInfrastructure()
 	brewUsecaseImpl := usecase.NewBrewUsecase(brewInfrastructureImpl, depsInfrastructureImpl, printOutUsecaseImpl, configUsecaseImpl)
-	depsUsecaseImpl := usecase.NewDepsUsecase(depsInfrastructureImpl, printOutUsecaseImpl, brewUsecaseImpl)
+	depsUsecaseImpl := usecase.NewDepsUsecase(depsInfrastructureImpl, fileInfrastructureImpl, gitInfrastructureImpl, printOutUsecaseImpl, brewUsecaseImpl)
 	dofyControllerImpl := controller.NewDofyController(printOutUsecaseImpl, configUsecaseImpl, depsUsecaseImpl)
 	controllersSet := &ControllersSet{
 		DofyController: dofyControllerImpl,
@@ -37,7 +39,7 @@ func InitializeControllerSet() (*ControllersSet, error) {
 var controllerSet = wire.NewSet(wire.Bind(new(controller.DofyController), new(*controller.DofyControllerImpl)), controller.NewDofyController)
 
 // Infrastructure
-var infrastructureSet = wire.NewSet(wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)), infrastructure.NewPrintOutInfrastructure, wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)), infrastructure.NewConfigInfrastructure, wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)), infrastructure.NewBrewInfrastructure, wire.Bind(new(infrastructure.DepsInfrastructure), new(*infrastructure.DepsInfrastructureImpl)), infrastructure.NewDepsInfrastructure)
+var infrastructureSet = wire.NewSet(wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)), infrastructure.NewPrintOutInfrastructure, wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)), infrastructure.NewConfigInfrastructure, wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)), infrastructure.NewBrewInfrastructure, wire.Bind(new(infrastructure.DepsInfrastructure), new(*infrastructure.DepsInfrastructureImpl)), infrastructure.NewDepsInfrastructure, wire.Bind(new(infrastructure.FileInfrastructure), new(*infrastructure.FileInfrastructureImpl)), infrastructure.NewFileInfrastructure, wire.Bind(new(infrastructure.GitInfrastructure), new(*infrastructure.GitInfrastructureImpl)), infrastructure.NewGitInfrastructure)
 
 // Usecase
 var usecaseSet = wire.NewSet(wire.Bind(new(usecase.PrintOutUsecase), new(*usecase.PrintOutUsecaseImpl)), usecase.NewPrintOutUsecase, wire.Bind(new(usecase.ConfigUsecase), new(*usecase.ConfigUsecaseImpl)), usecase.NewConfigUsecase, wire.Bind(new(usecase.BrewUsecase), new(*usecase.BrewUsecaseImpl)), usecase.NewBrewUsecase, wire.Bind(new(usecase.DepsUsecase), new(*usecase.DepsUsecaseImpl)), usecase.NewDepsUsecase)

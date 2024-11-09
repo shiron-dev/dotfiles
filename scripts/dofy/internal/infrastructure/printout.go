@@ -7,8 +7,6 @@ import (
 	"os"
 )
 
-const filePermission = 0o666
-
 type PrintOutInfrastructure interface {
 	Print(str string)
 	SetLogOutput() *os.File

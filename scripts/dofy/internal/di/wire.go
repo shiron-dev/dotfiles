@@ -27,6 +27,10 @@ var infrastructureSet = wire.NewSet(
 	infrastructure.NewBrewInfrastructure,
 	wire.Bind(new(infrastructure.DepsInfrastructure), new(*infrastructure.DepsInfrastructureImpl)),
 	infrastructure.NewDepsInfrastructure,
+	wire.Bind(new(infrastructure.FileInfrastructure), new(*infrastructure.FileInfrastructureImpl)),
+	infrastructure.NewFileInfrastructure,
+	wire.Bind(new(infrastructure.GitInfrastructure), new(*infrastructure.GitInfrastructureImpl)),
+	infrastructure.NewGitInfrastructure,
 )
 
 // Usecase

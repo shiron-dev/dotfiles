@@ -23,21 +23,28 @@ type DepsUsecase interface {
 
 	showBrewDiff(diffBundles []domain.BrewBundle, diffTmpBundles []domain.BrewBundle) error
 	updateBrewfile() error
+	resolveBrewDiff() error
 }
 
 type DepsUsecaseImpl struct {
 	depsInfrastructure infrastructure.DepsInfrastructure
+	fileInfrastructure infrastructure.FileInfrastructure
+	gitInfrastructure  infrastructure.GitInfrastructure
 	printOutUC         PrintOutUsecase
 	brewUC             BrewUsecase
 }
 
 func NewDepsUsecase(
 	depsInfrastructure infrastructure.DepsInfrastructure,
+	fileInfrastructure infrastructure.FileInfrastructure,
+	gitInfrastructure infrastructure.GitInfrastructure,
 	printOutUC PrintOutUsecase,
 	brewUC BrewUsecase,
 ) *DepsUsecaseImpl {
 	return &DepsUsecaseImpl{
 		depsInfrastructure: depsInfrastructure,
+		fileInfrastructure: fileInfrastructure,
+		gitInfrastructure:  gitInfrastructure,
 		printOutUC:         printOutUC,
 		brewUC:             brewUC,
 	}
@@ -136,7 +143,14 @@ Install the packages using Homebrew Bundle.
 		return errors.Wrap(err, "deps usecase: failed to check diff Brewfile")
 	}
 
-	if len(diffBundles) > 0 {
+	if len(diffTmpBundles) > 0 {
+		err := d.showBrewDiff(diffBundles, diffTmpBundles)
+		if err != nil {
+			return errors.Wrap(err, "deps usecase: failed to update Brewfile")
+		}
+	}
+
+	if len(diffBundles)+len(diffTmpBundles) > 0 {
 		d.printOutUC.PrintMdf(`
 ### Install brew packages with Brewfile
 `)
@@ -146,13 +160,6 @@ Install the packages using Homebrew Bundle.
 		}
 	} else {
 		d.printOutUC.Println("No new packages to install")
-	}
-
-	if len(diffTmpBundles) > 0 {
-		err := d.showBrewDiff(diffBundles, diffTmpBundles)
-		if err != nil {
-			return errors.Wrap(err, "deps usecase: failed to update Brewfile")
-		}
 	}
 
 	return nil
@@ -177,8 +184,8 @@ diff:
 
 What will you do to resolve the diff?
 
-1. run ` + "`brew bundlecleanup`" + `
-2. update the Brewfile with the currently installed packages
+1. update the Brewfile with the currently installed packages
+2. run ` + "`brew bundlecleanup`" + `
 3. do nothing
 4. exit
 `)
@@ -188,29 +195,22 @@ What will you do to resolve the diff?
 }
 
 func (d *DepsUsecaseImpl) updateBrewfile() error {
-	usr, err := user.Current()
-	if err != nil {
-		return errors.Wrap(err, "deps usecase: failed to get current user")
-	}
-
 	scanner := bufio.NewScanner(os.Stdin)
 	if scanner.Scan() {
 		switch strings.TrimSpace(scanner.Text()) {
 		case "1":
+			d.printOutUC.Println("Open Brewfile with code")
+
+			err := d.resolveBrewDiff()
+			if err != nil {
+				return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff")
+			}
+		case "2":
 			d.printOutUC.Println("Running `brew bundle cleanup`")
 
 			err := d.brewUC.CleanupBrewBundle(true)
 			if err != nil {
 				return errors.Wrap(err, "deps usecase: failed to run brew bundle cleanup")
-			}
-		case "2":
-			d.printOutUC.Println("Open Brewfile with code")
-
-			if err := d.depsInfrastructure.OpenWithCode(
-				usr.HomeDir+"/projects/dotfiles/data/Brewfile",
-				usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
-			); err != nil {
-				return errors.Wrap(err, "deps usecase: failed to open with code")
 			}
 		case "3":
 			d.printOutUC.Println("Do nothing")
@@ -218,6 +218,56 @@ func (d *DepsUsecaseImpl) updateBrewfile() error {
 			d.printOutUC.Println("Exit")
 			os.Exit(0)
 		}
+	}
+
+	return nil
+}
+
+func (d *DepsUsecaseImpl) resolveBrewDiff() error {
+	usr, err := user.Current()
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to get current user")
+	}
+
+	brewPath := usr.HomeDir + "/projects/dotfiles/data/Brewfile"
+
+	diffBundles, diffTmpBundles, err := d.brewUC.CheckDiffBrewBundle(
+		brewPath,
+		usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
+	)
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to check diff Brewfile")
+	}
+
+	data, err := d.fileInfrastructure.ReadFile(brewPath)
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
+	}
+
+	brewfileData := string(data)
+
+	for _, diff := range diffBundles {
+		brewfileData = strings.ReplaceAll(brewfileData, diff.String()+"\n", "")
+	}
+
+	if len(diffTmpBundles) > 0 {
+		brewfileData += "\n# Added by dofy\n"
+	}
+
+	for _, diff := range diffTmpBundles {
+		brewfileData += diff.String() + "\n"
+	}
+
+	if err := d.fileInfrastructure.WriteFile(brewPath, []byte(brewfileData)); err != nil {
+		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
+	}
+
+	if err := d.gitInfrastructure.GitDifftool(
+		*d.printOutUC.GetOut(),
+		*d.printOutUC.GetError(),
+		brewPath,
+	); err != nil {
+		return errors.Wrap(err, "deps usecase: failed to open with code")
 	}
 
 	return nil
