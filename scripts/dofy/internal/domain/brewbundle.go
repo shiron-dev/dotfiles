@@ -28,7 +28,7 @@ func (b BrewBundle) String() string {
 		str = "mas"
 	}
 
-	str += " " + b.Name
+	str += " \"" + b.Name + "\""
 
 	return str
 }
