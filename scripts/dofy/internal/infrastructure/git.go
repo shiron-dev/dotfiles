@@ -9,6 +9,7 @@ import (
 
 type GitInfrastructure interface {
 	GitDifftool(sout io.Writer, serror io.Writer, path ...string) error
+	CheckoutFile(path string) error
 }
 
 type GitInfrastructureImpl struct{}
@@ -27,6 +28,15 @@ func (g *GitInfrastructureImpl) GitDifftool(sout io.Writer, serror io.Writer, pa
 
 	if err := cmd.Run(); err != nil {
 		return errors.Wrap(err, "git infrastructure: failed to run git difftool")
+	}
+
+	return nil
+}
+
+func (g *GitInfrastructureImpl) CheckoutFile(path string) error {
+	cmd := exec.Command("git", "checkout", "--", path)
+	if err := cmd.Run(); err != nil {
+		return errors.Wrap(err, "git infrastructure: failed to run git checkout")
 	}
 
 	return nil

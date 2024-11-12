@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"os/exec"
+	"os/signal"
 	"os/user"
 	"path/filepath"
 	"strings"
@@ -227,6 +228,9 @@ func (d *DepsUsecaseImpl) updateBrewfile() error {
 }
 
 func (d *DepsUsecaseImpl) resolveBrewDiff() error {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
 	usr, err := user.Current()
 	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to get current user")
@@ -265,6 +269,20 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
 	}
+
+	go func(ctx context.Context) {
+		<-ctx.Done()
+		d.gitInfrastructure.CheckoutFile(brewPath)
+		d.printOutUC.PrintMdf(`
+> [!WARNING]
+> The Brewfile changes have been discarded.
+`)
+	}(ctx)
+
+	d.printOutUC.PrintMdf(`
+> [!NOTE]
+> If you do not want to change it, do a process kill (ctrl + c)
+`)
 
 	if err := d.gitInfrastructure.GitDifftool(
 		*d.printOutUC.GetOut(),
