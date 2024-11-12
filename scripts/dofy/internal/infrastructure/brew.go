@@ -242,6 +242,10 @@ func (d *BrewInfrastructureImpl) WriteBrewBundle(bundles []domain.BrewBundle, pa
 		for i, cate := range bundle.Categories {
 			if len(lastCategories) <= i || lastCategories[i] != cate {
 				for j := 0; j <= i; j++ {
+					if j == 0 {
+						file.WriteString("\n")
+					}
+
 					file.WriteString("#")
 				}
 

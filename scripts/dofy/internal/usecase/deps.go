@@ -155,16 +155,12 @@ Install the packages using Homebrew Bundle.
 		}
 	}
 
-	if len(diffBundles)+len(diffTmpBundles) > 0 {
-		d.printOutUC.PrintMdf(`
+	d.printOutUC.PrintMdf(`
 ### Install brew packages with Brewfile
 `)
 
-		if err := d.brewUC.InstallBrewBundle(); err != nil {
-			return errors.Wrap(err, "deps usecase: failed to install brew packages")
-		}
-	} else {
-		d.printOutUC.Println("No new packages to install")
+	if err := d.brewUC.InstallBrewBundle(); err != nil {
+		return errors.Wrap(err, "deps usecase: failed to install brew packages")
 	}
 
 	return nil
