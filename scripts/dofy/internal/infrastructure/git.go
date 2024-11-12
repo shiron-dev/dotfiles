@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"context"
 	"io"
 	"os/exec"
 
@@ -8,7 +9,7 @@ import (
 )
 
 type GitInfrastructure interface {
-	GitDifftool(sout io.Writer, serror io.Writer, path ...string) error
+	GitDifftool(ctx context.Context, sout io.Writer, serror io.Writer, path ...string) error
 	CheckoutFile(path string) error
 }
 
@@ -18,11 +19,16 @@ func NewGitInfrastructure() *GitInfrastructureImpl {
 	return &GitInfrastructureImpl{}
 }
 
-func (g *GitInfrastructureImpl) GitDifftool(sout io.Writer, serror io.Writer, path ...string) error {
+func (g *GitInfrastructureImpl) GitDifftool(
+	ctx context.Context,
+	sout io.Writer,
+	serror io.Writer,
+	path ...string,
+) error {
 	args := []string{"difftool", "-y"}
 	args = append(args, path...)
 
-	cmd := exec.Command("git", args...)
+	cmd := exec.CommandContext(ctx, "git", args...)
 	cmd.Stdout = sout
 	cmd.Stderr = serror
 

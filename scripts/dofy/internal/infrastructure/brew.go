@@ -173,20 +173,20 @@ func (d *BrewInfrastructureImpl) ReadBrewBundle(path string) ([]domain.BrewBundl
 			continue
 		}
 
-		spInd := strings.Index(line, " ")
-		prefix := line[:spInd]
-		formula := line[spInd+1:]
-		cFormula := strings.Split(formula, ",")
-
 		if line[0] == '#' {
 			lastCategories = getCategory(line, lastCategories)
 
 			continue
 		}
 
+		spInd := strings.Index(line, " ")
 		if spInd == -1 {
 			continue
 		}
+
+		prefix := line[:spInd]
+		formula := line[spInd+1:]
+		cFormula := strings.Split(formula, ",")
 
 		others := []string{}
 		for _, c := range cFormula[1:] {
@@ -245,7 +245,7 @@ func (d *BrewInfrastructureImpl) WriteBrewBundle(bundles []domain.BrewBundle, pa
 					file.WriteString("#")
 				}
 
-				file.WriteString(cate + "\n")
+				file.WriteString(" " + cate + "\n")
 			}
 		}
 

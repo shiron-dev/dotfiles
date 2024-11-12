@@ -9,6 +9,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
@@ -228,9 +229,6 @@ func (d *DepsUsecaseImpl) updateBrewfile() error {
 }
 
 func (d *DepsUsecaseImpl) resolveBrewDiff() error {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer stop()
-
 	usr, err := user.Current()
 	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to get current user")
@@ -246,7 +244,29 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 		return errors.Wrap(err, "deps usecase: failed to check diff Brewfile")
 	}
 
-	// Write
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	endFlag := false
+
+	defer func() {
+		endFlag = true
+
+		stop()
+	}()
+
+	go func() {
+		<-ctx.Done()
+
+		if endFlag {
+			return
+		}
+
+		d.printOutUC.PrintMdf(`
+> [!WARNING]
+> The Brewfile changes have been discarded.
+`)
+		d.gitInfrastructure.CheckoutFile(brewPath)
+	}()
+
 	bundles, err := d.brewInfrastructure.ReadBrewBundle(brewPath)
 	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
@@ -270,21 +290,13 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
 	}
 
-	go func(ctx context.Context) {
-		<-ctx.Done()
-		d.gitInfrastructure.CheckoutFile(brewPath)
-		d.printOutUC.PrintMdf(`
-> [!WARNING]
-> The Brewfile changes have been discarded.
-`)
-	}(ctx)
-
 	d.printOutUC.PrintMdf(`
 > [!NOTE]
 > If you do not want to change it, do a process kill (ctrl + c)
 `)
 
 	if err := d.gitInfrastructure.GitDifftool(
+		ctx,
 		*d.printOutUC.GetOut(),
 		*d.printOutUC.GetError(),
 		brewPath,
