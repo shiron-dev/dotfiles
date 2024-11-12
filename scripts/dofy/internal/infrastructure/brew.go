@@ -1,15 +1,18 @@
 package infrastructure
 
 import (
+	"bufio"
 	"context"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"os/user"
+	"sort"
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/domain"
 )
 
 type BrewInfrastructure interface {
@@ -19,6 +22,8 @@ type BrewInfrastructure interface {
 	DumpTmpBrewBundle(sout io.Writer, serror io.Writer) error
 	InstallBrewBundle(sout io.Writer, serror io.Writer) error
 	CleanupBrewBundle(isForce bool, sout io.Writer, serror io.Writer) error
+	ReadBrewBundle(path string) ([]domain.BrewBundle, error)
+	WriteBrewBundle(bundles []domain.BrewBundle, path string) error
 }
 
 type BrewInfrastructureImpl struct{}
@@ -146,4 +151,146 @@ func (b *BrewInfrastructureImpl) CleanupBrewBundle(isForce bool, sout io.Writer,
 	}
 
 	return nil
+}
+
+func (d *BrewInfrastructureImpl) ReadBrewBundle(path string) ([]domain.BrewBundle, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, errors.Wrap(err, "deps infrastructure: failed to open file")
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	var bundles []domain.BrewBundle
+
+	lastCategories := []string{}
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if len(line) == 0 {
+			continue
+		}
+
+		spInd := strings.Index(line, " ")
+		prefix := line[:spInd]
+		formula := line[spInd+1:]
+		cFormula := strings.Split(formula, ",")
+
+		if line[0] == '#' {
+			lastCategories = getCategory(line, lastCategories)
+
+			continue
+		}
+
+		if spInd == -1 {
+			continue
+		}
+
+		others := []string{}
+		for _, c := range cFormula[1:] {
+			others = append(others, strings.TrimSpace(c))
+		}
+
+		bundles = append(bundles, domain.BrewBundle{
+			Name:       strings.TrimSpace(strings.Trim(strings.ReplaceAll(cFormula[0], ",", ""), "\"")),
+			Others:     others,
+			BundleType: domain.BrewBundleTypeFromString(prefix),
+			Categories: append([]string{}, lastCategories...),
+		})
+	}
+
+	return bundles, nil
+}
+
+func getCategory(line string, lastCategories []string) []string {
+	count := 0
+
+	for _, c := range line {
+		if c == '#' {
+			count++
+		} else {
+			break
+		}
+	}
+
+	size := len(lastCategories)
+	for i := count - 1; i < size; i++ {
+		lastCategories = lastCategories[:len(lastCategories)-1]
+	}
+
+	lastCategories = append(lastCategories, strings.TrimSpace(line[count:]))
+
+	return lastCategories
+}
+
+func (d *BrewInfrastructureImpl) WriteBrewBundle(bundles []domain.BrewBundle, path string) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return errors.Wrap(err, "deps infrastructure: failed to create file")
+	}
+	defer file.Close()
+
+	file.WriteString("# Brewfile made by dofy\n")
+
+	bundleMap := sortByCategories(bundles)
+
+	lastCategories := []string{}
+
+	for _, bundle := range bundleMap {
+		for i, cate := range bundle.Categories {
+			if len(lastCategories) <= i || lastCategories[i] != cate {
+				for j := 0; j <= i; j++ {
+					file.WriteString("#")
+				}
+
+				file.WriteString(cate + "\n")
+			}
+		}
+
+		lastCategories = bundle.Categories
+
+		file.WriteString(bundle.String() + "\n")
+	}
+
+	return nil
+}
+
+type cateKey string
+
+func toCateKey(cate []string) cateKey {
+	return cateKey(strings.Join(cate, ","))
+}
+
+func sortByCategories(bundles []domain.BrewBundle) []domain.BrewBundle {
+	categoriesOrder := [][]string{}
+
+	bundleMap := make(map[cateKey][]domain.BrewBundle)
+
+	for _, bundle := range bundles {
+		if _, ok := bundleMap[toCateKey(bundle.Categories)]; !ok {
+			categoriesOrder = append(categoriesOrder, bundle.Categories)
+		}
+
+		bundleMap[toCateKey(bundle.Categories)] = append(bundleMap[toCateKey(bundle.Categories)], bundle)
+	}
+
+	for _, bundles := range bundleMap {
+		sort.Slice(bundles, func(i, j int) bool {
+			if bundles[i].BundleType != bundles[j].BundleType {
+				return bundles[i].BundleType < bundles[j].BundleType
+			}
+
+			return bundles[i].Name < bundles[j].Name
+		})
+	}
+
+	var sortedBundles []domain.BrewBundle
+
+	for _, categories := range categoriesOrder {
+		sortedBundles = append(sortedBundles, bundleMap[toCateKey(categories)]...)
+	}
+
+	return sortedBundles
 }

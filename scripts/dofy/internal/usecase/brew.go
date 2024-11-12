@@ -109,12 +109,12 @@ func (b *BrewUsecaseImpl) CheckDiffBrewBundle(
 	bundlePath string,
 	tmpPath string,
 ) ([]domain.BrewBundle, []domain.BrewBundle, error) {
-	bundles, err := b.depsInfrastructure.ReadBrewBundle(bundlePath)
+	bundles, err := b.brewInfrastructure.ReadBrewBundle(bundlePath)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "brew usecase: failed to read Brewfile")
 	}
 
-	tmpBundles, err := b.depsInfrastructure.ReadBrewBundle(tmpPath)
+	tmpBundles, err := b.brewInfrastructure.ReadBrewBundle(tmpPath)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "brew usecase: failed to read Brewfile.tmp")
 	}

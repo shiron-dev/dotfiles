@@ -28,6 +28,7 @@ type DepsUsecase interface {
 
 type DepsUsecaseImpl struct {
 	depsInfrastructure infrastructure.DepsInfrastructure
+	brewInfrastructure infrastructure.BrewInfrastructure
 	fileInfrastructure infrastructure.FileInfrastructure
 	gitInfrastructure  infrastructure.GitInfrastructure
 	printOutUC         PrintOutUsecase
@@ -36,6 +37,7 @@ type DepsUsecaseImpl struct {
 
 func NewDepsUsecase(
 	depsInfrastructure infrastructure.DepsInfrastructure,
+	brewInfrastructure infrastructure.BrewInfrastructure,
 	fileInfrastructure infrastructure.FileInfrastructure,
 	gitInfrastructure infrastructure.GitInfrastructure,
 	printOutUC PrintOutUsecase,
@@ -43,6 +45,7 @@ func NewDepsUsecase(
 ) *DepsUsecaseImpl {
 	return &DepsUsecaseImpl{
 		depsInfrastructure: depsInfrastructure,
+		brewInfrastructure: brewInfrastructure,
 		fileInfrastructure: fileInfrastructure,
 		gitInfrastructure:  gitInfrastructure,
 		printOutUC:         printOutUC,
@@ -239,26 +242,27 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 		return errors.Wrap(err, "deps usecase: failed to check diff Brewfile")
 	}
 
-	data, err := d.fileInfrastructure.ReadFile(brewPath)
+	// Write
+	bundles, err := d.brewInfrastructure.ReadBrewBundle(brewPath)
 	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
 	}
 
-	brewfileData := string(data)
+	for _, diff := range diffTmpBundles {
+		diff.Categories = []string{"Add by dofy"}
+		bundles = append(bundles, diff)
+	}
 
 	for _, diff := range diffBundles {
-		brewfileData = strings.ReplaceAll(brewfileData, diff.String()+"\n", "")
+		for i, bundle := range bundles {
+			if bundle.Name == diff.Name {
+				bundles = append(bundles[:i], bundles[i+1:]...)
+			}
+		}
 	}
 
-	if len(diffTmpBundles) > 0 {
-		brewfileData += "\n# Added by dofy\n"
-	}
-
-	for _, diff := range diffTmpBundles {
-		brewfileData += diff.String() + "\n"
-	}
-
-	if err := d.fileInfrastructure.WriteFile(brewPath, []byte(brewfileData)); err != nil {
+	err = d.brewInfrastructure.WriteBrewBundle(bundles, brewPath)
+	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
 	}
 
