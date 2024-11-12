@@ -35,10 +35,8 @@ func (p *PrintOutUsecaseImpl) PrintMdf(format string, a ...interface{}) {
 	str := fmt.Sprintf(format, a...)
 
 	for _, printer := range domain.GetMdPrinter() {
-		if printer.Name == "underline" {
-			str = printer.Reg.ReplaceAllStringFunc(str, func(s string) string {
-				return printer.Reg.ReplaceAllString(s, printer.Col.Sprint("$1"))
-			})
+		if printer.Printer != nil {
+			str = printer.Printer(str)
 		} else {
 			str = printer.Reg.ReplaceAllStringFunc(str, func(s string) string {
 				return printer.Col.SprintFunc()(s)
