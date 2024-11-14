@@ -39,7 +39,18 @@ cask "visual-studio-code"
 mas "Xcode", id: 497799835
 
 # Lib
+brew "gmp"
+brew "harfbuzz"
+brew "libass"
+brew "libassuan"
+brew "librsvg"
+brew "opus"
+brew "pango"
+brew "pinentry"
+brew "pkgconf"
+brew "tesseract"
 brew "ttyd"
+brew "unbound"
 
 # Dev Tools
 brew "act"
