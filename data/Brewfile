@@ -3,7 +3,9 @@
 # Taps
 tap "ariga/tap"
 tap "bufbuild/buf"
+tap "charmbracelet/tap"
 tap "cloudflare/cloudflare"
+tap "go-task/tap"
 tap "grishka/grishka"
 tap "hashicorp/tap"
 tap "homebrew/bundle"
@@ -36,6 +38,9 @@ cask "jetbrains-toolbox"
 cask "visual-studio-code"
 mas "Xcode", id: 497799835
 
+# Lib
+brew "ttyd"
+
 # Dev Tools
 brew "act"
 brew "actionlint"
@@ -46,6 +51,7 @@ brew "ariga/tap/atlas"
 brew "arp-scan"
 brew "awscli"
 brew "bufbuild/buf/buf"
+brew "charmbracelet/tap/vhs"
 brew "cloudflared"
 brew "coreutils"
 brew "curl"
@@ -58,6 +64,7 @@ brew "gnu-sed"
 brew "gnupg"
 brew "gnutls"
 brew "go"
+brew "go-task/tap/go-task"
 brew "golangci-lint"
 brew "graphviz"
 brew "grpcurl"
@@ -110,6 +117,7 @@ cask "wireshark"
 
 # Tools Internet
 cask "discord"
+cask "microsoft-edge"
 cask "notion"
 cask "slack"
 cask "tor-browser"
@@ -127,6 +135,7 @@ mas "DaVinci Resolve", id: 571213070
 cask "appcleaner"
 cask "betterdisplay"
 cask "obs"
+cask "openmtp"
 cask "voicevox"
 cask "webtorrent"
 cask "whisky"
