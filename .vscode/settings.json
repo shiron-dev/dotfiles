@@ -1,0 +1,10 @@
+{
+  "cSpell.words": [
+    "Dofy"
+  ],
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": [
+    "--config=${workspaceFolder}/scripts/dofy/.golangci.yaml",
+    "--fast"
+  ]
+}

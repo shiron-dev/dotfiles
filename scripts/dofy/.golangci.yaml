@@ -1,0 +1,9 @@
+issues:
+  exclude-dirs:
+    - gen
+
+linters:
+  enable-all: true
+  disable:
+    - exportloopref
+    - depguard
