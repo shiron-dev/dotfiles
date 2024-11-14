@@ -211,17 +211,28 @@ func (d *DepsUsecaseImpl) updateBrewfile() error {
 	if scanner.Scan() {
 		switch strings.TrimSpace(scanner.Text()) {
 		case "1":
-			d.printOutUC.Println("Open Brewfile with code")
+			d.printOutUC.PrintMdf("#### Open Brewfile with code\n")
 
-			err := d.resolveBrewDiff()
-			if err != nil {
+			if err := d.resolveBrewDiff(); err != nil {
 				return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff")
 			}
+
+			d.printOutUC.PrintMdf("#### Running `brew bundle install`\n")
+
+			if err := d.brewUC.InstallBrewBundle(); err != nil {
+				return errors.Wrap(err, "deps usecase: failed to install brew packages")
+			}
+
+			d.printOutUC.PrintMdf("#### Running `brew bundle cleanup`\n")
+
+			if err := d.brewUC.CleanupBrewBundle(true); err != nil {
+				return errors.Wrap(err, "deps usecase: failed to run brew bundle cleanup")
+			}
+
 		case "2":
 			d.printOutUC.Println("Running `brew bundle cleanup`")
 
-			err := d.brewUC.CleanupBrewBundle(true)
-			if err != nil {
+			if err := d.brewUC.CleanupBrewBundle(true); err != nil {
 				return errors.Wrap(err, "deps usecase: failed to run brew bundle cleanup")
 			}
 		case "3":
@@ -280,7 +291,7 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
 	}
 
-	err = d.brewInfrastructure.WriteBrewBundle(d.mergeDiff(bundles, diffBundles, diffTmpBundles), brewPath)
+	err = d.brewInfrastructure.WriteBrewBundle(d.mergeDiff(bundles, diffTmpBundles, diffBundles), brewPath)
 	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
 	}
