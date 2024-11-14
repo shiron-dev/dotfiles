@@ -11,7 +11,7 @@ https://github.com/shiron-dev/dotfiles
 
 EOM
 
-if [ -d ~/projects/dotfiles ]; then 
+if [ -d ~/projects/dotfiles ]; then
   cat <<EOM
 
 dotfiles repository already exists.
