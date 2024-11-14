@@ -1,9 +1,13 @@
 package main
 
-import "github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
+import (
+	"os"
+
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
+)
 
 func main() {
-	controllerSet, err := di.InitializeControllerSet()
+	controllerSet, err := di.InitializeControllerSet(os.Stdout, os.Stderr)
 	if err != nil {
 		panic(err)
 	}

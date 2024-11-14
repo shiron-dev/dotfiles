@@ -4,12 +4,21 @@
 package di
 
 import (
+	"io"
+
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/adapter/controller"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/usecase"
 
 	"github.com/google/wire"
 )
+
+type stdoutType io.Writer
+type stderrType io.Writer
+
+func providePrintOutInfrastructure(stdout stdoutType, stderr stderrType) *infrastructure.PrintOutInfrastructureImpl {
+	return infrastructure.NewPrintOutInfrastructure(stdout, stderr)
+}
 
 // Adapter
 var controllerSet = wire.NewSet(
@@ -20,7 +29,7 @@ var controllerSet = wire.NewSet(
 // Infrastructure
 var infrastructureSet = wire.NewSet(
 	wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)),
-	infrastructure.NewPrintOutInfrastructure,
+	providePrintOutInfrastructure,
 	wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)),
 	infrastructure.NewConfigInfrastructure,
 	wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)),
@@ -49,7 +58,7 @@ type ControllersSet struct {
 	DofyController controller.DofyController
 }
 
-func InitializeControllerSet() (*ControllersSet, error) {
+func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*ControllersSet, error) {
 	wire.Build(
 		controllerSet,
 		infrastructureSet,
