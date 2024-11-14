@@ -14,6 +14,7 @@ type MdPrinterType struct {
 	Printer func(string) string
 }
 
+//nolint:funlen
 func GetMdPrinter() []MdPrinterType {
 	return []MdPrinterType{
 		{
@@ -89,41 +90,41 @@ func GetMdPrinter() []MdPrinterType {
 			func(str string) string {
 				ret := ""
 
-				re := regexp.MustCompile(`^> \[!(.+?)\]$`)
+				reg := regexp.MustCompile(`^> \[!(.+?)\]$`)
 
-				var fg *color.Color = nil
+				var fgColor *color.Color
 				for _, line := range strings.Split(str, "\n") {
-					if re.MatchString(line) {
+					if reg.MatchString(line) {
 						emoji := ""
-						switch re.FindStringSubmatch(line)[1] {
+						switch reg.FindStringSubmatch(line)[1] {
 						case "NOTE":
-							fg = color.New(color.FgBlue)
+							fgColor = color.New(color.FgBlue)
 							emoji = "📝"
 						case "TIP":
-							fg = color.New(color.FgGreen)
+							fgColor = color.New(color.FgGreen)
 							emoji = "💡"
 						case "IMPORTANT":
-							fg = color.New(color.FgMagenta)
+							fgColor = color.New(color.FgMagenta)
 							emoji = "❗"
 						case "WARNING":
 							//nolint:mnd
-							fg = color.RGB(255, 128, 0)
+							fgColor = color.RGB(255, 128, 0)
 							emoji = "⚠️"
 						case "CAUTION":
-							fg = color.New(color.FgRed)
+							fgColor = color.New(color.FgRed)
 							emoji = "🚨"
 						}
-						ret += fg.SprintFunc()("|"+strings.ReplaceAll(line[1:], "!", emoji)) + "\n"
+						ret += fgColor.SprintFunc()("|"+strings.ReplaceAll(line[1:], "!", emoji)) + "\n"
 
 						continue
 					}
 
 					if !strings.HasPrefix(line, ">") {
-						fg = nil
+						fgColor = nil
 					}
 
-					if fg != nil {
-						ret += fg.SprintFunc()("|") + line[1:] + "\n"
+					if fgColor != nil {
+						ret += fgColor.SprintFunc()("|") + line[1:] + "\n"
 					} else {
 						ret += line + "\n"
 					}

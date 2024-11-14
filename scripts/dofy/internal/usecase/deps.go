@@ -17,6 +17,12 @@ import (
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 )
 
+const dofyBrewCategory = "Add by dofy"
+
+const resolveBrewDiffWithEditorMaxCount = 3
+
+var errResolveBrewDiffWithEditorMaxCount = errors.New("resolve brew diff with editor max count error")
+
 type DepsUsecase interface {
 	InstallHomebrew(ctx context.Context) error
 	InstallGit() error
@@ -26,6 +32,8 @@ type DepsUsecase interface {
 	showBrewDiff(diffBundles []domain.BrewBundle, diffTmpBundles []domain.BrewBundle) error
 	updateBrewfile() error
 	resolveBrewDiff() error
+	resolveBrewDiffWithEditor(ctx context.Context) error
+	mergeDiff(base []domain.BrewBundle, add []domain.BrewBundle, sub []domain.BrewBundle) []domain.BrewBundle
 }
 
 type DepsUsecaseImpl struct {
@@ -35,6 +43,8 @@ type DepsUsecaseImpl struct {
 	gitInfrastructure  infrastructure.GitInfrastructure
 	printOutUC         PrintOutUsecase
 	brewUC             BrewUsecase
+
+	resolveBrewDiffWithEditorCount int
 }
 
 func NewDepsUsecase(
@@ -46,12 +56,13 @@ func NewDepsUsecase(
 	brewUC BrewUsecase,
 ) *DepsUsecaseImpl {
 	return &DepsUsecaseImpl{
-		depsInfrastructure: depsInfrastructure,
-		brewInfrastructure: brewInfrastructure,
-		fileInfrastructure: fileInfrastructure,
-		gitInfrastructure:  gitInfrastructure,
-		printOutUC:         printOutUC,
-		brewUC:             brewUC,
+		depsInfrastructure:             depsInfrastructure,
+		brewInfrastructure:             brewInfrastructure,
+		fileInfrastructure:             fileInfrastructure,
+		gitInfrastructure:              gitInfrastructure,
+		printOutUC:                     printOutUC,
+		brewUC:                         brewUC,
+		resolveBrewDiffWithEditorCount: 0,
 	}
 }
 
@@ -232,10 +243,8 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 
 	brewPath := usr.HomeDir + "/projects/dotfiles/data/Brewfile"
 
-	diffBundles, diffTmpBundles, err := d.brewUC.CheckDiffBrewBundle(
-		brewPath,
-		usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp",
-	)
+	diffBundles, diffTmpBundles, err := d.brewUC.CheckDiffBrewBundle(brewPath,
+		usr.HomeDir+"/projects/dotfiles/data/Brewfile.tmp")
 	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to check diff Brewfile")
 	}
@@ -260,7 +269,10 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 > [!WARNING]
 > The Brewfile changes have been discarded.
 `)
-		d.gitInfrastructure.CheckoutFile(brewPath)
+
+		if err := d.gitInfrastructure.CheckoutFile(brewPath); err != nil {
+			panic(err)
+		}
 	}()
 
 	bundles, err := d.brewInfrastructure.ReadBrewBundle(brewPath)
@@ -268,20 +280,7 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
 	}
 
-	for _, diff := range diffTmpBundles {
-		diff.Categories = []string{"Add by dofy"}
-		bundles = append(bundles, diff)
-	}
-
-	for _, diff := range diffBundles {
-		for i, bundle := range bundles {
-			if bundle.Name == diff.Name {
-				bundles = append(bundles[:i], bundles[i+1:]...)
-			}
-		}
-	}
-
-	err = d.brewInfrastructure.WriteBrewBundle(bundles, brewPath)
+	err = d.brewInfrastructure.WriteBrewBundle(d.mergeDiff(bundles, diffBundles, diffTmpBundles), brewPath)
 	if err != nil {
 		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
 	}
@@ -290,6 +289,33 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 > [!NOTE]
 > If you do not want to change it, do a process kill (ctrl + c)
 `)
+
+	d.resolveBrewDiffWithEditorCount = 0
+	if err := d.resolveBrewDiffWithEditor(ctx); err != nil {
+		return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff with editor")
+	}
+
+	return nil
+}
+
+func (d *DepsUsecaseImpl) resolveBrewDiffWithEditor(ctx context.Context) error {
+	d.resolveBrewDiffWithEditorCount++
+
+	if d.resolveBrewDiffWithEditorCount > resolveBrewDiffWithEditorMaxCount {
+		d.printOutUC.PrintMdf(`
+> [!CAUTION]
+> Abort because brewfile was not updated
+`)
+
+		return errResolveBrewDiffWithEditorMaxCount
+	}
+
+	usr, err := user.Current()
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to get current user")
+	}
+
+	brewPath := usr.HomeDir + "/projects/dotfiles/data/Brewfile"
 
 	if err := d.gitInfrastructure.GitDifftool(
 		ctx,
@@ -300,5 +326,40 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 		return errors.Wrap(err, "deps usecase: failed to open with code")
 	}
 
+	if data, err := d.fileInfrastructure.ReadFile(brewPath); err != nil {
+		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
+	} else if strings.Contains(string(data), "# "+dofyBrewCategory) {
+		d.printOutUC.PrintMdf(`
+> [!CAUTION]
+> Update your brewfile
+`)
+
+		err := d.resolveBrewDiffWithEditor(ctx)
+		if err != nil {
+			return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff with editor")
+		}
+	}
+
 	return nil
+}
+
+func (d *DepsUsecaseImpl) mergeDiff(
+	base []domain.BrewBundle,
+	add []domain.BrewBundle,
+	sub []domain.BrewBundle,
+) []domain.BrewBundle {
+	for _, diff := range add {
+		diff.Categories = []string{dofyBrewCategory}
+		base = append(base, diff)
+	}
+
+	for _, diff := range sub {
+		for i, bundle := range base {
+			if bundle.Name == diff.Name {
+				base = append(base[:i], base[i+1:]...)
+			}
+		}
+	}
+
+	return base
 }

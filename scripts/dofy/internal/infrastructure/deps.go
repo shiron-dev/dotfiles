@@ -23,8 +23,6 @@ func (d *DepsInfrastructureImpl) CheckInstalled(name string) bool {
 	return err == nil
 }
 
-const correctBrewSpNum = 2
-
 func (d *DepsInfrastructureImpl) OpenWithCode(path ...string) error {
 	args := []string{"-n", "-w"}
 	args = append(args, path...)

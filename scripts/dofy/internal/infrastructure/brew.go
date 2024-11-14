@@ -153,7 +153,7 @@ func (b *BrewInfrastructureImpl) CleanupBrewBundle(isForce bool, sout io.Writer,
 	return nil
 }
 
-func (d *BrewInfrastructureImpl) ReadBrewBundle(path string) ([]domain.BrewBundle, error) {
+func (b *BrewInfrastructureImpl) ReadBrewBundle(path string) ([]domain.BrewBundle, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, errors.Wrap(err, "deps infrastructure: failed to open file")
@@ -225,37 +225,47 @@ func getCategory(line string, lastCategories []string) []string {
 	return lastCategories
 }
 
-func (d *BrewInfrastructureImpl) WriteBrewBundle(bundles []domain.BrewBundle, path string) error {
+func (b *BrewInfrastructureImpl) WriteBrewBundle(bundles []domain.BrewBundle, path string) error {
 	file, err := os.Create(path)
 	if err != nil {
 		return errors.Wrap(err, "deps infrastructure: failed to create file")
 	}
 	defer file.Close()
 
-	file.WriteString("# Brewfile made by dofy\n")
+	if _, err := file.WriteString("# Brewfile made by dofy\n"); err != nil {
+		return errors.Wrap(err, "deps infrastructure: failed to write file")
+	}
 
 	bundleMap := sortByCategories(bundles)
 
 	lastCategories := []string{}
 
+	writeString := ""
+
 	for _, bundle := range bundleMap {
 		for i, cate := range bundle.Categories {
-			if len(lastCategories) <= i || lastCategories[i] != cate {
-				for j := 0; j <= i; j++ {
-					if j == 0 {
-						file.WriteString("\n")
-					}
+			if len(lastCategories) > i && lastCategories[i] == cate {
+				continue
+			}
 
-					file.WriteString("#")
+			for j := 0; j <= i; j++ {
+				if j == 0 {
+					writeString += "\n"
 				}
 
-				file.WriteString(" " + cate + "\n")
+				writeString += "#"
 			}
+
+			writeString += " " + cate + "\n"
 		}
 
 		lastCategories = bundle.Categories
 
-		file.WriteString(bundle.String() + "\n")
+		writeString += bundle.String() + "\n"
+	}
+
+	if _, err := file.WriteString(writeString); err != nil {
+		return errors.Wrap(err, "deps infrastructure: failed to write file")
 	}
 
 	return nil
