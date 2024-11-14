@@ -64,7 +64,7 @@ This script will install dependencies and setup dotfiles.
 
 	c.printoutUC.PrintMdf("Start setup in `" + mode + "` mode.")
 
-	initialSetupFlag := c.depsUC.CheckInstalled("brew")
+	initialSetupFlag := !c.depsUC.CheckInstalled("brew")
 
 	err := c.depsUC.InstallHomebrew(context.Background())
 	if err != nil {
