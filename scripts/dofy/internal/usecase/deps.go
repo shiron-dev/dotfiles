@@ -28,6 +28,7 @@ type DepsUsecase interface {
 	InstallGit() error
 	CloneDotfiles() error
 	InstallBrewBundle() error
+	Finish() error
 
 	showBrewDiff(diffBundles []domain.BrewBundle, diffTmpBundles []domain.BrewBundle) error
 	updateBrewfile() error
@@ -177,6 +178,16 @@ Install the packages using Homebrew Bundle.
 	return nil
 }
 
+func (d *DepsUsecaseImpl) Finish() error {
+	d.printOutUC.PrintMdf(`
+## Finish
+`)
+
+	os.Exit(0)
+
+	return nil
+}
+
 func (d *DepsUsecaseImpl) showBrewDiff(diffBundles []domain.BrewBundle, diffTmpBundles []domain.BrewBundle) error {
 	var diffNames string
 	for _, diff := range diffTmpBundles {
@@ -217,13 +228,7 @@ func (d *DepsUsecaseImpl) updateBrewfile() error {
 				return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff")
 			}
 
-			d.printOutUC.PrintMdf("#### Running `brew bundle install`\n")
-
-			if err := d.brewUC.InstallBrewBundle(); err != nil {
-				return errors.Wrap(err, "deps usecase: failed to install brew packages")
-			}
-
-			d.printOutUC.PrintMdf("#### Running `brew bundle cleanup`\n")
+			d.printOutUC.Println("Running `brew bundle cleanup`")
 
 			if err := d.brewUC.CleanupBrewBundle(true); err != nil {
 				return errors.Wrap(err, "deps usecase: failed to run brew bundle cleanup")
@@ -239,7 +244,7 @@ func (d *DepsUsecaseImpl) updateBrewfile() error {
 			d.printOutUC.Println("Do nothing")
 		default:
 			d.printOutUC.Println("Exit")
-			os.Exit(0)
+			d.Finish()
 		}
 	}
 
@@ -305,6 +310,13 @@ func (d *DepsUsecaseImpl) resolveBrewDiff() error {
 	if err := d.resolveBrewDiffWithEditor(ctx); err != nil {
 		return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff with editor")
 	}
+
+	bundles, err = d.brewInfrastructure.ReadBrewBundle(brewPath)
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
+	}
+
+	d.brewInfrastructure.WriteBrewBundle(bundles, brewPath)
 
 	return nil
 }
