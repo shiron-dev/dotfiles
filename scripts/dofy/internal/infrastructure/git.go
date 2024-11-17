@@ -9,14 +9,25 @@ import (
 )
 
 type GitInfrastructure interface {
+	SetGitDir(path string)
 	GitDifftool(ctx context.Context, sout io.Writer, serror io.Writer, path ...string) error
 	CheckoutFile(path string) error
 }
 
-type GitInfrastructureImpl struct{}
+type GitInfrastructureImpl struct {
+	gitDir string
+}
 
 func NewGitInfrastructure() *GitInfrastructureImpl {
-	return &GitInfrastructureImpl{}
+	return &GitInfrastructureImpl{
+		gitDir: "",
+	}
+}
+
+var ErrGitDirNotSet = errors.New("git infrastructure: git directory is not set")
+
+func (g *GitInfrastructureImpl) SetGitDir(path string) {
+	g.gitDir = path
 }
 
 func (g *GitInfrastructureImpl) GitDifftool(
@@ -25,10 +36,15 @@ func (g *GitInfrastructureImpl) GitDifftool(
 	serror io.Writer,
 	path ...string,
 ) error {
+	if g.gitDir == "" {
+		return ErrGitDirNotSet
+	}
+
 	args := []string{"difftool", "-y"}
 	args = append(args, path...)
 
 	cmd := exec.CommandContext(ctx, "git", args...)
+	cmd.Dir = g.gitDir
 	cmd.Stdout = sout
 	cmd.Stderr = serror
 
@@ -40,7 +56,13 @@ func (g *GitInfrastructureImpl) GitDifftool(
 }
 
 func (g *GitInfrastructureImpl) CheckoutFile(path string) error {
+	if g.gitDir == "" {
+		return ErrGitDirNotSet
+	}
+
 	cmd := exec.Command("git", "checkout", "--", path)
+	cmd.Dir = g.gitDir
+
 	if err := cmd.Run(); err != nil {
 		return errors.Wrap(err, "git infrastructure: failed to run git checkout")
 	}

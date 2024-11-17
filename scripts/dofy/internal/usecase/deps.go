@@ -266,6 +266,7 @@ func (d *DepsUsecaseImpl) updateBrewfile(brewPath string, brewTmpPath string) er
 	return nil
 }
 
+//nolint:funlen
 func (d *DepsUsecaseImpl) resolveBrewDiff(brewPath string, brewTmpPath string) error {
 	diffBundles, diffTmpBundles, err := d.brewUC.CheckDiffBrewBundle(brewPath, brewTmpPath)
 	if err != nil {
@@ -292,6 +293,8 @@ func (d *DepsUsecaseImpl) resolveBrewDiff(brewPath string, brewTmpPath string) e
 > [!WARNING]
 > The Brewfile changes have been discarded.
 `)
+
+		d.gitInfrastructure.SetGitDir(filepath.Dir(brewPath))
 
 		if err := d.gitInfrastructure.CheckoutFile(brewPath); err != nil {
 			panic(err)
@@ -340,6 +343,8 @@ func (d *DepsUsecaseImpl) resolveBrewDiffWithEditor(ctx context.Context, brewPat
 
 		return errResolveBrewDiffWithEditorMaxCount
 	}
+
+	d.gitInfrastructure.SetGitDir(filepath.Dir(brewPath))
 
 	if err := d.gitInfrastructure.GitDifftool(
 		ctx,
