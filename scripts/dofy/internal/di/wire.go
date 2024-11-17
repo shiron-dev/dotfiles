@@ -69,6 +69,7 @@ func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*Controllers
 }
 
 type TestInfrastructureSet struct {
+	DepsInfrastructure     infrastructure.DepsInfrastructure
 	FileInfrastructure     infrastructure.FileInfrastructure
 	GitInfrastructure      infrastructure.GitInfrastructure
 	PrintOutInfrastructure infrastructure.PrintOutInfrastructure
