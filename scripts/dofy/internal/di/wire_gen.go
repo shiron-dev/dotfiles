@@ -34,6 +34,14 @@ func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*Controllers
 	return controllersSet, nil
 }
 
+func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*TestInfrastructureSet, error) {
+	printOutInfrastructureImpl := providePrintOutInfrastructure(stdout, stderr)
+	testInfrastructureSet := &TestInfrastructureSet{
+		PrintOutInfrastructure: printOutInfrastructureImpl,
+	}
+	return testInfrastructureSet, nil
+}
+
 // wire.go:
 
 type stdoutType io.Writer
@@ -55,4 +63,8 @@ var usecaseSet = wire.NewSet(wire.Bind(new(usecase.PrintOutUsecase), new(*usecas
 
 type ControllersSet struct {
 	DofyController controller.DofyController
+}
+
+type TestInfrastructureSet struct {
+	PrintOutInfrastructure infrastructure.PrintOutInfrastructure
 }

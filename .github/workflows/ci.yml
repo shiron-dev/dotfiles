@@ -142,6 +142,7 @@ jobs:
       - name: Run go test
         id: golang-test
         run: |
+          set +e
           TEST_OUT=$(go test ./... -coverpkg=./... -p=5)
           TEST_EXIT_CODE=$?
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
@@ -193,6 +194,7 @@ jobs:
       - name: Run go test
         id: golang-test
         run: |
+          set +e
           TEST_OUT=$(go test -json -v ./... -p=5 2>&1)
           TEST_EXIT=$?
           echo "$TEST_OUT" | tee /tmp/gotest.log | gotestfmt

@@ -67,3 +67,15 @@ func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*Controllers
 	)
 	return nil, nil
 }
+
+type TestInfrastructureSet struct {
+	PrintOutInfrastructure infrastructure.PrintOutInfrastructure
+}
+
+func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*TestInfrastructureSet, error) {
+	wire.Build(
+		infrastructureSet,
+		wire.Struct(new(TestInfrastructureSet), "*"),
+	)
+	return nil, nil
+}

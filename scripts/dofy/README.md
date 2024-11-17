@@ -59,7 +59,7 @@ Lint golang code.
 Requires: init
 
 ```bash
-golangci-lint run
+golangci-lint run  --config=.golangci.yaml
 ```
 
 ### lint:fix
@@ -90,6 +90,16 @@ Requires: init
 
 ```bash
 go generate ./...
+```
+
+### test
+
+Test golang code.
+
+Requires: init
+
+```bash
+go test ./...
 ```
 
 ### clean
