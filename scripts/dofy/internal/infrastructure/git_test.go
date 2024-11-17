@@ -88,6 +88,7 @@ func TestCheckoutFile(t *testing.T) {
 
 	cmd = exec.Command("git", "commit", "-m", "test")
 	cmd.Dir = gitRepo
+	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
 		t.Fatal(err)

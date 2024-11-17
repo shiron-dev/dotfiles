@@ -26,5 +26,26 @@ func MakeGitRepo(t *testing.T) string {
 		t.Fatal(err)
 	}
 
+	cmd = exec.Command("git", "config", "user.email", "test@example.com")
+	cmd.Dir = path
+
+	if err = cmd.Run(); err != nil {
+		t.Fatal(err)
+	}
+
+	cmd = exec.Command("git", "config", "user.name", "test")
+	cmd.Dir = path
+
+	if err = cmd.Run(); err != nil {
+		t.Fatal(err)
+	}
+
+	cmd = exec.Command("git", "config", "commit.gpgSign", "false")
+	cmd.Dir = path
+
+	if err = cmd.Run(); err != nil {
+		t.Fatal(err)
+	}
+
 	return path
 }
