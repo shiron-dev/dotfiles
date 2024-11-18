@@ -1,0 +1,265 @@
+package infrastructure_test
+
+import (
+	"bytes"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
+	"testing"
+
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/domain"
+)
+
+// Related to `../test/data/brew_test.brewfile`.
+//
+//nolint:gochecknoglobals
+var testBundles = []domain.BrewBundle{
+	{
+		Name:       "git",
+		Others:     []string{},
+		BundleType: domain.BrewBundleTypeFormula,
+		Categories: []string{"cat 1", "cat 1.1", "cat 1.1.1"},
+	},
+	{
+		Name:       "go",
+		Others:     []string{},
+		BundleType: domain.BrewBundleTypeFormula,
+		Categories: []string{"cat 1", "cat 1.2"},
+	},
+	{
+		Name:       "homebrew/cask",
+		Others:     []string{},
+		BundleType: domain.BrewBundleTypeTap,
+		Categories: []string{"cat 2"},
+	},
+	{
+		Name:       "mas",
+		Others:     []string{},
+		BundleType: domain.BrewBundleTypeCask,
+		Categories: []string{"cat 2"},
+	},
+	{
+		Name:       "mas",
+		Others:     []string{"id: 1234567890"},
+		BundleType: domain.BrewBundleTypeMas,
+		Categories: []string{"cat 2"},
+	},
+}
+
+func TestSetHomebrewEnv(t *testing.T) {
+	t.Parallel()
+
+	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	brew := infra.BrewInfrastructure
+
+	brewPath := ""
+
+	err = brew.SetHomebrewEnv(brewPath)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+
+	switch runtime.GOOS {
+	case "darwin":
+		brewPath = "/opt/homebrew/bin/brew"
+	case "linux":
+		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
+	}
+
+	err = brew.SetHomebrewEnv(brewPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestInstallFormula(t *testing.T) {
+	t.Parallel()
+
+	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	brew := infra.BrewInfrastructure
+
+	const notExistFormula = "not_exist_formula"
+
+	cmd := exec.Command("brew", "info", notExistFormula)
+	err = cmd.Run()
+
+	if err == nil {
+		t.Fatalf("expected error, got nil")
+	}
+
+	err = brew.InstallFormula(notExistFormula)
+	if err == nil {
+		t.Fatalf("expected error, got nil")
+	}
+
+	const existFormula = "git"
+
+	cmd = exec.Command("brew", "info", existFormula)
+	if err = cmd.Run(); err != nil {
+		t.Fatalf("expected nil, got %v", err)
+	}
+
+	err = brew.InstallFormula(existFormula)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestDumpTmpBrewBundle(t *testing.T) {
+	t.Parallel()
+
+	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	brew := infra.BrewInfrastructure
+
+	usr, err := os.UserHomeDir()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	path := usr + "/projects/dotfiles/data/Brewfile.tmp"
+
+	if _, err := os.Stat(path); err == nil {
+		if err = os.Remove(path); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	outBuffer := &bytes.Buffer{}
+
+	errBuffer := &bytes.Buffer{}
+
+	err = brew.DumpTmpBrewBundle(outBuffer, errBuffer)
+	if err != nil {
+		t.Fatal(err, outBuffer.String(), errBuffer.String())
+	}
+
+	if _, err := os.Stat(path); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestInstallBrewBundle(t *testing.T) {
+	t.Parallel()
+
+	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	brew := infra.BrewInfrastructure
+
+	path := t.TempDir() + "/projects/dotfiles/data/Brewfile"
+
+	if _, err := os.Stat(path); err == nil {
+		t.Fatal("Brewfile already exists")
+	}
+
+	outBuffer := &bytes.Buffer{}
+
+	errBuffer := &bytes.Buffer{}
+
+	err = brew.InstallBrewBundle(outBuffer, errBuffer)
+	if err != nil {
+		t.Fatal(err, outBuffer.String(), errBuffer.String())
+	}
+}
+
+//nolint:cyclop
+func TestReadBrewBundle(t *testing.T) {
+	t.Parallel()
+
+	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	brew := infra.BrewInfrastructure
+
+	path, err := filepath.Abs("../test/data/brew_test.brewfile")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	bundles, err := brew.ReadBrewBundle(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(bundles) != len(testBundles) {
+		t.Fatalf("expected %d, got %d", len(testBundles), len(bundles))
+	}
+
+	for ind, bundle := range bundles {
+		if bundle.Name != testBundles[ind].Name {
+			t.Fatalf("expected %s, got %s", testBundles[ind].Name, bundle.Name)
+		}
+
+		if bundle.BundleType != testBundles[ind].BundleType {
+			t.Fatalf("expected %d, got %d", testBundles[ind].BundleType, bundle.BundleType)
+		}
+
+		if len(bundle.Categories) != len(testBundles[ind].Categories) {
+			t.Fatalf("expected %d, got %d", len(testBundles[ind].Categories), len(bundle.Categories))
+		}
+
+		for j, cat := range bundle.Categories {
+			if cat != testBundles[ind].Categories[j] {
+				t.Fatalf("expected %s, got %s", testBundles[ind].Categories[j], cat)
+			}
+		}
+	}
+}
+
+func TestWriteBrewBundle(t *testing.T) {
+	t.Parallel()
+
+	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	brew := infra.BrewInfrastructure
+
+	path := t.TempDir() + "/test.brewfile"
+
+	if _, err := os.Stat(path); err == nil {
+		t.Fatal("file already exists")
+	}
+
+	err = brew.WriteBrewBundle(testBundles, path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := os.Stat(path); err != nil {
+		t.Fatal(err)
+	}
+
+	file, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	correctFile, err := os.ReadFile("../test/data/brew_test.brewfile")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if string(file) != string(correctFile) {
+		t.Fatalf("expected %s, got %s", string(correctFile), string(file))
+	}
+}

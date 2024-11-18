@@ -13,8 +13,10 @@ import (
 	"github.com/google/wire"
 )
 
-type stdoutType io.Writer
-type stderrType io.Writer
+type (
+	stdoutType io.Writer
+	stderrType io.Writer
+)
 
 func providePrintOutInfrastructure(stdout stdoutType, stderr stderrType) *infrastructure.PrintOutInfrastructureImpl {
 	return infrastructure.NewPrintOutInfrastructure(stdout, stderr)
@@ -69,6 +71,7 @@ func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*Controllers
 }
 
 type TestInfrastructureSet struct {
+	BrewInfrastructure     infrastructure.BrewInfrastructure
 	ConfigInfrastructure   infrastructure.ConfigInfrastructure
 	DepsInfrastructure     infrastructure.DepsInfrastructure
 	FileInfrastructure     infrastructure.FileInfrastructure

@@ -1,0 +1,16 @@
+# Brewfile made by dofy
+
+# cat 1
+
+## cat 1.1
+
+### cat 1.1.1
+brew "git"
+
+## cat 1.2
+brew "go"
+
+# cat 2
+tap "homebrew/cask"
+cask "mas"
+mas "mas", id: 1234567890

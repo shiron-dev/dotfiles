@@ -35,12 +35,14 @@ func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*Controllers
 }
 
 func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*TestInfrastructureSet, error) {
+	brewInfrastructureImpl := infrastructure.NewBrewInfrastructure()
 	configInfrastructureImpl := infrastructure.NewConfigInfrastructure()
 	depsInfrastructureImpl := infrastructure.NewDepsInfrastructure()
 	fileInfrastructureImpl := infrastructure.NewFileInfrastructure()
 	gitInfrastructureImpl := infrastructure.NewGitInfrastructure()
 	printOutInfrastructureImpl := providePrintOutInfrastructure(stdout, stderr)
 	testInfrastructureSet := &TestInfrastructureSet{
+		BrewInfrastructure:     brewInfrastructureImpl,
 		ConfigInfrastructure:   configInfrastructureImpl,
 		DepsInfrastructure:     depsInfrastructureImpl,
 		FileInfrastructure:     fileInfrastructureImpl,
@@ -52,9 +54,10 @@ func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*Tes
 
 // wire.go:
 
-type stdoutType io.Writer
-
-type stderrType io.Writer
+type (
+	stdoutType io.Writer
+	stderrType io.Writer
+)
 
 func providePrintOutInfrastructure(stdout stdoutType, stderr stderrType) *infrastructure.PrintOutInfrastructureImpl {
 	return infrastructure.NewPrintOutInfrastructure(stdout, stderr)
@@ -74,6 +77,7 @@ type ControllersSet struct {
 }
 
 type TestInfrastructureSet struct {
+	BrewInfrastructure     infrastructure.BrewInfrastructure
 	ConfigInfrastructure   infrastructure.ConfigInfrastructure
 	DepsInfrastructure     infrastructure.DepsInfrastructure
 	FileInfrastructure     infrastructure.FileInfrastructure
