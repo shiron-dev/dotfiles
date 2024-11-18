@@ -50,6 +50,7 @@ Requires: init
 
 ```bash
 go fmt ./...
+gofumpt -l -w .
 ```
 
 ### lint
