@@ -23,6 +23,7 @@ type EnvInfo struct {
 	os        string
 	osVersion string
 	arch      string
+	isMac     bool
 }
 
 func (c *ConfigUsecaseImpl) ScanEnvInfo() (*EnvInfo, error) {
@@ -45,5 +46,6 @@ func (c *ConfigUsecaseImpl) ScanEnvInfo() (*EnvInfo, error) {
 		os:        gos,
 		osVersion: osVersion,
 		arch:      arch,
+		isMac:     gos == "darwin",
 	}, nil
 }

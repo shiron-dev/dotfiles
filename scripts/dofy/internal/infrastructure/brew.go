@@ -18,7 +18,7 @@ type BrewInfrastructure interface {
 	InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) error
 	SetHomebrewEnv(goos string) error
 	InstallFormula(pkg string) error
-	DumpTmpBrewBundle(path string, sout io.Writer, serror io.Writer) error
+	DumpTmpBrewBundle(path string, isMac bool, sout io.Writer, serror io.Writer) error
 	InstallBrewBundle(path string, sout io.Writer, serror io.Writer) error
 	CleanupBrewBundle(path string, isForce bool, sout io.Writer, serror io.Writer) error
 	ReadBrewBundle(path string) ([]domain.BrewBundle, error)
@@ -97,12 +97,20 @@ func (b *BrewInfrastructureImpl) InstallFormula(formula string) error {
 	return nil
 }
 
-func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(path string, sout io.Writer, serror io.Writer) error {
+func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(path string, isMac bool, sout io.Writer, serror io.Writer) error {
 	if _, err := os.Stat(path); err == nil {
 		os.Remove(path)
 	}
 
-	cmd := exec.Command("brew", "bundle", "dump", "--tap", "--formula", "--cask", "--mas", "--file", path)
+	args := []string{"bundle", "dump", "--tap", "--formula"}
+
+	if isMac {
+		args = append(args, "--cask", "--mas")
+	}
+
+	args = append(args, "--file", path)
+
+	cmd := exec.Command("brew", args...)
 	cmd.Stdout = sout
 	cmd.Stderr = serror
 

@@ -88,7 +88,12 @@ func (b *BrewUsecaseImpl) InstallBrewBundle(path string) error {
 }
 
 func (b *BrewUsecaseImpl) DumpTmpBrewBundle(path string) error {
-	err := b.brewInfrastructure.DumpTmpBrewBundle(path, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	cfg, err := b.configUC.ScanEnvInfo()
+	if err != nil {
+		return errors.Wrap(err, "brew usecase: failed to get environment info")
+	}
+
+	err = b.brewInfrastructure.DumpTmpBrewBundle(path, cfg.isMac, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to dump Brewfile.tmp")
 	}

@@ -87,7 +87,7 @@ func TestInstallFormula(t *testing.T) {
 		t.Fatalf("expected error, got nil")
 	}
 
-	const existFormula = "git"
+	const existFormula = "go"
 
 	cmd = exec.Command("brew", "info", existFormula)
 	if err = cmd.Run(); err != nil {
@@ -112,17 +112,11 @@ func TestDumpTmpBrewBundle(t *testing.T) {
 
 	path := filepath.Join(t.TempDir(), "/Brewfile.tmp")
 
-	if _, err := os.Stat(path); err == nil {
-		if err = os.Remove(path); err != nil {
-			t.Fatal(err)
-		}
-	}
-
 	outBuffer := &bytes.Buffer{}
 
 	errBuffer := &bytes.Buffer{}
 
-	err = brew.DumpTmpBrewBundle(path, outBuffer, errBuffer)
+	err = brew.DumpTmpBrewBundle(path, false, outBuffer, errBuffer)
 	if err != nil {
 		t.Fatal(err, outBuffer.String(), errBuffer.String())
 	}
@@ -147,7 +141,7 @@ func TestInstallBrewBundle(t *testing.T) {
 	if file, err := os.Create(path); err != nil {
 		t.Fatal(err)
 	} else {
-		_, err = file.WriteString("brew \"git\"\n")
+		_, err = file.WriteString("brew \"go\"\n")
 		if err != nil {
 			t.Fatal(err)
 		}
