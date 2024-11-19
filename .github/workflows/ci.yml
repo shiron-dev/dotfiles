@@ -217,7 +217,7 @@ jobs:
           message: | 
             ${{ env.comment }}
 
-            ## Cov HTML
+            ## Cov HTML ${{ github.run_id }}: ${{ github.run_attempt }}
             [Cov HTML Report](https://shiron-dev.github.io/dotfiles/${{ env.HTML_REPORT_URL_PATH }})
       - name: Error check
         if: ${{ steps.golang-test.outcome != 'success' }}
