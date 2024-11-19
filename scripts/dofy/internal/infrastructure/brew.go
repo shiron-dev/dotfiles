@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"os/user"
 	"sort"
 	"strings"
 
@@ -17,13 +16,13 @@ import (
 
 type BrewInfrastructure interface {
 	InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) error
-	SetHomebrewEnv(brewPath string) error
+	SetHomebrewEnv(goos string) error
 	InstallFormula(pkg string) error
-	DumpTmpBrewBundle(sout io.Writer, serror io.Writer) error
-	InstallBrewBundle(sout io.Writer, serror io.Writer) error
-	CleanupBrewBundle(isForce bool, sout io.Writer, serror io.Writer) error
+	DumpTmpBrewBundle(path string, sout io.Writer, serror io.Writer) error
+	InstallBrewBundle(path string, sout io.Writer, serror io.Writer) error
+	CleanupBrewBundle(path string, isForce bool, sout io.Writer, serror io.Writer) error
 	ReadBrewBundle(path string) ([]domain.BrewBundle, error)
-	WriteBrewBundle(bundles []domain.BrewBundle, path string) error
+	WriteBrewBundle(path string, bundles []domain.BrewBundle) error
 }
 
 type BrewInfrastructureImpl struct{}
@@ -60,7 +59,16 @@ func (b *BrewInfrastructureImpl) InstallHomebrew(ctx context.Context, sout io.Wr
 	return nil
 }
 
-func (b *BrewInfrastructureImpl) SetHomebrewEnv(brewPath string) error {
+func (b *BrewInfrastructureImpl) SetHomebrewEnv(goos string) error {
+	var brewPath string
+
+	switch goos {
+	case "darwin":
+		brewPath = "/opt/homebrew/bin/brew"
+	case "linux":
+		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
+	}
+
 	cmd := exec.Command(brewPath, "shellenv")
 
 	shellenv, err := cmd.Output()
@@ -89,10 +97,7 @@ func (b *BrewInfrastructureImpl) InstallFormula(formula string) error {
 	return nil
 }
 
-func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(sout io.Writer, serror io.Writer) error {
-	usr, _ := user.Current()
-	path := usr.HomeDir + "/projects/dotfiles/data/Brewfile.tmp"
-
+func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(path string, sout io.Writer, serror io.Writer) error {
 	if _, err := os.Stat(path); err == nil {
 		os.Remove(path)
 	}
@@ -108,10 +113,8 @@ func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(sout io.Writer, serror io.Wri
 	return nil
 }
 
-func (b *BrewInfrastructureImpl) InstallBrewBundle(sout io.Writer, serror io.Writer) error {
-	usr, _ := user.Current()
-	//nolint:gosec
-	cmd := exec.Command("brew", "bundle", "--no-lock", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
+func (b *BrewInfrastructureImpl) InstallBrewBundle(path string, sout io.Writer, serror io.Writer) error {
+	cmd := exec.Command("brew", "bundle", "--no-lock", "--file", path)
 	cmd.Stdout = sout
 	cmd.Stderr = serror
 
@@ -122,27 +125,14 @@ func (b *BrewInfrastructureImpl) InstallBrewBundle(sout io.Writer, serror io.Wri
 	return nil
 }
 
-// func checkBrewBundle() {
-// 	usr, _ := user.Current()
-// 	cmd := exec.Command("brew", "bundle", "check", "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
-// 	cmd.Stdout = infrastructure.Out
-// 	cmd.Stderr = infrastructure.Error
-// 	err := cmd.Run()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
-
-func (b *BrewInfrastructureImpl) CleanupBrewBundle(isForce bool, sout io.Writer, serror io.Writer) error {
-	usr, _ := user.Current()
+func (b *BrewInfrastructureImpl) CleanupBrewBundle(path string, isForce bool, sout io.Writer, serror io.Writer) error {
 	forceFlag := ""
 
 	if isForce {
 		forceFlag = "--force"
 	}
 
-	//nolint:gosec
-	cmd := exec.Command("brew", "bundle", "cleanup", forceFlag, "--file", usr.HomeDir+"/projects/dotfiles/data/Brewfile")
+	cmd := exec.Command("brew", "bundle", "cleanup", forceFlag, "--file", path)
 	cmd.Stdout = sout
 	cmd.Stderr = serror
 
@@ -225,7 +215,7 @@ func getCategory(line string, lastCategories []string) []string {
 	return lastCategories
 }
 
-func (b *BrewInfrastructureImpl) WriteBrewBundle(bundles []domain.BrewBundle, path string) error {
+func (b *BrewInfrastructureImpl) WriteBrewBundle(path string, bundles []domain.BrewBundle) error {
 	file, err := os.Create(path)
 	if err != nil {
 		return errors.Wrap(err, "deps infrastructure: failed to create file")

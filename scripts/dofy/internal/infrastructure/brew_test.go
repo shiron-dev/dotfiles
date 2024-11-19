@@ -65,14 +65,7 @@ func TestSetHomebrewEnv(t *testing.T) {
 		t.Fatal("expected error, got nil")
 	}
 
-	switch runtime.GOOS {
-	case "darwin":
-		brewPath = "/opt/homebrew/bin/brew"
-	case "linux":
-		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
-	}
-
-	err = brew.SetHomebrewEnv(brewPath)
+	err = brew.SetHomebrewEnv(runtime.GOOS)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,12 +118,7 @@ func TestDumpTmpBrewBundle(t *testing.T) {
 
 	brew := infra.BrewInfrastructure
 
-	usr, err := os.UserHomeDir()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	path := usr + "/projects/dotfiles/data/Brewfile.tmp"
+	path := filepath.Join(t.TempDir(), "/Brewfile.tmp")
 
 	if _, err := os.Stat(path); err == nil {
 		if err = os.Remove(path); err != nil {
@@ -142,7 +130,7 @@ func TestDumpTmpBrewBundle(t *testing.T) {
 
 	errBuffer := &bytes.Buffer{}
 
-	err = brew.DumpTmpBrewBundle(outBuffer, errBuffer)
+	err = brew.DumpTmpBrewBundle(path, outBuffer, errBuffer)
 	if err != nil {
 		t.Fatal(err, outBuffer.String(), errBuffer.String())
 	}
@@ -162,17 +150,22 @@ func TestInstallBrewBundle(t *testing.T) {
 
 	brew := infra.BrewInfrastructure
 
-	path := t.TempDir() + "/projects/dotfiles/data/Brewfile"
+	path := filepath.Join(t.TempDir(), "/Brewfile")
 
-	if _, err := os.Stat(path); err == nil {
-		t.Fatal("Brewfile already exists")
+	if file, err := os.Create(path); err != nil {
+		t.Fatal(err)
+	} else {
+		_, err = file.WriteString("brew \"git\"\n")
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	outBuffer := &bytes.Buffer{}
 
 	errBuffer := &bytes.Buffer{}
 
-	err = brew.InstallBrewBundle(outBuffer, errBuffer)
+	err = brew.InstallBrewBundle(path, outBuffer, errBuffer)
 	if err != nil {
 		t.Fatal(err, outBuffer.String(), errBuffer.String())
 	}
@@ -240,7 +233,7 @@ func TestWriteBrewBundle(t *testing.T) {
 		t.Fatal("file already exists")
 	}
 
-	err = brew.WriteBrewBundle(testBundles, path)
+	err = brew.WriteBrewBundle(path, testBundles)
 	if err != nil {
 		t.Fatal(err)
 	}
