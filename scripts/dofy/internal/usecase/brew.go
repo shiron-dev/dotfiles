@@ -10,7 +10,7 @@ import (
 
 type BrewUsecase interface {
 	InstallHomebrew(ctx context.Context) error
-	InstallFormula(formula string) error
+	InstallFormula(formula string, bType domain.BrewBundleType) error
 	InstallBrewBundle(path string) error
 	DumpTmpBrewBundle(path string) error
 	CheckDiffBrewBundle(bundlePath string, tmpPath string) ([]domain.BrewBundle, []domain.BrewBundle, error)
@@ -65,12 +65,23 @@ func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 	return nil
 }
 
-func (b *BrewUsecaseImpl) InstallFormula(formula string) error {
+func (b *BrewUsecaseImpl) InstallFormula(formula string, bType domain.BrewBundleType) error {
 	b.printOutUC.PrintMdf(`
 ### Installing %s (with Homebrew)
 `, formula)
 
-	err := b.brewInfrastructure.InstallFormula(formula, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	var err error
+
+	switch bType {
+	case domain.BrewBundleTypeTap:
+		err = b.brewInfrastructure.InstallTap(formula, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	case domain.BrewBundleTypeFormula:
+	case domain.BrewBundleTypeCask:
+		err = b.brewInfrastructure.InstallFormula(formula, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	case domain.BrewBundleTypeMas:
+		err = b.brewInfrastructure.InstallByMas(formula, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	}
+
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to install formula")
 	}

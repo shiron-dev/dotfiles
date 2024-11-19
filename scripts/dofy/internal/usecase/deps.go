@@ -102,7 +102,7 @@ func (d *DepsUsecaseImpl) InstallGit() error {
 	if d.depsInfrastructure.CheckInstalled("git") {
 		d.printOutUC.Println("git is already installed")
 	} else {
-		err := d.brewUC.InstallFormula("git")
+		err := d.brewUC.InstallFormula("git", domain.BrewBundleTypeFormula)
 		if err != nil {
 			return errors.Wrap(err, "deps usecase: failed to install git")
 		}
@@ -157,6 +157,15 @@ func (d *DepsUsecaseImpl) InstallBrewBundle(forceInstall bool) error {
 
 Install the packages using Homebrew Bundle.
 `)
+
+	d.printOutUC.PrintMdf(`
+### Install brew bundle
+
+` + "`brew tap Homebrew/bundle`\n")
+
+	if err := d.brewUC.InstallFormula("Homebrew/bundle", domain.BrewBundleTypeTap); err != nil {
+		return errors.Wrap(err, "deps usecase: failed to install Homebrew/bundle")
+	}
 
 	err = d.brewUC.DumpTmpBrewBundle(brewTmpPath)
 	if err != nil {

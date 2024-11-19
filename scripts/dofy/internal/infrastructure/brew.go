@@ -18,6 +18,8 @@ type BrewInfrastructure interface {
 	InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) error
 	SetHomebrewEnv(goos string) error
 	InstallFormula(pkg string, sout io.Writer, serror io.Writer) error
+	InstallTap(pkg string, sout io.Writer, serror io.Writer) error
+	InstallByMas(pkg string, sout io.Writer, serror io.Writer) error
 	DumpTmpBrewBundle(path string, isMac bool, sout io.Writer, serror io.Writer) error
 	InstallBrewBundle(path string, sout io.Writer, serror io.Writer) error
 	CleanupBrewBundle(path string, isForce bool, sout io.Writer, serror io.Writer) error
@@ -95,6 +97,30 @@ func (b *BrewInfrastructureImpl) InstallFormula(formula string, sout io.Writer, 
 
 	if err := cmd.Run(); err != nil {
 		return errors.Wrap(err, "brew infrastructure: failed to run brew install command")
+	}
+
+	return nil
+}
+
+func (b *BrewInfrastructureImpl) InstallTap(formula string, sout io.Writer, serror io.Writer) error {
+	cmd := exec.Command("brew", "tap", formula)
+	cmd.Stdout = sout
+	cmd.Stderr = serror
+
+	if err := cmd.Run(); err != nil {
+		return errors.Wrap(err, "brew infrastructure: failed to run brew tap command")
+	}
+
+	return nil
+}
+
+func (b *BrewInfrastructureImpl) InstallByMas(pkg string, sout io.Writer, serror io.Writer) error {
+	cmd := exec.Command("mas", "install", pkg)
+	cmd.Stdout = sout
+	cmd.Stderr = serror
+
+	if err := cmd.Run(); err != nil {
+		return errors.Wrap(err, "brew infrastructure: failed to run mas install command")
 	}
 
 	return nil
