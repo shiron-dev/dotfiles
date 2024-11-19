@@ -19,6 +19,12 @@ import (
 //nolint:gochecknoglobals
 var testBundles = []domain.BrewBundle{
 	{
+		Name:       "gh",
+		Others:     []string{},
+		BundleType: domain.BrewBundleTypeFormula,
+		Categories: []string{"cat 1", "cat 1.1", "cat 1.1.1"},
+	},
+	{
 		Name:       "git",
 		Others:     []string{},
 		BundleType: domain.BrewBundleTypeFormula,
@@ -184,6 +190,17 @@ func TestDumpTmpBrewBundle(t *testing.T) {
 	if _, err := os.Stat(path); err != nil {
 		t.Fatal(err)
 	}
+
+	err = brew.DumpTmpBrewBundle(path, true, outBuffer, errBuffer)
+	if runtime.GOOS != "darwin" {
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+	} else {
+		if err != nil {
+			t.Fatal(err, outBuffer.String(), errBuffer.String())
+		}
+	}
 }
 
 func TestInstallBrewBundle(t *testing.T) {
@@ -219,6 +236,15 @@ func TestInstallBrewBundle(t *testing.T) {
 	err = brew.InstallBrewBundle(path, outBuffer, errBuffer)
 	if err != nil {
 		t.Fatal(err, outBuffer.String(), errBuffer.String())
+	}
+
+	outBuffer.Reset()
+
+	errBuffer.Reset()
+
+	err = brew.InstallBrewBundle(filepath.Join(t.TempDir(), "/not_exist"), outBuffer, errBuffer)
+	if err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }
 
@@ -265,6 +291,11 @@ func TestReadBrewBundle(t *testing.T) {
 				t.Fatalf("expected %s, got %s", testBundles[ind].Categories[j], cat)
 			}
 		}
+	}
+
+	_, err = brew.ReadBrewBundle(filepath.Join(t.TempDir(), "/not_exist"))
+	if err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }
 

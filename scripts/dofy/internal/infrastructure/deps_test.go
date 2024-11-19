@@ -44,3 +44,28 @@ func TestCheckInstalled(t *testing.T) {
 		t.Fatal("git is not installed")
 	}
 }
+
+func TestOpenWithCode(t *testing.T) {
+	t.Parallel()
+
+	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	deps := infra.DepsInfrastructure
+
+	_, err = exec.LookPath("code")
+	isCode := err == nil
+
+	err = deps.OpenWithCode("-h")
+	if isCode {
+		if err != nil {
+			t.Fatal(err)
+		}
+	} else {
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+	}
+}

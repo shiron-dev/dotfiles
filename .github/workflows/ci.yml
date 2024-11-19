@@ -214,7 +214,6 @@ jobs:
       - uses: actions/checkout@v4
         if: ${{ steps.golang-test.outcome == 'success' }}
       - name: Create PR comment
-        if: ${{ steps.golang-test.outcome == 'success' }}
         uses: marocchino/sticky-pull-request-comment@44e0bad81007ecff41ba26d1cbf49a0267d28e9d # v2.9.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

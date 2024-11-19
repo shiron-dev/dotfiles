@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/test/util"
 )
 
 func createFile(t *testing.T, path string, content string) {
@@ -61,13 +62,12 @@ func TestReadFile(t *testing.T) {
 		t.Fatal("expected error, got nil")
 	}
 
-	busy, err := os.Create(dir + "/busy.txt")
+	path, err := util.MakeUnOpenableFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer busy.Close()
 
-	_, err = file.ReadFile(dir + "/busy.txt")
+	_, err = file.ReadFile(path)
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
@@ -109,13 +109,12 @@ func TestWriteFile(t *testing.T) {
 		}
 	}
 
-	busy, err := os.Create(dir + "/busy.txt")
+	path, err := util.MakeUnOpenableFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer busy.Close()
 
-	err = file.WriteFile(dir+"/busy.txt", []byte("busy"))
+	err = file.WriteFile(path, []byte("test"))
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

@@ -5,6 +5,7 @@
 ## cat 1.1
 
 ### cat 1.1.1
+brew "gh"
 brew "git"
 
 ## cat 1.2
