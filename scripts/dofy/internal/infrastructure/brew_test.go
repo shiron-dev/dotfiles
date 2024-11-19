@@ -63,9 +63,8 @@ func TestSetHomebrewEnv(t *testing.T) {
 	}
 }
 
+//nolint:paralleltest
 func TestInstallFormula(t *testing.T) {
-	t.Parallel()
-
 	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 	if err != nil {
 		t.Fatal(err)
@@ -82,9 +81,13 @@ func TestInstallFormula(t *testing.T) {
 		t.Fatalf("expected error, got nil")
 	}
 
-	err = brew.InstallFormula(notExistFormula)
+	outBuffer := &bytes.Buffer{}
+
+	errBuffer := &bytes.Buffer{}
+
+	err = brew.InstallFormula(notExistFormula, outBuffer, errBuffer)
 	if err == nil {
-		t.Fatalf("expected error, got nil")
+		t.Fatal("expected error, got nil", outBuffer.String(), errBuffer.String())
 	}
 
 	const existFormula = "go"
@@ -94,9 +97,13 @@ func TestInstallFormula(t *testing.T) {
 		t.Fatalf("expected nil, got %v", err)
 	}
 
-	err = brew.InstallFormula(existFormula)
+	outBuffer = &bytes.Buffer{}
+
+	errBuffer = &bytes.Buffer{}
+
+	err = brew.InstallFormula(existFormula, outBuffer, errBuffer)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal(err, outBuffer.String(), errBuffer.String())
 	}
 }
 

@@ -70,7 +70,7 @@ func (b *BrewUsecaseImpl) InstallFormula(formula string) error {
 ### Installing %s (with Homebrew)
 `, formula)
 
-	err := b.brewInfrastructure.InstallFormula(formula)
+	err := b.brewInfrastructure.InstallFormula(formula, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to install formula")
 	}

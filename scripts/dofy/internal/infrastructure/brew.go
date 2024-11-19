@@ -17,7 +17,7 @@ import (
 type BrewInfrastructure interface {
 	InstallHomebrew(ctx context.Context, sout io.Writer, serror io.Writer) error
 	SetHomebrewEnv(goos string) error
-	InstallFormula(pkg string) error
+	InstallFormula(pkg string, sout io.Writer, serror io.Writer) error
 	DumpTmpBrewBundle(path string, isMac bool, sout io.Writer, serror io.Writer) error
 	InstallBrewBundle(path string, sout io.Writer, serror io.Writer) error
 	CleanupBrewBundle(path string, isForce bool, sout io.Writer, serror io.Writer) error
@@ -88,8 +88,11 @@ func (b *BrewInfrastructureImpl) SetHomebrewEnv(goos string) error {
 	return nil
 }
 
-func (b *BrewInfrastructureImpl) InstallFormula(formula string) error {
+func (b *BrewInfrastructureImpl) InstallFormula(formula string, sout io.Writer, serror io.Writer) error {
 	cmd := exec.Command("brew", "install", formula)
+	cmd.Stdout = sout
+	cmd.Stderr = serror
+
 	if err := cmd.Run(); err != nil {
 		return errors.Wrap(err, "brew infrastructure: failed to run brew install command")
 	}
