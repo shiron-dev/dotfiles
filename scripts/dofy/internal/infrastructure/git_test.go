@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"testing"
 
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
@@ -54,6 +55,11 @@ func TestGitDifftool(t *testing.T) {
 	err = git.GitDifftool(context.Background(), os.Stdout, os.Stderr, filePath)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	err = git.GitDifftool(context.Background(), os.Stdout, os.Stderr, filepath.Join(gitRepo, "not_exist"))
+	if err == nil {
+		t.Fatal("difftool should fail")
 	}
 }
 

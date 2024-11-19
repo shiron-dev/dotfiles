@@ -55,6 +55,22 @@ func TestReadFile(t *testing.T) {
 			t.Fatalf("expected %s, got %s", testStr, content)
 		}
 	}
+
+	_, err = file.ReadFile(dir + "/not_exist.txt")
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+
+	busy, err := os.Create(dir + "/busy.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer busy.Close()
+
+	_, err = file.ReadFile(dir + "/busy.txt")
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
 }
 
 func TestWriteFile(t *testing.T) {
@@ -91,5 +107,16 @@ func TestWriteFile(t *testing.T) {
 		if string(content) != testStr {
 			t.Fatalf("expected %s, got %s", testStr, content)
 		}
+	}
+
+	busy, err := os.Create(dir + "/busy.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer busy.Close()
+
+	err = file.WriteFile(dir+"/busy.txt", []byte("busy"))
+	if err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }
