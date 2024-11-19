@@ -52,9 +52,7 @@ func TestSetHomebrewEnv(t *testing.T) {
 
 	brew := infra.BrewInfrastructure
 
-	brewPath := ""
-
-	err = brew.SetHomebrewEnv(brewPath)
+	err = brew.SetHomebrewEnv("")
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

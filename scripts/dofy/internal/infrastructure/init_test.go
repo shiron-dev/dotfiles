@@ -43,16 +43,7 @@ func setupBrew(brew infrastructure.BrewInfrastructure) error {
 		return errors.Wrap(err, "failed to install homebrew\n"+outBuffer.String()+"\n"+errBuffer.String())
 	}
 
-	brewPath := ""
-
-	switch runtime.GOOS {
-	case "darwin":
-		brewPath = "/opt/homebrew/bin/brew"
-	case "linux":
-		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
-	}
-
-	err = brew.SetHomebrewEnv(brewPath)
+	err = brew.SetHomebrewEnv(runtime.GOOS)
 	if err != nil {
 		return errors.Wrap(err, "failed to set homebrew env")
 	}
