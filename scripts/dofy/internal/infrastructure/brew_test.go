@@ -2,6 +2,7 @@ package infrastructure_test
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/domain"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/test/util"
 )
 
 // Related to `../test/data/brew_test.brewfile`.
@@ -40,6 +42,25 @@ var testBundles = []domain.BrewBundle{
 		BundleType: domain.BrewBundleTypeMas,
 		Categories: []string{"cat 2"},
 	},
+}
+
+//nolint:paralleltest
+func TestInstallHomebrew(t *testing.T) {
+	if !util.IsCI() {
+		t.Skip("skipping test; not running on CI")
+	}
+
+	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	brew := infra.BrewInfrastructure
+
+	err = brew.InstallHomebrew(context.Background(), os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestSetHomebrewEnv(t *testing.T) {
