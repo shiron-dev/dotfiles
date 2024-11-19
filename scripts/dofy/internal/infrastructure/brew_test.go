@@ -107,9 +107,8 @@ func TestInstallFormula(t *testing.T) {
 	}
 }
 
+//nolint:paralleltest
 func TestDumpTmpBrewBundle(t *testing.T) {
-	t.Parallel()
-
 	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 	if err != nil {
 		t.Fatal(err)
@@ -133,9 +132,8 @@ func TestDumpTmpBrewBundle(t *testing.T) {
 	}
 }
 
+//nolint:paralleltest
 func TestInstallBrewBundle(t *testing.T) {
-	t.Parallel()
-
 	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 	if err != nil {
 		t.Fatal(err)
