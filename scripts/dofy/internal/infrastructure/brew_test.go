@@ -97,9 +97,9 @@ func TestInstallFormula(t *testing.T) {
 		t.Fatalf("expected nil, got %v", err)
 	}
 
-	outBuffer = &bytes.Buffer{}
+	outBuffer.Reset()
 
-	errBuffer = &bytes.Buffer{}
+	errBuffer.Reset()
 
 	err = brew.InstallFormula(existFormula, outBuffer, errBuffer)
 	if err != nil {
@@ -117,13 +117,6 @@ func TestInstallTap(t *testing.T) {
 
 	const notExistFormula = "not_exist_formula"
 
-	cmd := exec.Command("brew", "info", notExistFormula)
-	err = cmd.Run()
-
-	if err == nil {
-		t.Fatalf("expected error, got nil")
-	}
-
 	outBuffer := &bytes.Buffer{}
 
 	errBuffer := &bytes.Buffer{}
@@ -135,14 +128,9 @@ func TestInstallTap(t *testing.T) {
 
 	const existFormula = "Homebrew/bundle"
 
-	cmd = exec.Command("brew", "info", existFormula)
-	if err = cmd.Run(); err != nil {
-		t.Fatalf("expected nil, got %v", err)
-	}
+	outBuffer.Reset()
 
-	outBuffer = &bytes.Buffer{}
-
-	errBuffer = &bytes.Buffer{}
+	errBuffer.Reset()
 
 	err = brew.InstallTap(existFormula, outBuffer, errBuffer)
 	if err != nil {
@@ -183,9 +171,9 @@ func TestInstallByMas(t *testing.T) {
 		t.Fatalf("expected nil, got %v", err)
 	}
 
-	outBuffer = &bytes.Buffer{}
+	outBuffer.Reset()
 
-	errBuffer = &bytes.Buffer{}
+	errBuffer.Reset()
 
 	err = brew.InstallByMas(existFormula, outBuffer, errBuffer)
 	if err != nil {
@@ -194,6 +182,8 @@ func TestInstallByMas(t *testing.T) {
 }
 
 func TestDumpTmpBrewBundle(t *testing.T) {
+	t.Parallel()
+
 	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 	if err != nil {
 		t.Fatal(err)
@@ -217,8 +207,9 @@ func TestDumpTmpBrewBundle(t *testing.T) {
 	}
 }
 
-//nolint:paralleltest
 func TestInstallBrewBundle(t *testing.T) {
+	t.Parallel()
+
 	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 	if err != nil {
 		t.Fatal(err)

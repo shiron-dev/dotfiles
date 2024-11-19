@@ -48,5 +48,14 @@ func setupBrew(brew infrastructure.BrewInfrastructure) error {
 		return errors.Wrap(err, "failed to set homebrew env")
 	}
 
+	outBuffer.Reset()
+
+	errBuffer.Reset()
+
+	err = brew.InstallTap("Homebrew/bundle", outBuffer, errBuffer)
+	if err != nil {
+		return errors.Wrap(err, "failed to install tap\n"+outBuffer.String()+"\n"+errBuffer.String())
+	}
+
 	return nil
 }
