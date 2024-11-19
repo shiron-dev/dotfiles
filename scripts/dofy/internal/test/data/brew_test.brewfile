@@ -12,5 +12,4 @@ brew "go"
 
 # cat 2
 tap "homebrew/cask"
-cask "mas"
 mas "mas", id: 1234567890

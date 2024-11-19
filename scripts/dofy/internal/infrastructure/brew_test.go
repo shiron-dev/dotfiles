@@ -36,12 +36,6 @@ var testBundles = []domain.BrewBundle{
 	},
 	{
 		Name:       "mas",
-		Others:     []string{},
-		BundleType: domain.BrewBundleTypeCask,
-		Categories: []string{"cat 2"},
-	},
-	{
-		Name:       "mas",
 		Others:     []string{"id: 1234567890"},
 		BundleType: domain.BrewBundleTypeMas,
 		Categories: []string{"cat 2"},
@@ -156,6 +150,11 @@ func TestInstallBrewBundle(t *testing.T) {
 		t.Fatal(err)
 	} else {
 		_, err = file.WriteString("brew \"git\"\n")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = file.Close()
 		if err != nil {
 			t.Fatal(err)
 		}
