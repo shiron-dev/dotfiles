@@ -173,20 +173,24 @@ jobs:
           exit $TEST_EXIT_CODE
         continue-on-error: true
       - uses: actions/upload-artifact@v4
+        if: ${{ steps.golang-test.outcome == 'success' }}
         with:
           name: cov html
           path: ${{ github.workspace }}/scripts/dofy/index.html
           if-no-files-found: error
       - uses: actions/checkout@v4
+        if: ${{ steps.golang-test.outcome == 'success' }}
         with:
           ref: github-pages
           clean: false
       - name: Set Git User
+        if: ${{ steps.golang-test.outcome == 'success' }}
         working-directory: .
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Push HTML Report
+        if: ${{ steps.golang-test.outcome == 'success' }}
         timeout-minutes: 3
         working-directory: .
         run: |
@@ -208,7 +212,9 @@ jobs:
             fi
           done
       - uses: actions/checkout@v4
+        if: ${{ steps.golang-test.outcome == 'success' }}
       - name: Create PR comment
+        if: ${{ steps.golang-test.outcome == 'success' }}
         uses: marocchino/sticky-pull-request-comment@44e0bad81007ecff41ba26d1cbf49a0267d28e9d # v2.9.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
