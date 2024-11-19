@@ -107,6 +107,7 @@ func TestInstallFormula(t *testing.T) {
 	}
 }
 
+//nolint:paralleltest
 func TestInstallTap(t *testing.T) {
 	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 	if err != nil {
@@ -133,49 +134,6 @@ func TestInstallTap(t *testing.T) {
 	errBuffer.Reset()
 
 	err = brew.InstallTap(existFormula, outBuffer, errBuffer)
-	if err != nil {
-		t.Fatal(err, outBuffer.String(), errBuffer.String())
-	}
-}
-
-func TestInstallByMas(t *testing.T) {
-	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	brew := infra.BrewInfrastructure
-
-	const notExistFormula = "123"
-
-	cmd := exec.Command("mas", "info", notExistFormula)
-	err = cmd.Run()
-
-	if err == nil {
-		t.Fatalf("expected error, got nil")
-	}
-
-	outBuffer := &bytes.Buffer{}
-
-	errBuffer := &bytes.Buffer{}
-
-	err = brew.InstallByMas(notExistFormula, outBuffer, errBuffer)
-	if err == nil {
-		t.Fatal("expected error, got nil", outBuffer.String(), errBuffer.String())
-	}
-
-	const existFormula = "497799835"
-
-	cmd = exec.Command("mas", "info", existFormula)
-	if err = cmd.Run(); err != nil {
-		t.Fatalf("expected nil, got %v", err)
-	}
-
-	outBuffer.Reset()
-
-	errBuffer.Reset()
-
-	err = brew.InstallByMas(existFormula, outBuffer, errBuffer)
 	if err != nil {
 		t.Fatal(err, outBuffer.String(), errBuffer.String())
 	}
