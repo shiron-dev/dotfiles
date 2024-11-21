@@ -65,8 +65,17 @@ func (p *PrintOutUsecaseImpl) Print(str string) {
 	p.printOutInfrastructure.Print(str)
 }
 
+const filePermission = 0o666
+
 func (p *PrintOutUsecaseImpl) SetLogOutput() *os.File {
-	return p.printOutInfrastructure.SetLogOutput()
+	logFile, err := os.OpenFile("./dotfiles.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, filePermission)
+	if err != nil {
+		panic("cannot open ./dotfiles.log:" + err.Error())
+	}
+
+	p.printOutInfrastructure.SetLogOutput(logFile)
+
+	return logFile
 }
 
 func (p *PrintOutUsecaseImpl) GetOut() *io.Writer {

@@ -10,11 +10,11 @@ import (
 
 type BrewUsecase interface {
 	InstallHomebrew(ctx context.Context) error
-	InstallFormula(formula string) error
-	InstallBrewBundle() error
-	DumpTmpBrewBundle() error
+	InstallFormula(formula string, bType domain.BrewBundleType) error
+	InstallBrewBundle(path string) error
+	DumpTmpBrewBundle(path string) error
 	CheckDiffBrewBundle(bundlePath string, tmpPath string) ([]domain.BrewBundle, []domain.BrewBundle, error)
-	CleanupBrewBundle(isForce bool) error
+	CleanupBrewBundle(path string, isForce bool) error
 }
 
 type BrewUsecaseImpl struct {
@@ -52,21 +52,12 @@ func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 ### Set Homebrew environment
 `)
 
-	var brewPath string
-
 	cfg, err := b.configUC.ScanEnvInfo()
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to get environment info")
 	}
 
-	switch cfg.os {
-	case "darwin":
-		brewPath = "/opt/homebrew/bin/brew"
-	case "linux":
-		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
-	}
-
-	err = b.brewInfrastructure.SetHomebrewEnv(brewPath)
+	err = b.brewInfrastructure.SetHomebrewEnv(cfg.os)
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to set Homebrew environment")
 	}
@@ -74,12 +65,23 @@ func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 	return nil
 }
 
-func (b *BrewUsecaseImpl) InstallFormula(formula string) error {
+func (b *BrewUsecaseImpl) InstallFormula(formula string, bType domain.BrewBundleType) error {
 	b.printOutUC.PrintMdf(`
 ### Installing %s (with Homebrew)
 `, formula)
 
-	err := b.brewInfrastructure.InstallFormula(formula)
+	var err error
+
+	switch bType {
+	case domain.BrewBundleTypeTap:
+		err = b.brewInfrastructure.InstallTap(formula, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	case domain.BrewBundleTypeFormula:
+	case domain.BrewBundleTypeCask:
+		err = b.brewInfrastructure.InstallFormula(formula, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	case domain.BrewBundleTypeMas:
+		err = b.brewInfrastructure.InstallByMas(formula, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	}
+
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to install formula")
 	}
@@ -87,8 +89,8 @@ func (b *BrewUsecaseImpl) InstallFormula(formula string) error {
 	return nil
 }
 
-func (b *BrewUsecaseImpl) InstallBrewBundle() error {
-	err := b.brewInfrastructure.InstallBrewBundle(*b.printOutUC.GetOut(), *b.printOutUC.GetError())
+func (b *BrewUsecaseImpl) InstallBrewBundle(path string) error {
+	err := b.brewInfrastructure.InstallBrewBundle(path, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to install Brewfile")
 	}
@@ -96,8 +98,13 @@ func (b *BrewUsecaseImpl) InstallBrewBundle() error {
 	return nil
 }
 
-func (b *BrewUsecaseImpl) DumpTmpBrewBundle() error {
-	err := b.brewInfrastructure.DumpTmpBrewBundle(*b.printOutUC.GetOut(), *b.printOutUC.GetError())
+func (b *BrewUsecaseImpl) DumpTmpBrewBundle(path string) error {
+	cfg, err := b.configUC.ScanEnvInfo()
+	if err != nil {
+		return errors.Wrap(err, "brew usecase: failed to get environment info")
+	}
+
+	err = b.brewInfrastructure.DumpTmpBrewBundle(path, cfg.isMac, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to dump Brewfile.tmp")
 	}
@@ -149,8 +156,8 @@ func (b *BrewUsecaseImpl) CheckDiffBrewBundle(
 	return diffBundles, diffTmpBundles, nil
 }
 
-func (b *BrewUsecaseImpl) CleanupBrewBundle(isForce bool) error {
-	err := b.brewInfrastructure.CleanupBrewBundle(isForce, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+func (b *BrewUsecaseImpl) CleanupBrewBundle(path string, isForce bool) error {
+	err := b.brewInfrastructure.CleanupBrewBundle(path, isForce, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to cleanup Brewfile")
 	}

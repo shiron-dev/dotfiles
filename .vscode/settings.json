@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "Difftool",
     "Dofy"
   ],
   "go.lintTool": "golangci-lint",
