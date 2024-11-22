@@ -20,10 +20,10 @@ func NewConfigUsecase(configInfrastructure infrastructure.ConfigInfrastructure) 
 }
 
 type EnvInfo struct {
-	os        string
-	osVersion string
-	arch      string
-	isMac     bool
+	OS        string
+	OSVersion string
+	Arch      string
+	IsMac     bool
 }
 
 func (c *ConfigUsecaseImpl) ScanEnvInfo() (*EnvInfo, error) {
@@ -43,9 +43,9 @@ func (c *ConfigUsecaseImpl) ScanEnvInfo() (*EnvInfo, error) {
 	}
 
 	return &EnvInfo{
-		os:        gos,
-		osVersion: osVersion,
-		arch:      arch,
-		isMac:     gos == "darwin",
+		OS:        gos,
+		OSVersion: osVersion,
+		Arch:      arch,
+		IsMac:     gos == "darwin",
 	}, nil
 }

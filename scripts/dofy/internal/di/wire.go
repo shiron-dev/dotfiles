@@ -6,6 +6,7 @@ package di
 import (
 	"io"
 
+	mock_infrastructure "github.com/shiron-dev/dotfiles/scripts/dofy/gen/mock/infrastructure"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/adapter/controller"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/usecase"
@@ -42,6 +43,10 @@ var infrastructureSet = wire.NewSet(
 	infrastructure.NewFileInfrastructure,
 	wire.Bind(new(infrastructure.GitInfrastructure), new(*infrastructure.GitInfrastructureImpl)),
 	infrastructure.NewGitInfrastructure,
+)
+
+var mockInfrastructureSet = wire.NewSet(
+// wire.Bind(new(infrastructure.ConfigInfrastructure), new(*mock_infrastructure.MockConfigInfrastructure)),
 )
 
 // Usecase
@@ -83,6 +88,20 @@ func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*Tes
 	wire.Build(
 		infrastructureSet,
 		wire.Struct(new(TestInfrastructureSet), "*"),
+	)
+	return nil, nil
+}
+
+type TestUsecaseSet struct {
+	ConfigUsecase usecase.ConfigUsecase
+}
+
+func InitializeTestControllerSet(config *mock_infrastructure.MockConfigInfrastructure) (*TestUsecaseSet, error) {
+	wire.Build(
+		// mockInfrastructureSet,
+		wire.Bind(new(infrastructure.ConfigInfrastructure), new(*mock_infrastructure.MockConfigInfrastructure)),
+		usecaseSet,
+		wire.Struct(new(TestUsecaseSet), "*"),
 	)
 	return nil, nil
 }
