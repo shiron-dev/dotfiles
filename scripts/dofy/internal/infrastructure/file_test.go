@@ -2,6 +2,8 @@ package infrastructure_test
 
 import (
 	"os"
+	"path/filepath"
+	"reflect"
 	"strconv"
 	"testing"
 
@@ -21,55 +23,6 @@ func createFile(t *testing.T, path string, content string) {
 	_, err = file.WriteString(content)
 	if err != nil {
 		t.Fatal(err)
-	}
-}
-
-func TestReadFile(t *testing.T) {
-	t.Parallel()
-
-	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	file := infra.FileInfrastructure
-
-	testStrs := []string{
-		"test1",
-		"test2",
-		"test3\nt3",
-	}
-
-	dir := t.TempDir()
-
-	for i, testStr := range testStrs {
-		path := dir + "/test" + strconv.Itoa(i) + ".txt"
-
-		createFile(t, path, testStr)
-
-		content, err := file.ReadFile(path)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if string(content) != testStr {
-			t.Fatalf("expected %s, got %s", testStr, content)
-		}
-	}
-
-	_, err = file.ReadFile(dir + "/not_exist.txt")
-	if err == nil {
-		t.Fatal("expected error, got nil")
-	}
-
-	path, err := util.MakeUnOpenableFile(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_, err = file.ReadFile(path)
-	if err == nil {
-		t.Fatal("expected error, got nil")
 	}
 }
 
@@ -117,5 +70,83 @@ func TestWriteFile(t *testing.T) {
 	err = file.WriteFile(path, []byte("test"))
 	if err == nil {
 		t.Fatal("expected error, got nil")
+	}
+}
+
+func TestFileInfrastructureImpl_ReadFile(t *testing.T) {
+	type args struct {
+		path string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{"test", args{filepath.Join(t.TempDir(), "test.txt")}, []byte("test"), false},
+		{"test 2 line", args{filepath.Join(t.TempDir(), "test.txt")}, []byte("test\nt"), false},
+		{"not exist", args{filepath.Join(t.TempDir(), "not_exist.txt")}, nil, true},
+		{"unopenable", args{filepath.Join(t.TempDir(), "unopenable")}, nil, true},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if tt.want != nil {
+				createFile(t, tt.args.path, string(tt.want))
+			}
+
+			if tt.name == "unopenable" {
+				path, err := util.MakeUnOpenableFile(t)
+				if err != nil {
+					t.Fatal(err)
+				}
+				tt.args.path = path
+			}
+
+			f := infra.FileInfrastructure
+			got, err := f.ReadFile(tt.args.path)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("FileInfrastructureImpl.ReadFile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FileInfrastructureImpl.ReadFile() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFileInfrastructureImpl_WriteFile(t *testing.T) {
+	type args struct {
+		path string
+		data []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			f := infra.FileInfrastructure
+			if err := f.WriteFile(tt.args.path, tt.args.data); (err != nil) != tt.wantErr {
+				t.Errorf("FileInfrastructureImpl.WriteFile() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
 	}
 }

@@ -2,17 +2,6 @@
 {{- $f := .}}
 
 func {{.TestName}}(t *testing.T) {
-	{{- with .Receiver}}
-		{{- if .IsStruct}}
-			{{- if .Fields}}
-				type fields struct {
-				{{- range .Fields}}
-					{{Field .}} {{.Type}}
-				{{- end}}
-				}
-			{{- end}}
-		{{- end}}
-	{{- end}}
 	{{- if .TestParameters}}
 	type args struct {
 		{{- range .TestParameters}}
@@ -22,13 +11,6 @@ func {{.TestName}}(t *testing.T) {
 	{{- end}}
 	tests := []struct {
 		name string
-		{{- with .Receiver}}
-			{{- if and .IsStruct .Fields}}
-				fields fields
-			{{- else}}
-				{{Receiver .}} {{.Type}}
-			{{- end}}
-		{{- end}}
 		{{- if .TestParameters}}
 			args args
 		{{- end}}

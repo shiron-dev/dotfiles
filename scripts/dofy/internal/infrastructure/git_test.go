@@ -1,15 +1,13 @@
 package infrastructure_test
 
 import (
+	"bytes"
 	"context"
-	"errors"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"testing"
 
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
-	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/test/util"
 )
 
@@ -33,88 +31,143 @@ func makeTestFile(t *testing.T) (string, string) {
 	return gitRepo, path
 }
 
-func TestGitDifftool(t *testing.T) {
-	t.Parallel()
-
-	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
-	if err != nil {
-		t.Fatal(err)
+func TestGitInfrastructureImpl_SetGitDir(t *testing.T) {
+	type args struct {
+		path string
 	}
-
-	git := infra.GitInfrastructure
-
-	gitRepo, filePath := makeTestFile(t)
-
-	err = git.GitDifftool(context.Background(), os.Stdout, os.Stderr, filePath)
-	if !errors.Is(err, infrastructure.ErrGitDirNotSet) {
-		t.Fatal(err)
+	tests := []struct {
+		name string
+		args args
+	}{
+		{"test", args{"test"}},
 	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	git.SetGitDir(gitRepo)
+			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-	err = git.GitDifftool(context.Background(), os.Stdout, os.Stderr, filePath)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = git.GitDifftool(context.Background(), os.Stdout, os.Stderr, filepath.Join(gitRepo, "not_exist"))
-	if err == nil {
-		t.Fatal("difftool should fail")
+			g := infra.GitInfrastructure
+			g.SetGitDir(tt.args.path)
+		})
 	}
 }
 
-func TestCheckoutFile(t *testing.T) {
-	t.Parallel()
-
-	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	git := infra.GitInfrastructure
-
+func TestGitInfrastructureImpl_GitDifftool(t *testing.T) {
 	gitRepo, filePath := makeTestFile(t)
 
-	if err := git.CheckoutFile(filePath); !errors.Is(err, infrastructure.ErrGitDirNotSet) {
-		t.Fatal(err)
+	type args struct {
+		ctx  context.Context
+		path []string
 	}
-
-	git.SetGitDir(gitRepo)
-
-	if err := git.CheckoutFile(filePath); err == nil {
-		t.Fatal("checkout file should fail")
+	tests := []struct {
+		name    string
+		args    args
+		gitRepo string
+		wantErr bool
+	}{
+		{"no error", args{context.Background(), []string{filePath}}, gitRepo, false},
+		{"error", args{context.Background(), []string{"not_exist"}}, t.TempDir(), true},
+		{"not set git dir", args{context.Background(), []string{"."}}, "", true},
 	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	cmd := exec.Command("git", "add", filePath)
-	cmd.Dir = gitRepo
+			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-	if err := cmd.Run(); err != nil {
-		t.Fatal(err)
+			g := infra.GitInfrastructure
+
+			if tt.gitRepo != "" {
+				g.SetGitDir(tt.gitRepo)
+			}
+
+			sout := &bytes.Buffer{}
+			serror := &bytes.Buffer{}
+			if err := g.GitDifftool(tt.args.ctx, sout, serror, tt.args.path...); (err != nil) != tt.wantErr {
+				t.Errorf("GitInfrastructureImpl.GitDifftool() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
 	}
+}
 
-	cmd = exec.Command("git", "commit", "-m", "test")
-	cmd.Dir = gitRepo
-	cmd.Stderr = os.Stderr
+func TestGitInfrastructureImpl_CheckoutFile(t *testing.T) {
+	gitRepo, filePath := makeTestFile(t)
+	gitRepo2, filePath2 := makeTestFile(t)
+	gitRepo3, filePath3 := makeTestFile(t)
 
-	if err := cmd.Run(); err != nil {
-		t.Fatal(err)
+	type args struct {
+		path string
 	}
-
-	if err := git.CheckoutFile(filePath); err != nil {
-		t.Fatal(err)
+	tests := []struct {
+		name    string
+		args    args
+		gitRepo string
+		wantErr bool
+	}{
+		{"no error", args{filePath}, gitRepo, false},
+		{"no update", args{filePath2}, gitRepo2, false},
+		{"error", args{filePath3}, gitRepo3, true},
+		{"not exist", args{"not_exist"}, t.TempDir(), true},
+		{"not set git dir", args{"."}, "", true},
 	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	file, err := os.OpenFile(filePath, os.O_WRONLY, 0o666)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer file.Close()
+			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-	if _, err = file.WriteString("test"); err != nil {
-		t.Fatal(err)
-	}
+			g := infra.GitInfrastructure
 
-	if err = git.CheckoutFile(filePath); err != nil {
-		t.Fatal(err)
+			if tt.gitRepo != "" {
+				g.SetGitDir(tt.gitRepo)
+			}
+
+			if !tt.wantErr {
+				cmd := exec.Command("git", "add", tt.args.path)
+				cmd.Dir = tt.gitRepo
+
+				if err := cmd.Run(); err != nil {
+					t.Fatal(err)
+				}
+
+				cmd = exec.Command("git", "commit", "-m", "test")
+				cmd.Dir = tt.gitRepo
+				cmd.Stderr = os.Stderr
+
+				if err := cmd.Run(); err != nil {
+					t.Fatal(err)
+				}
+
+				if tt.name != "no update" {
+					file, err := os.OpenFile(tt.args.path, os.O_WRONLY, 0o666)
+					if err != nil {
+						t.Fatal(err)
+					}
+					defer file.Close()
+
+					if _, err = file.WriteString("test"); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+
+			if err := g.CheckoutFile(tt.args.path); (err != nil) != tt.wantErr {
+				t.Errorf("GitInfrastructureImpl.CheckoutFile() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
 	}
 }
