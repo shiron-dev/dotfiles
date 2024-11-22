@@ -53,10 +53,16 @@ func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*Tes
 	return testInfrastructureSet, nil
 }
 
-func InitializeTestControllerSet(config *mock_infrastructure.MockConfigInfrastructure) (*TestUsecaseSet, error) {
-	configUsecaseImpl := usecase.NewConfigUsecase(config)
+func InitializeTestUsecaseSet(mockBrewInfrastructure *mock_infrastructure.MockBrewInfrastructure, mockConfigInfrastructure *mock_infrastructure.MockConfigInfrastructure, mockDepsInfrastructure *mock_infrastructure.MockDepsInfrastructure, mockFileInfrastructure *mock_infrastructure.MockFileInfrastructure, mockGitInfrastructure *mock_infrastructure.MockGitInfrastructure, mockPrintOutInfrastructure *mock_infrastructure.MockPrintOutInfrastructure) (*TestUsecaseSet, error) {
+	printOutUsecaseImpl := usecase.NewPrintOutUsecase(mockPrintOutInfrastructure)
+	configUsecaseImpl := usecase.NewConfigUsecase(mockConfigInfrastructure)
+	brewUsecaseImpl := usecase.NewBrewUsecase(mockBrewInfrastructure, mockDepsInfrastructure, printOutUsecaseImpl, configUsecaseImpl)
+	depsUsecaseImpl := usecase.NewDepsUsecase(mockDepsInfrastructure, mockBrewInfrastructure, mockFileInfrastructure, mockGitInfrastructure, printOutUsecaseImpl, brewUsecaseImpl)
 	testUsecaseSet := &TestUsecaseSet{
-		ConfigUsecase: configUsecaseImpl,
+		BrewUsecase:     brewUsecaseImpl,
+		ConfigUsecase:   configUsecaseImpl,
+		DepsUsecase:     depsUsecaseImpl,
+		PrintOutUsecase: printOutUsecaseImpl,
 	}
 	return testUsecaseSet, nil
 }
@@ -78,8 +84,6 @@ var controllerSet = wire.NewSet(wire.Bind(new(controller.DofyController), new(*c
 // Infrastructure
 var infrastructureSet = wire.NewSet(wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)), providePrintOutInfrastructure, wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)), infrastructure.NewConfigInfrastructure, wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)), infrastructure.NewBrewInfrastructure, wire.Bind(new(infrastructure.DepsInfrastructure), new(*infrastructure.DepsInfrastructureImpl)), infrastructure.NewDepsInfrastructure, wire.Bind(new(infrastructure.FileInfrastructure), new(*infrastructure.FileInfrastructureImpl)), infrastructure.NewFileInfrastructure, wire.Bind(new(infrastructure.GitInfrastructure), new(*infrastructure.GitInfrastructureImpl)), infrastructure.NewGitInfrastructure)
 
-var mockInfrastructureSet = wire.NewSet()
-
 // Usecase
 var usecaseSet = wire.NewSet(wire.Bind(new(usecase.PrintOutUsecase), new(*usecase.PrintOutUsecaseImpl)), usecase.NewPrintOutUsecase, wire.Bind(new(usecase.ConfigUsecase), new(*usecase.ConfigUsecaseImpl)), usecase.NewConfigUsecase, wire.Bind(new(usecase.BrewUsecase), new(*usecase.BrewUsecaseImpl)), usecase.NewBrewUsecase, wire.Bind(new(usecase.DepsUsecase), new(*usecase.DepsUsecaseImpl)), usecase.NewDepsUsecase)
 
@@ -97,5 +101,8 @@ type TestInfrastructureSet struct {
 }
 
 type TestUsecaseSet struct {
-	ConfigUsecase usecase.ConfigUsecase
+	BrewUsecase     usecase.BrewUsecase
+	ConfigUsecase   usecase.ConfigUsecase
+	DepsUsecase     usecase.DepsUsecase
+	PrintOutUsecase usecase.PrintOutUsecase
 }

@@ -35,7 +35,7 @@ func TestConfigUsecaseImpl_ScanEnvInfo(t *testing.T) {
 			mCfg.EXPECT().GetOSVersion().Return(tt.want.OSVersion, nil)
 			mCfg.EXPECT().GetArch().Return(tt.want.Arch, nil)
 
-			uc, err := di.InitializeTestControllerSet(mCfg)
+			uc, err := di.InitializeTestUsecaseSet(nil, mCfg, nil, nil, nil, nil)
 			if err != nil {
 				t.Fatal(err)
 			}

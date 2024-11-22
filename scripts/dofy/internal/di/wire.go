@@ -45,10 +45,6 @@ var infrastructureSet = wire.NewSet(
 	infrastructure.NewGitInfrastructure,
 )
 
-var mockInfrastructureSet = wire.NewSet(
-// wire.Bind(new(infrastructure.ConfigInfrastructure), new(*mock_infrastructure.MockConfigInfrastructure)),
-)
-
 // Usecase
 var usecaseSet = wire.NewSet(
 	wire.Bind(new(usecase.PrintOutUsecase), new(*usecase.PrintOutUsecaseImpl)),
@@ -93,13 +89,26 @@ func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*Tes
 }
 
 type TestUsecaseSet struct {
-	ConfigUsecase usecase.ConfigUsecase
+	BrewUsecase     usecase.BrewUsecase
+	ConfigUsecase   usecase.ConfigUsecase
+	DepsUsecase     usecase.DepsUsecase
+	PrintOutUsecase usecase.PrintOutUsecase
 }
 
-func InitializeTestControllerSet(config *mock_infrastructure.MockConfigInfrastructure) (*TestUsecaseSet, error) {
+func InitializeTestUsecaseSet(
+	mockBrewInfrastructure *mock_infrastructure.MockBrewInfrastructure,
+	mockConfigInfrastructure *mock_infrastructure.MockConfigInfrastructure,
+	mockDepsInfrastructure *mock_infrastructure.MockDepsInfrastructure,
+	mockFileInfrastructure *mock_infrastructure.MockFileInfrastructure,
+	mockGitInfrastructure *mock_infrastructure.MockGitInfrastructure,
+	mockPrintOutInfrastructure *mock_infrastructure.MockPrintOutInfrastructure) (*TestUsecaseSet, error) {
 	wire.Build(
-		// mockInfrastructureSet,
+		wire.Bind(new(infrastructure.BrewInfrastructure), new(*mock_infrastructure.MockBrewInfrastructure)),
 		wire.Bind(new(infrastructure.ConfigInfrastructure), new(*mock_infrastructure.MockConfigInfrastructure)),
+		wire.Bind(new(infrastructure.DepsInfrastructure), new(*mock_infrastructure.MockDepsInfrastructure)),
+		wire.Bind(new(infrastructure.FileInfrastructure), new(*mock_infrastructure.MockFileInfrastructure)),
+		wire.Bind(new(infrastructure.GitInfrastructure), new(*mock_infrastructure.MockGitInfrastructure)),
+		wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*mock_infrastructure.MockPrintOutInfrastructure)),
 		usecaseSet,
 		wire.Struct(new(TestUsecaseSet), "*"),
 	)
