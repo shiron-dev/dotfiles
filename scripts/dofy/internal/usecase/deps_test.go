@@ -44,7 +44,7 @@ func TestDepsUsecaseImpl_CheckInstalled(t *testing.T) {
 
 			mDeps.EXPECT().CheckInstalled(tt.args.name).Return(tt.want)
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -100,7 +100,7 @@ func TestDepsUsecaseImpl_InstallHomebrew(t *testing.T) {
 			mBrew.EXPECT().InstallHomebrew(gomock.Eq(tt.args.ctx), gomock.Eq(sout), gomock.Eq(serror)).Return(nil)
 			mBrew.EXPECT().SetHomebrewEnv(gomock.Eq("testOS")).Return(nil)
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -141,7 +141,7 @@ func TestDepsUsecaseImpl_InstallGit(t *testing.T) {
 			mDeps.EXPECT().CheckInstalled(gomock.Eq("git")).Return(false)
 			mPrintOut.EXPECT().Print(gomock.Any()).AnyTimes()
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -179,7 +179,7 @@ func TestDepsUsecaseImpl_CloneDotfiles(t *testing.T) {
 			mGit := mock_infrastructure.NewMockGitInfrastructure(ctrl)
 			mPrintOut := mock_infrastructure.NewMockPrintOutInfrastructure(ctrl)
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -243,7 +243,7 @@ func TestDepsUsecaseImpl_InstallBrewBundle(t *testing.T) {
 			},
 				nil).AnyTimes()
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -283,7 +283,7 @@ func TestDepsUsecaseImpl_Finish(t *testing.T) {
 
 			mPrintOut.EXPECT().Print(gomock.Any()).AnyTimes()
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}

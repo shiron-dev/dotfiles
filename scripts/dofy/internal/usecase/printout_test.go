@@ -62,7 +62,7 @@ func TestPrintOutUsecaseImpl_PrintMdf(t *testing.T) {
 
 			mPrintOut.EXPECT().Print(gomock.Eq(tt.want)).Return()
 
-			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -107,7 +107,7 @@ func TestPrintOutUsecaseImpl_PrintObj(t *testing.T) {
 
 			mPrintOut := mock_infrastructure.NewMockPrintOutInfrastructure(ctrl)
 
-			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -145,7 +145,7 @@ func TestPrintOutUsecaseImpl_Println(t *testing.T) {
 
 			mPrintOut := mock_infrastructure.NewMockPrintOutInfrastructure(ctrl)
 
-			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -183,7 +183,7 @@ func TestPrintOutUsecaseImpl_Print(t *testing.T) {
 
 			mPrintOut := mock_infrastructure.NewMockPrintOutInfrastructure(ctrl)
 
-			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -224,7 +224,7 @@ func TestPrintOutUsecaseImpl_GetOut(t *testing.T) {
 
 			mPrintOut := mock_infrastructure.NewMockPrintOutInfrastructure(ctrl)
 
-			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -262,7 +262,7 @@ func TestPrintOutUsecaseImpl_GetError(t *testing.T) {
 
 			mPrintOut := mock_infrastructure.NewMockPrintOutInfrastructure(ctrl)
 
-			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, nil, nil, nil, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}

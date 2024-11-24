@@ -3,6 +3,8 @@ package infrastructure
 import (
 	"io"
 	"os/exec"
+
+	"github.com/pkg/errors"
 )
 
 type AnsibleInfrastructure interface {
@@ -27,7 +29,7 @@ func (a *AnsibleInfrastructureImpl) CheckPlaybook(
 	cmd.Stderr = serror
 
 	if err := cmd.Run(); err != nil {
-		return err
+		return errors.Wrap(err, "ansible infrastructure: failed to check playbook")
 	}
 
 	return nil
@@ -44,7 +46,7 @@ func (a *AnsibleInfrastructureImpl) RunPlaybook(
 	cmd.Stderr = serror
 
 	if err := cmd.Run(); err != nil {
-		return err
+		return errors.Wrap(err, "ansible infrastructure: failed to run playbook")
 	}
 
 	return nil

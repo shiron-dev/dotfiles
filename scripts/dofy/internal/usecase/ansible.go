@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"github.com/pkg/errors"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 )
 
@@ -10,29 +11,50 @@ type AnsibleUsecase interface {
 }
 
 type AnsibleUsecaseImpl struct {
-	ansibleInfrastructure  infrastructure.AnsibleInfrastructure
-	PrintOutInfrastructure infrastructure.PrintOutInfrastructure
+	ansibleInfrastructure infrastructure.AnsibleInfrastructure
+	printOutUC            PrintOutUsecase
 }
 
 func NewAnsibleUsecase(
 	ansibleInfrastructure infrastructure.AnsibleInfrastructure,
-	PrintOutInfrastructure infrastructure.PrintOutInfrastructure,
+	printOutUC PrintOutUsecase,
 ) *AnsibleUsecaseImpl {
-	return &AnsibleUsecaseImpl{}
+	return &AnsibleUsecaseImpl{
+		ansibleInfrastructure: ansibleInfrastructure,
+		printOutUC:            printOutUC,
+	}
 }
 
 func (a *AnsibleUsecaseImpl) CheckPlaybook(invPath string, playbookPath string) error {
-	return a.ansibleInfrastructure.CheckPlaybook(
+	a.printOutUC.PrintMdf(`
+## Check Ansible playbook
+`)
+
+	err := a.ansibleInfrastructure.CheckPlaybook(
 		invPath, playbookPath,
-		*a.PrintOutInfrastructure.GetOut(),
-		*a.PrintOutInfrastructure.GetError(),
+		*a.printOutUC.GetOut(),
+		*a.printOutUC.GetError(),
 	)
+	if err != nil {
+		return errors.Wrap(err, "ansible usecase: failed to check playbook")
+	}
+
+	return nil
 }
 
 func (a *AnsibleUsecaseImpl) RunPlaybook(invPath string, playbookPath string) error {
-	return a.ansibleInfrastructure.RunPlaybook(
+	a.printOutUC.PrintMdf(`
+## Run Ansible playbook
+`)
+
+	err := a.ansibleInfrastructure.RunPlaybook(
 		invPath, playbookPath,
-		*a.PrintOutInfrastructure.GetOut(),
-		*a.PrintOutInfrastructure.GetError(),
+		*a.printOutUC.GetOut(),
+		*a.printOutUC.GetError(),
 	)
+	if err != nil {
+		return errors.Wrap(err, "ansible usecase: failed to run playbook")
+	}
+
+	return nil
 }
