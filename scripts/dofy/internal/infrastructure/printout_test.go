@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -13,123 +15,178 @@ import (
 
 const filePermission = 0o666
 
-//nolint:funlen,cyclop
-func TestPrint(t *testing.T) {
+func TestPrintOutInfrastructureImpl_Print(t *testing.T) {
 	t.Parallel()
 
-	outBuffer := &bytes.Buffer{}
-
-	errBuffer := &bytes.Buffer{}
-
-	infra, err := di.InitializeTestInfrastructureSet(outBuffer, errBuffer)
-	if err != nil {
-		t.Fatal(err)
+	type args struct {
+		str string
 	}
 
-	testStrs := []string{
-		"test1",
-		"test2",
-		"test3\nt3",
+	tests := []struct {
+		name       string
+		wantSout   string
+		wantSerror string
+		args       args
+	}{
+		{"test1", "test1", "", args{"test1"}},
+		{"test2", "test2\nt2", "", args{"test2\nt2"}},
 	}
 
-	logFile, err := os.OpenFile("./dotfiles.log", os.O_CREATE|os.O_RDWR, filePermission)
-	if err != nil {
-		panic("cannot open ./dotfiles.log:" + err.Error())
-	}
-	defer logFile.Close()
+	//nolint:paralleltest
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sout := &bytes.Buffer{}
+			serror := &bytes.Buffer{}
 
-	if err := logFile.Truncate(0); err != nil {
-		t.Fatal(err)
-	}
-
-	if _, err := logFile.Seek(0, 0); err != nil {
-		t.Fatal(err)
-	}
-
-	infra.PrintOutInfrastructure.SetLogOutput(logFile)
-
-	if logFile == nil {
-		t.Fatal("logFile is nil")
-	}
-
-	logLastLine := 0
-
-	for _, testStr := range testStrs {
-		outBuffer.Reset()
-		infra.PrintOutInfrastructure.Print(testStr)
-
-		if outBuffer.String() != testStr {
-			t.Errorf("Print() = %q, want %q", outBuffer.String(), testStr)
-		}
-
-		if _, err := logFile.Seek(0, 0); err != nil {
-			t.Fatal(err)
-		}
-
-		scanner := bufio.NewScanner(logFile)
-		str := ""
-
-		lineCount := 0
-
-		for scanner.Scan() {
-			if str != "" {
-				str += "\n"
+			infra, err := di.InitializeTestInfrastructureSet(sout, serror)
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			str += scanner.Text()
-			lineCount++
+			p := infra.PrintOutInfrastructure
 
-			if lineCount <= logLastLine {
-				str = ""
+			logPath := filepath.Join(t.TempDir(), tt.name+".log")
+
+			logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_RDWR, filePermission)
+			if err != nil {
+				t.Fatal(err)
 			}
-		}
+			defer logFile.Close()
 
-		logLastLine = lineCount
+			p.SetLogOutput(logFile)
 
-		if !strings.HasSuffix(str, testStr) {
-			t.Errorf("log file = %q, want %q", str, testStr)
-		}
+			p.Print(tt.args.str)
+
+			if gotSout := sout.String(); gotSout != tt.wantSout {
+				t.Errorf("GitInfrastructureImpl.GitDifftool() = %v, want %v", gotSout, tt.wantSout)
+			}
+
+			if gotSerror := serror.String(); gotSerror != tt.wantSerror {
+				t.Errorf("GitInfrastructureImpl.GitDifftool() = %v, want %v", gotSerror, tt.wantSerror)
+			}
+
+			if _, err := logFile.Seek(0, 0); err != nil {
+				t.Fatal(err)
+			}
+
+			str := ""
+			scanner := bufio.NewScanner(logFile)
+
+			for scanner.Scan() {
+				if str != "" {
+					str += "\n"
+				}
+
+				str += scanner.Text()
+			}
+
+			if !strings.HasSuffix(str, tt.wantSout) {
+				t.Errorf("log file = %q, want %q", str, tt.wantSout)
+			}
+		})
 	}
 }
 
-func TestGetOut(t *testing.T) {
+func TestPrintOutInfrastructureImpl_SetLogOutput(t *testing.T) {
 	t.Parallel()
 
-	outBuffer := &bytes.Buffer{}
-
-	errBuffer := &bytes.Buffer{}
-
-	infra, err := di.InitializeTestInfrastructureSet(outBuffer, errBuffer)
+	file, err := os.Create(filepath.Join(t.TempDir(), "test.log"))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if infra.PrintOutInfrastructure.GetOut() == nil {
-		t.Fatal("GetOut() is nil")
+	type args struct {
+		logFile *os.File
 	}
 
-	if *infra.PrintOutInfrastructure.GetOut() != io.Writer(outBuffer) {
-		t.Errorf("GetOut() = %v, want %v", infra.PrintOutInfrastructure.GetOut(), outBuffer)
+	tests := []struct {
+		name string
+		args args
+	}{
+		{"test1", args{file}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			sout := &bytes.Buffer{}
+			serror := &bytes.Buffer{}
+
+			infra, err := di.InitializeTestInfrastructureSet(sout, serror)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			p := infra.PrintOutInfrastructure
+
+			p.SetLogOutput(tt.args.logFile)
+		})
 	}
 }
 
-func TestGetError(t *testing.T) {
+func TestPrintOutInfrastructureImpl_GetOut(t *testing.T) {
 	t.Parallel()
 
-	outBuffer := &bytes.Buffer{}
+	sout := &bytes.Buffer{}
+	serror := &bytes.Buffer{}
 
-	errBuffer := &bytes.Buffer{}
+	soutWriter := io.Writer(sout)
 
-	infra, err := di.InitializeTestInfrastructureSet(outBuffer, errBuffer)
-	if err != nil {
-		t.Fatal(err)
+	tests := []struct {
+		name string
+		want *io.Writer
+	}{
+		{"test1", &soutWriter},
 	}
 
-	if infra.PrintOutInfrastructure.GetError() == nil {
-		t.Fatal("GetError() is nil")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			infra, err := di.InitializeTestInfrastructureSet(sout, serror)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			p := infra.PrintOutInfrastructure
+
+			if got := p.GetOut(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("PrintOutInfrastructureImpl.GetOut() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPrintOutInfrastructureImpl_GetError(t *testing.T) {
+	t.Parallel()
+
+	sout := &bytes.Buffer{}
+	serror := &bytes.Buffer{}
+
+	sserrorWriter := io.Writer(serror)
+
+	tests := []struct {
+		name string
+		want *io.Writer
+	}{
+		{"test1", &sserrorWriter},
 	}
 
-	if *infra.PrintOutInfrastructure.GetError() != io.Writer(errBuffer) {
-		t.Errorf("GetError() = %v, want %v", infra.PrintOutInfrastructure.GetError(), errBuffer)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			infra, err := di.InitializeTestInfrastructureSet(sout, serror)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			p := infra.PrintOutInfrastructure
+
+			if got := p.GetError(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("PrintOutInfrastructureImpl.GetError() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

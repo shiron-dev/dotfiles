@@ -8,64 +8,77 @@ import (
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
 )
 
-func TestCheckInstalled(t *testing.T) {
+func TestDepsInfrastructureImpl_CheckInstalled(t *testing.T) {
 	t.Parallel()
 
-	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
-	if err != nil {
-		t.Fatal(err)
+	type args struct {
+		name string
 	}
 
-	deps := infra.DepsInfrastructure
-
-	const notInstalledCommand = "not_installed_command"
-
-	_, err = exec.LookPath(notInstalledCommand)
-	if err == nil {
-		t.Fatalf("expected error, got nil")
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"not_installed", args{"not_installed"}, false},
+		{"installed", args{"git"}, true},
 	}
 
-	installed := deps.CheckInstalled(notInstalledCommand)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	if installed {
-		t.Fatal("not_installed is installed")
-	}
+			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-	const installedCommand = "git"
+			_, err = exec.LookPath(tt.args.name)
+			installed := err == nil
 
-	_, err = exec.LookPath(installedCommand)
-	if err != nil {
-		t.Fatal(err)
-	}
+			if installed != tt.want {
+				t.Fatalf("expected %v, got %v", tt.want, installed)
+			}
 
-	installed = deps.CheckInstalled(installedCommand)
-
-	if !installed {
-		t.Fatal("git is not installed")
+			d := infra.DepsInfrastructure
+			if got := d.CheckInstalled(tt.args.name); got != tt.want {
+				t.Errorf("DepsInfrastructureImpl.CheckInstalled() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
-func TestOpenWithCode(t *testing.T) {
+func TestDepsInfrastructureImpl_OpenWithCode(t *testing.T) {
 	t.Parallel()
 
-	infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
-	if err != nil {
-		t.Fatal(err)
+	_, err := exec.LookPath("code")
+	hasCode := err == nil
+
+	type args struct {
+		path []string
 	}
 
-	deps := infra.DepsInfrastructure
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{"no error", args{[]string{"-h"}}, !hasCode},
+	}
 
-	_, err = exec.LookPath("code")
-	isCode := err == nil
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	err = deps.OpenWithCode("-h")
-	if isCode {
-		if err != nil {
-			t.Fatal(err)
-		}
-	} else {
-		if err == nil {
-			t.Fatal("expected error, got nil")
-		}
+			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			d := infra.DepsInfrastructure
+			if err := d.OpenWithCode(tt.args.path...); (err != nil) != tt.wantErr {
+				t.Errorf("DepsInfrastructureImpl.OpenWithCode() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
 	}
 }
