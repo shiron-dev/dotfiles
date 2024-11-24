@@ -149,8 +149,8 @@ func (d *DepsUsecaseImpl) InstallBrewBundle(forceInstall bool) error {
 		return errors.Wrap(err, "deps usecase: failed to get current user")
 	}
 
-	brewPath := usr.HomeDir + "/projects/dotfiles/data/Brewfile"
-	brewTmpPath := usr.HomeDir + "/projects/dotfiles/data/Brewfile.tmp"
+	brewPath := usr.HomeDir + "/projects/dotfiles/data/brew/Brewfile"
+	brewTmpPath := usr.HomeDir + "/projects/dotfiles/data/brew/Brewfile.tmp"
 
 	d.printOutUC.PrintMdf(`
 ## Installing brew packages
