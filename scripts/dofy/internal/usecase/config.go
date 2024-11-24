@@ -7,6 +7,7 @@ import (
 
 type ConfigUsecase interface {
 	ScanEnvInfo() (*EnvInfo, error)
+	GetDotfilesDir() (string, error)
 }
 
 type ConfigUsecaseImpl struct {
@@ -48,4 +49,13 @@ func (c *ConfigUsecaseImpl) ScanEnvInfo() (*EnvInfo, error) {
 		Arch:      arch,
 		IsMac:     gos == "darwin",
 	}, nil
+}
+
+func (c *ConfigUsecaseImpl) GetDotfilesDir() (string, error) {
+	dir, err := c.configInfrastructure.GetDotfilesDir()
+	if err != nil {
+		return "", errors.Wrap(err, "config usecase: failed to get dotfiles dir")
+	}
+
+	return dir, nil
 }

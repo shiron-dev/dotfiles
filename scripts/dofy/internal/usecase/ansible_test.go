@@ -115,3 +115,40 @@ func TestAnsibleUsecaseImpl_RunPlaybook(t *testing.T) {
 		})
 	}
 }
+
+func TestAnsibleUsecaseImpl_SetWorkingDir(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		workingDir string
+	}
+
+	tests := []struct {
+		name string
+		args args
+	}{
+		{"normal", args{"test"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mAnsible := mock_infrastructure.NewMockAnsibleInfrastructure(ctrl)
+
+			mAnsible.EXPECT().SetWorkingDir(gomock.Eq(tt.args.workingDir))
+
+			uc, err := di.InitializeTestUsecaseSet(mAnsible, nil, nil, nil, nil, nil, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			a := uc.AnsibleUsecase
+
+			a.SetWorkingDir(tt.args.workingDir)
+		})
+	}
+}

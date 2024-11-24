@@ -55,3 +55,46 @@ func TestConfigUsecaseImpl_ScanEnvInfo(t *testing.T) {
 		})
 	}
 }
+
+func TestConfigUsecaseImpl_GetDotfilesDir(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		want    string
+		wantErr bool
+	}{
+		{"test", "test", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mCfg := mock_infrastructure.NewMockConfigInfrastructure(ctrl)
+
+			mCfg.EXPECT().GetDotfilesDir().Return(tt.want, nil)
+
+			uc, err := di.InitializeTestUsecaseSet(nil, nil, mCfg, nil, nil, nil, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c := uc.ConfigUsecase
+
+			got, err := c.GetDotfilesDir()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ConfigUsecaseImpl.GetDotfilesDir() error = %v, wantErr %v", err, tt.wantErr)
+
+				return
+			}
+
+			if got != tt.want {
+				t.Errorf("ConfigUsecaseImpl.GetDotfilesDir() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

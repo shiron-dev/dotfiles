@@ -67,3 +67,15 @@ func (mr *MockAnsibleInfrastructureMockRecorder) RunPlaybook(invPath, playbookPa
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RunPlaybook", reflect.TypeOf((*MockAnsibleInfrastructure)(nil).RunPlaybook), invPath, playbookPath, sout, serror)
 }
+
+// SetWorkingDir mocks base method.
+func (m *MockAnsibleInfrastructure) SetWorkingDir(workingDir string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetWorkingDir", workingDir)
+}
+
+// SetWorkingDir indicates an expected call of SetWorkingDir.
+func (mr *MockAnsibleInfrastructureMockRecorder) SetWorkingDir(workingDir any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetWorkingDir", reflect.TypeOf((*MockAnsibleInfrastructure)(nil).SetWorkingDir), workingDir)
+}

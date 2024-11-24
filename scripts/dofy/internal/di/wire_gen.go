@@ -18,8 +18,10 @@ import (
 // Injectors from wire.go:
 
 func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*ControllersSet, error) {
+	ansibleInfrastructureImpl := infrastructure.NewAnsibleInfrastructure()
 	printOutInfrastructureImpl := providePrintOutInfrastructure(stdout, stderr)
 	printOutUsecaseImpl := usecase.NewPrintOutUsecase(printOutInfrastructureImpl)
+	ansibleUsecaseImpl := usecase.NewAnsibleUsecase(ansibleInfrastructureImpl, printOutUsecaseImpl)
 	configInfrastructureImpl := infrastructure.NewConfigInfrastructure()
 	configUsecaseImpl := usecase.NewConfigUsecase(configInfrastructureImpl)
 	depsInfrastructureImpl := infrastructure.NewDepsInfrastructure()
@@ -28,7 +30,7 @@ func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*Controllers
 	gitInfrastructureImpl := infrastructure.NewGitInfrastructure()
 	brewUsecaseImpl := usecase.NewBrewUsecase(brewInfrastructureImpl, depsInfrastructureImpl, printOutUsecaseImpl, configUsecaseImpl)
 	depsUsecaseImpl := usecase.NewDepsUsecase(depsInfrastructureImpl, brewInfrastructureImpl, fileInfrastructureImpl, gitInfrastructureImpl, printOutUsecaseImpl, brewUsecaseImpl)
-	dofyControllerImpl := controller.NewDofyController(printOutUsecaseImpl, configUsecaseImpl, depsUsecaseImpl)
+	dofyControllerImpl := controller.NewDofyController(ansibleUsecaseImpl, printOutUsecaseImpl, configUsecaseImpl, depsUsecaseImpl)
 	controllersSet := &ControllersSet{
 		DofyController: dofyControllerImpl,
 	}

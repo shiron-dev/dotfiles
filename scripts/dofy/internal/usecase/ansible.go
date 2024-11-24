@@ -6,6 +6,7 @@ import (
 )
 
 type AnsibleUsecase interface {
+	SetWorkingDir(workingDir string)
 	CheckPlaybook(invPath string, playbookPath string) error
 	RunPlaybook(invPath string, playbookPath string) error
 }
@@ -23,6 +24,10 @@ func NewAnsibleUsecase(
 		ansibleInfrastructure: ansibleInfrastructure,
 		printOutUC:            printOutUC,
 	}
+}
+
+func (a *AnsibleUsecaseImpl) SetWorkingDir(workingDir string) {
+	a.ansibleInfrastructure.SetWorkingDir(workingDir)
 }
 
 func (a *AnsibleUsecaseImpl) CheckPlaybook(invPath string, playbookPath string) error {
