@@ -1,4 +1,4 @@
-package infrastructure_test
+package usecase_test
 
 import (
 	"os"

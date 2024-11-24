@@ -57,7 +57,7 @@ func (b *BrewUsecaseImpl) InstallHomebrew(ctx context.Context) error {
 		return errors.Wrap(err, "brew usecase: failed to get environment info")
 	}
 
-	err = b.brewInfrastructure.SetHomebrewEnv(cfg.os)
+	err = b.brewInfrastructure.SetHomebrewEnv(cfg.OS)
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to set Homebrew environment")
 	}
@@ -104,7 +104,7 @@ func (b *BrewUsecaseImpl) DumpTmpBrewBundle(path string) error {
 		return errors.Wrap(err, "brew usecase: failed to get environment info")
 	}
 
-	err = b.brewInfrastructure.DumpTmpBrewBundle(path, cfg.isMac, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
+	err = b.brewInfrastructure.DumpTmpBrewBundle(path, cfg.IsMac, *b.printOutUC.GetOut(), *b.printOutUC.GetError())
 	if err != nil {
 		return errors.Wrap(err, "brew usecase: failed to dump Brewfile.tmp")
 	}

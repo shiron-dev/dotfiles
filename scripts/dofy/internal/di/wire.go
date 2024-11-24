@@ -6,6 +6,7 @@ package di
 import (
 	"io"
 
+	mock_infrastructure "github.com/shiron-dev/dotfiles/scripts/dofy/gen/mock/infrastructure"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/adapter/controller"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/usecase"
@@ -83,6 +84,34 @@ func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*Tes
 	wire.Build(
 		infrastructureSet,
 		wire.Struct(new(TestInfrastructureSet), "*"),
+	)
+	return nil, nil
+}
+
+type TestUsecaseSet struct {
+	BrewUsecase     usecase.BrewUsecase
+	ConfigUsecase   usecase.ConfigUsecase
+	DepsUsecase     usecase.DepsUsecase
+	PrintOutUsecase usecase.PrintOutUsecase
+}
+
+func InitializeTestUsecaseSet(
+	mockBrewInfrastructure *mock_infrastructure.MockBrewInfrastructure,
+	mockConfigInfrastructure *mock_infrastructure.MockConfigInfrastructure,
+	mockDepsInfrastructure *mock_infrastructure.MockDepsInfrastructure,
+	mockFileInfrastructure *mock_infrastructure.MockFileInfrastructure,
+	mockGitInfrastructure *mock_infrastructure.MockGitInfrastructure,
+	mockPrintOutInfrastructure *mock_infrastructure.MockPrintOutInfrastructure,
+) (*TestUsecaseSet, error) {
+	wire.Build(
+		wire.Bind(new(infrastructure.BrewInfrastructure), new(*mock_infrastructure.MockBrewInfrastructure)),
+		wire.Bind(new(infrastructure.ConfigInfrastructure), new(*mock_infrastructure.MockConfigInfrastructure)),
+		wire.Bind(new(infrastructure.DepsInfrastructure), new(*mock_infrastructure.MockDepsInfrastructure)),
+		wire.Bind(new(infrastructure.FileInfrastructure), new(*mock_infrastructure.MockFileInfrastructure)),
+		wire.Bind(new(infrastructure.GitInfrastructure), new(*mock_infrastructure.MockGitInfrastructure)),
+		wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*mock_infrastructure.MockPrintOutInfrastructure)),
+		usecaseSet,
+		wire.Struct(new(TestUsecaseSet), "*"),
 	)
 	return nil, nil
 }

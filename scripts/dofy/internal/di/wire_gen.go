@@ -8,6 +8,7 @@ package di
 
 import (
 	"github.com/google/wire"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/gen/mock/infrastructure"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/adapter/controller"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/infrastructure"
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/usecase"
@@ -52,6 +53,20 @@ func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*Tes
 	return testInfrastructureSet, nil
 }
 
+func InitializeTestUsecaseSet(mockBrewInfrastructure *mock_infrastructure.MockBrewInfrastructure, mockConfigInfrastructure *mock_infrastructure.MockConfigInfrastructure, mockDepsInfrastructure *mock_infrastructure.MockDepsInfrastructure, mockFileInfrastructure *mock_infrastructure.MockFileInfrastructure, mockGitInfrastructure *mock_infrastructure.MockGitInfrastructure, mockPrintOutInfrastructure *mock_infrastructure.MockPrintOutInfrastructure) (*TestUsecaseSet, error) {
+	printOutUsecaseImpl := usecase.NewPrintOutUsecase(mockPrintOutInfrastructure)
+	configUsecaseImpl := usecase.NewConfigUsecase(mockConfigInfrastructure)
+	brewUsecaseImpl := usecase.NewBrewUsecase(mockBrewInfrastructure, mockDepsInfrastructure, printOutUsecaseImpl, configUsecaseImpl)
+	depsUsecaseImpl := usecase.NewDepsUsecase(mockDepsInfrastructure, mockBrewInfrastructure, mockFileInfrastructure, mockGitInfrastructure, printOutUsecaseImpl, brewUsecaseImpl)
+	testUsecaseSet := &TestUsecaseSet{
+		BrewUsecase:     brewUsecaseImpl,
+		ConfigUsecase:   configUsecaseImpl,
+		DepsUsecase:     depsUsecaseImpl,
+		PrintOutUsecase: printOutUsecaseImpl,
+	}
+	return testUsecaseSet, nil
+}
+
 // wire.go:
 
 type (
@@ -83,4 +98,11 @@ type TestInfrastructureSet struct {
 	FileInfrastructure     infrastructure.FileInfrastructure
 	GitInfrastructure      infrastructure.GitInfrastructure
 	PrintOutInfrastructure infrastructure.PrintOutInfrastructure
+}
+
+type TestUsecaseSet struct {
+	BrewUsecase     usecase.BrewUsecase
+	ConfigUsecase   usecase.ConfigUsecase
+	DepsUsecase     usecase.DepsUsecase
+	PrintOutUsecase usecase.PrintOutUsecase
 }

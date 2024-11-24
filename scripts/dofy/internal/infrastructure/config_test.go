@@ -46,7 +46,6 @@ func TestConfigInfrastructureImpl_GetOS(t *testing.T) {
 	}
 }
 
-//nolint:dupl
 func TestConfigInfrastructureImpl_GetOSVersion(t *testing.T) {
 	t.Parallel()
 
@@ -90,7 +89,6 @@ func TestConfigInfrastructureImpl_GetOSVersion(t *testing.T) {
 	}
 }
 
-//nolint:dupl
 func TestConfigInfrastructureImpl_GetArch(t *testing.T) {
 	t.Parallel()
 

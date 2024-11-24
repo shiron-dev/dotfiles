@@ -17,3 +17,4 @@ issues:
         - gocognit
         - tparallel
         - cyclop
+        - dupl
