@@ -52,6 +52,8 @@ var testBundles = []domain.BrewBundle{
 }
 
 func TestBrewInfrastructureImpl_InstallHomebrew(t *testing.T) {
+	t.Parallel()
+
 	if !util.IsCI() {
 		t.Skip("skipping test; not running on CI")
 	}
@@ -59,6 +61,7 @@ func TestBrewInfrastructureImpl_InstallHomebrew(t *testing.T) {
 	type args struct {
 		ctx context.Context
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -66,8 +69,9 @@ func TestBrewInfrastructureImpl_InstallHomebrew(t *testing.T) {
 	}{
 		{"no error", args{context.Background()}, false},
 	}
+
+	//nolint:paralleltest
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
@@ -77,8 +81,10 @@ func TestBrewInfrastructureImpl_InstallHomebrew(t *testing.T) {
 			b := infra.BrewInfrastructure
 			sout := &bytes.Buffer{}
 			serror := &bytes.Buffer{}
+
 			if err := b.InstallHomebrew(tt.args.ctx, sout, serror); (err != nil) != tt.wantErr {
 				t.Errorf("BrewInfrastructureImpl.InstallHomebrew() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 		})
@@ -86,9 +92,12 @@ func TestBrewInfrastructureImpl_InstallHomebrew(t *testing.T) {
 }
 
 func TestBrewInfrastructureImpl_SetHomebrewEnv(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		goos string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -98,10 +107,11 @@ func TestBrewInfrastructureImpl_SetHomebrewEnv(t *testing.T) {
 		{"linux", args{"linux"}, runtime.GOOS != "linux"},
 		{"darwin", args{"darwin"}, runtime.GOOS != "darwin"},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
 				t.Fatal(err)
@@ -115,10 +125,12 @@ func TestBrewInfrastructureImpl_SetHomebrewEnv(t *testing.T) {
 	}
 }
 
+//nolint:paralleltest
 func TestBrewInfrastructureImpl_InstallFormula(t *testing.T) {
 	type args struct {
 		formula string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -127,8 +139,9 @@ func TestBrewInfrastructureImpl_InstallFormula(t *testing.T) {
 		{"error", args{"not_exist_formula"}, true},
 		{"go", args{"go"}, false},
 	}
+
+	//nolint:paralleltest
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
@@ -136,6 +149,7 @@ func TestBrewInfrastructureImpl_InstallFormula(t *testing.T) {
 			}
 
 			if tt.wantErr {
+				//nolint:gosec
 				cmd := exec.Command("brew", "info", tt.args.formula)
 				if err = cmd.Run(); err == nil {
 					t.Fatalf("expected error, got nil")
@@ -145,18 +159,23 @@ func TestBrewInfrastructureImpl_InstallFormula(t *testing.T) {
 			b := infra.BrewInfrastructure
 			sout := &bytes.Buffer{}
 			serror := &bytes.Buffer{}
+
 			if err := b.InstallFormula(tt.args.formula, sout, serror); (err != nil) != tt.wantErr {
-				t.Errorf("BrewInfrastructureImpl.InstallFormula() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BrewInfrastructureImpl.InstallFormula() error = %v, wantErr %v, serror %s",
+					err, tt.wantErr, serror.String())
+
 				return
 			}
 		})
 	}
 }
 
+//nolint:paralleltest
 func TestBrewInfrastructureImpl_InstallTap(t *testing.T) {
 	type args struct {
 		formula string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -165,8 +184,9 @@ func TestBrewInfrastructureImpl_InstallTap(t *testing.T) {
 		{"error", args{"not_exist_formula"}, true},
 		{"Homebrew/bundle", args{"Homebrew/bundle"}, false},
 	}
+
+	//nolint:paralleltest
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
@@ -174,6 +194,7 @@ func TestBrewInfrastructureImpl_InstallTap(t *testing.T) {
 			}
 
 			if tt.wantErr {
+				//nolint:gosec
 				cmd := exec.Command("brew", "info", tt.args.formula)
 				if err = cmd.Run(); err == nil {
 					t.Fatalf("expected error, got nil")
@@ -183,8 +204,10 @@ func TestBrewInfrastructureImpl_InstallTap(t *testing.T) {
 			b := infra.BrewInfrastructure
 			sout := &bytes.Buffer{}
 			serror := &bytes.Buffer{}
+
 			if err := b.InstallTap(tt.args.formula, sout, serror); (err != nil) != tt.wantErr {
 				t.Errorf("BrewInfrastructureImpl.InstallTap() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 		})
@@ -192,14 +215,19 @@ func TestBrewInfrastructureImpl_InstallTap(t *testing.T) {
 }
 
 func TestBrewInfrastructureImpl_InstallByMas(t *testing.T) {
+	t.Parallel()
+
 	t.Skip("skipping test; not running on linux")
 }
 
 func TestBrewInfrastructureImpl_DumpTmpBrewBundle(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		path  string
 		isMac bool
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -208,10 +236,11 @@ func TestBrewInfrastructureImpl_DumpTmpBrewBundle(t *testing.T) {
 		{"no error", args{filepath.Join(t.TempDir(), "/Brewfile.tmp"), false}, false},
 		{"mac mode", args{filepath.Join(t.TempDir(), "/Brewfile.tmp"), true}, runtime.GOOS != "darwin"},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
 				t.Fatal(err)
@@ -220,14 +249,17 @@ func TestBrewInfrastructureImpl_DumpTmpBrewBundle(t *testing.T) {
 			b := infra.BrewInfrastructure
 			sout := &bytes.Buffer{}
 			serror := &bytes.Buffer{}
+
 			if err := b.DumpTmpBrewBundle(tt.args.path, tt.args.isMac, sout, serror); (err != nil) != tt.wantErr {
 				t.Errorf("BrewInfrastructureImpl.DumpTmpBrewBundle() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 		})
 	}
 }
 
+//nolint:paralleltest
 func TestBrewInfrastructureImpl_InstallBrewBundle(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "/Brewfile")
 
@@ -243,6 +275,7 @@ func TestBrewInfrastructureImpl_InstallBrewBundle(t *testing.T) {
 	type args struct {
 		path string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -251,10 +284,10 @@ func TestBrewInfrastructureImpl_InstallBrewBundle(t *testing.T) {
 		{"no error", args{path}, false},
 		{"error", args{filepath.Join(t.TempDir(), "/not_exist")}, true},
 	}
+
+	//nolint:paralleltest
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
 				t.Fatal(err)
@@ -263,8 +296,10 @@ func TestBrewInfrastructureImpl_InstallBrewBundle(t *testing.T) {
 			b := infra.BrewInfrastructure
 			sout := &bytes.Buffer{}
 			serror := &bytes.Buffer{}
+
 			if err := b.InstallBrewBundle(tt.args.path, sout, serror); (err != nil) != tt.wantErr {
 				t.Errorf("BrewInfrastructureImpl.InstallBrewBundle() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 		})
@@ -272,10 +307,14 @@ func TestBrewInfrastructureImpl_InstallBrewBundle(t *testing.T) {
 }
 
 func TestBrewInfrastructureImpl_CleanupBrewBundle(t *testing.T) {
+	t.Parallel()
+
 	t.Skip("skipping test; not running")
 }
 
 func TestBrewInfrastructureImpl_ReadBrewBundle(t *testing.T) {
+	t.Parallel()
+
 	path, err := filepath.Abs("../test/data/brew_test.brewfile")
 	if err != nil {
 		t.Fatal(err)
@@ -284,6 +323,7 @@ func TestBrewInfrastructureImpl_ReadBrewBundle(t *testing.T) {
 	type args struct {
 		path string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -293,10 +333,11 @@ func TestBrewInfrastructureImpl_ReadBrewBundle(t *testing.T) {
 		{"no error", args{path}, testBundles, false},
 		{"error", args{filepath.Join(t.TempDir(), "/not_exist")}, nil, true},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
 				t.Fatal(err)
@@ -304,10 +345,13 @@ func TestBrewInfrastructureImpl_ReadBrewBundle(t *testing.T) {
 
 			b := infra.BrewInfrastructure
 			got, err := b.ReadBrewBundle(tt.args.path)
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BrewInfrastructureImpl.ReadBrewBundle() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("BrewInfrastructureImpl.ReadBrewBundle() = %v, want %v", got, tt.want)
 			}
@@ -316,10 +360,13 @@ func TestBrewInfrastructureImpl_ReadBrewBundle(t *testing.T) {
 }
 
 func TestBrewInfrastructureImpl_WriteBrewBundle(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		path    string
 		bundles []domain.BrewBundle
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -327,10 +374,11 @@ func TestBrewInfrastructureImpl_WriteBrewBundle(t *testing.T) {
 	}{
 		{"no error", args{filepath.Join(t.TempDir(), "/Brewfile"), testBundles}, false},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
 				t.Fatal(err)

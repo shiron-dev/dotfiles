@@ -9,9 +9,12 @@ import (
 )
 
 func TestDepsInfrastructureImpl_CheckInstalled(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		name string
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -20,10 +23,11 @@ func TestDepsInfrastructureImpl_CheckInstalled(t *testing.T) {
 		{"not_installed", args{"not_installed"}, false},
 		{"installed", args{"git"}, true},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
 				t.Fatal(err)
@@ -45,12 +49,15 @@ func TestDepsInfrastructureImpl_CheckInstalled(t *testing.T) {
 }
 
 func TestDepsInfrastructureImpl_OpenWithCode(t *testing.T) {
+	t.Parallel()
+
 	_, err := exec.LookPath("code")
 	hasCode := err == nil
 
 	type args struct {
 		path []string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -58,10 +65,11 @@ func TestDepsInfrastructureImpl_OpenWithCode(t *testing.T) {
 	}{
 		{"no error", args{[]string{"-h"}}, !hasCode},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
 			if err != nil {
 				t.Fatal(err)

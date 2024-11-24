@@ -32,17 +32,20 @@ func makeTestFile(t *testing.T) (string, string) {
 }
 
 func TestGitInfrastructureImpl_SetGitDir(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		path string
 	}
+
 	tests := []struct {
 		name string
 		args args
 	}{
 		{"test", args{"test"}},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -58,12 +61,15 @@ func TestGitInfrastructureImpl_SetGitDir(t *testing.T) {
 }
 
 func TestGitInfrastructureImpl_GitDifftool(t *testing.T) {
+	t.Parallel()
+
 	gitRepo, filePath := makeTestFile(t)
 
 	type args struct {
 		ctx  context.Context
 		path []string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -74,8 +80,8 @@ func TestGitInfrastructureImpl_GitDifftool(t *testing.T) {
 		{"error", args{context.Background(), []string{"not_exist"}}, t.TempDir(), true},
 		{"not set git dir", args{context.Background(), []string{"."}}, "", true},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -84,16 +90,18 @@ func TestGitInfrastructureImpl_GitDifftool(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			g := infra.GitInfrastructure
+			git := infra.GitInfrastructure
 
 			if tt.gitRepo != "" {
-				g.SetGitDir(tt.gitRepo)
+				git.SetGitDir(tt.gitRepo)
 			}
 
 			sout := &bytes.Buffer{}
 			serror := &bytes.Buffer{}
-			if err := g.GitDifftool(tt.args.ctx, sout, serror, tt.args.path...); (err != nil) != tt.wantErr {
+
+			if err := git.GitDifftool(tt.args.ctx, sout, serror, tt.args.path...); (err != nil) != tt.wantErr {
 				t.Errorf("GitInfrastructureImpl.GitDifftool() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 		})
@@ -101,6 +109,8 @@ func TestGitInfrastructureImpl_GitDifftool(t *testing.T) {
 }
 
 func TestGitInfrastructureImpl_CheckoutFile(t *testing.T) {
+	t.Parallel()
+
 	gitRepo, filePath := makeTestFile(t)
 	gitRepo2, filePath2 := makeTestFile(t)
 	gitRepo3, filePath3 := makeTestFile(t)
@@ -108,6 +118,7 @@ func TestGitInfrastructureImpl_CheckoutFile(t *testing.T) {
 	type args struct {
 		path string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -120,8 +131,8 @@ func TestGitInfrastructureImpl_CheckoutFile(t *testing.T) {
 		{"not exist", args{"not_exist"}, t.TempDir(), true},
 		{"not set git dir", args{"."}, "", true},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -130,13 +141,14 @@ func TestGitInfrastructureImpl_CheckoutFile(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			g := infra.GitInfrastructure
+			git := infra.GitInfrastructure
 
 			if tt.gitRepo != "" {
-				g.SetGitDir(tt.gitRepo)
+				git.SetGitDir(tt.gitRepo)
 			}
 
 			if !tt.wantErr {
+				//nolint:gosec
 				cmd := exec.Command("git", "add", tt.args.path)
 				cmd.Dir = tt.gitRepo
 
@@ -165,7 +177,7 @@ func TestGitInfrastructureImpl_CheckoutFile(t *testing.T) {
 				}
 			}
 
-			if err := g.CheckoutFile(tt.args.path); (err != nil) != tt.wantErr {
+			if err := git.CheckoutFile(tt.args.path); (err != nil) != tt.wantErr {
 				t.Errorf("GitInfrastructureImpl.CheckoutFile() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
