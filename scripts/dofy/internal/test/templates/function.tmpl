@@ -3,14 +3,14 @@
 
 func {{.TestName}}(t *testing.T) {
 	t.Parallel()
-	
+	{{ printf "\n" }}
 	{{- if .TestParameters}}
 	type args struct {
 		{{- range .TestParameters}}
 				{{Param .}} {{.Type}}
 		{{- end}}
 	}
-
+	{{ printf "\n" }}
 	{{- end}}
 	tests := []struct {
 		name string

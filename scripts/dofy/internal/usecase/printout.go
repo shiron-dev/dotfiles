@@ -44,17 +44,23 @@ func (p *PrintOutUsecaseImpl) PrintMdf(format string, a ...interface{}) {
 		}
 	}
 
-	p.Println(str)
+	p.Print(str)
 }
 
 func (p *PrintOutUsecaseImpl) PrintObj(obj interface{}) {
-	t := reflect.TypeOf(obj)
-	v := reflect.ValueOf(obj)
+	refT := reflect.TypeOf(obj)
+	refV := reflect.ValueOf(obj)
 
-	for i := range t.NumField() {
-		field := t.Field(i)
-		p.Println(field.Name + ": " + v.Field(i).String())
+	str := ""
+
+	for i := range refT.NumField() {
+		field := refT.Field(i)
+		value := refV.Field(i)
+
+		str += field.Name + ": " + fmt.Sprintf("%v", value) + "\n"
 	}
+
+	p.Print(str)
 }
 
 func (p *PrintOutUsecaseImpl) Println(str string) {

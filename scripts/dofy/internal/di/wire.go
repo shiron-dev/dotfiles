@@ -101,7 +101,8 @@ func InitializeTestUsecaseSet(
 	mockDepsInfrastructure *mock_infrastructure.MockDepsInfrastructure,
 	mockFileInfrastructure *mock_infrastructure.MockFileInfrastructure,
 	mockGitInfrastructure *mock_infrastructure.MockGitInfrastructure,
-	mockPrintOutInfrastructure *mock_infrastructure.MockPrintOutInfrastructure) (*TestUsecaseSet, error) {
+	mockPrintOutInfrastructure *mock_infrastructure.MockPrintOutInfrastructure,
+) (*TestUsecaseSet, error) {
 	wire.Build(
 		wire.Bind(new(infrastructure.BrewInfrastructure), new(*mock_infrastructure.MockBrewInfrastructure)),
 		wire.Bind(new(infrastructure.ConfigInfrastructure), new(*mock_infrastructure.MockConfigInfrastructure)),
