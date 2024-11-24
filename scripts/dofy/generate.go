@@ -16,4 +16,5 @@ package main
 
 //go:generate go run github.com/cweill/gotests/gotests -all -exported -parallel -w -excl New.+ -template_dir internal/test/templates internal/usecase/brew.go
 //go:generate go run github.com/cweill/gotests/gotests -all -exported -parallel -w -excl New.+ -template_dir internal/test/templates internal/usecase/config.go
+//go:generate go run github.com/cweill/gotests/gotests -all -exported -parallel -w -excl New.+ -template_dir internal/test/templates internal/usecase/deps.go
 //go:generate go run github.com/cweill/gotests/gotests -all -exported -parallel -w -excl New.+ -template_dir internal/test/templates internal/usecase/printout.go

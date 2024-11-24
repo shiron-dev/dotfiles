@@ -200,8 +200,6 @@ func (d *DepsUsecaseImpl) Finish() error {
 ## Finish
 `)
 
-	os.Exit(0)
-
 	return nil
 }
 
