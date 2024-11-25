@@ -75,6 +75,17 @@ jobs:
           level: warning
           fail_on_error: true
 
+  ansible-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@e83eb914a731111b17950b39e12aebb0ac8a04b3 # v24.10.0
+        with:
+          working_directory: "scripts/ansible"
+          requirements_file: "requirements.yml"
+
   golang-build-check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
