@@ -19,6 +19,7 @@ tap "voicevox/voicevox"
 
 # Core Tools
 brew "mas"
+brew "sheldon"
 cask "1password"
 cask "arc"
 cask "battery"

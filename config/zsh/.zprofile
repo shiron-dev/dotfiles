@@ -1,6 +1,3 @@
-# Amazon Q pre block. Keep at the top of this file.
-[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zprofile.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zprofile.pre.zsh"
-# Q pre block. Keep at the top of this file.
 HISTFILE=$ZDOTDIR/.zsh-history
 HISTSIZE=100000
 SAVEHIST=10000000
@@ -31,10 +28,6 @@ export LC_ALL=en_US.UTF-8
   
 alias lsusb=system_profiler SPUSBDataType
 
-# terraform -install-autocomplete
-# autoload -U +X bashcompinit && bashcompinit
-# complete -o nospace -C /opt/homebrew/bin/terraform terraform
-
 export CPPFLAGS="-I/opt/homebrew/opt/openjdk@17/include"
 
 export PATH="$PATH:/Users/shiron/Library/Android/sdk/platform-tools"
@@ -51,7 +44,6 @@ export PATH="$PATH":"/Users/shiron/projects/tools/bin"
 alias docker-compose-rm="docker compose down --rmi all --volumes --remove-orphans"
 alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
 
-# Q post block. Keep at the bottom of this file.
 export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
@@ -62,9 +54,6 @@ _notify-done() {
   osascript -e 'display notification "Process is done!" with title "Terminal"'
 }
 alias notify=_notify-done
-
-# Amazon Q post block. Keep at the bottom of this file.
-[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zprofile.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zprofile.post.zsh"
 
 function moveToTrash() {
   local p
