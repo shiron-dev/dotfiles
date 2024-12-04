@@ -3,7 +3,6 @@
   ansible.builtin.stat:
     path: "{{ item | replace(vars.config_dir + '/zsh/', '~/') }}"
   with_fileglob:
-    - "{{ vars.config_dir }}/zsh/*"
     - "{{ vars.config_dir }}/zsh/.*"
   register: zsh_files
 
@@ -20,5 +19,48 @@
     dest: "{{ item | replace(vars.config_dir + '/zsh/', '~/') }}"
     state: link
   with_fileglob:
-    - "{{ vars.config_dir }}/zsh/*"
     - "{{ vars.config_dir }}/zsh/.*"
+
+- name: Find all files in config dir
+  ansible.builtin.find:
+    paths: "{{ vars.config_dir }}"
+    hidden: true
+    recurse: true
+  register: config_files
+
+- name: Set config items
+  ansible.builtin.set_fact:
+    config_items: |
+      {{ config_files.files
+      | map(attribute='path')
+      | select('match', '.*\\.config')
+      | map('replace', vars.config_dir + '/', '')
+      | map('replace', '.config/', '')
+      | list }}
+
+- name: Check ~/.config/* files
+  ansible.builtin.stat:
+    path: "~/.config/{{ item }}"
+  with_items: "{{ config_items }}"
+  register: config_files
+
+- name: Remove ~/.config/*
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  when: item.stat.exists and not item.stat.islnk
+  with_items: "{{ config_files.results }}"
+
+- name: Mkdir ~/.config
+  ansible.builtin.file:
+    path: "~/.config/{{ item | dirname }}"
+    state: directory
+    mode: "0755"
+  with_items: "{{ config_items }}"
+
+- name: Make ~/.config symlink
+  ansible.builtin.file:
+    src: "{{ vars.config_dir }}/{{ item | dirname }}/.config/{{ item | basename }}"
+    dest: "~/.config/{{ item }}"
+    state: link
+  with_items: "{{ config_items }}"
