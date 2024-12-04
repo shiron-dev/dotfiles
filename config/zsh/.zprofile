@@ -32,7 +32,6 @@ export CPPFLAGS="-I/opt/homebrew/opt/openjdk@17/include"
 
 export PATH="$PATH:/Users/shiron/Library/Android/sdk/platform-tools"
 
-source ~/.config/peco.sh
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 
 export SDKMAN_DIR=$(brew --prefix sdkman-cli)/libexec
