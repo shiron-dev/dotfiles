@@ -39,6 +39,7 @@ type DepsUsecase interface {
 	updateBrewfile(brewPath string, brewTmpPath string) error
 	resolveBrewDiff(brewPath string, brewTmpPath string) error
 	resolveBrewDiffWithEditor(ctx context.Context, brewPath string) error
+	fmtBrewfile(brewPath string) error
 }
 
 type DepsUsecaseImpl struct {
@@ -185,6 +186,15 @@ Install the packages using Homebrew Bundle.
 	}
 
 	d.printOutUC.PrintMdf(`
+### Format Brewfile
+`)
+
+	err = d.fmtBrewfile(brewPath)
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to format Brewfile")
+	}
+
+	d.printOutUC.PrintMdf(`
 ### Install brew packages with Brewfile
 `)
 
@@ -327,15 +337,6 @@ func (d *DepsUsecaseImpl) resolveBrewDiff(brewPath string, brewTmpPath string) e
 		return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff with editor")
 	}
 
-	bundles, err = d.brewInfrastructure.ReadBrewBundle(brewPath)
-	if err != nil {
-		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
-	}
-
-	if err := d.brewInfrastructure.WriteBrewBundle(brewPath, bundles); err != nil {
-		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
-	}
-
 	return nil
 }
 
@@ -374,6 +375,19 @@ func (d *DepsUsecaseImpl) resolveBrewDiffWithEditor(ctx context.Context, brewPat
 		if err != nil {
 			return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff with editor")
 		}
+	}
+
+	return nil
+}
+
+func (d *DepsUsecaseImpl) fmtBrewfile(brewPath string) error {
+	bundles, err := d.brewInfrastructure.ReadBrewBundle(brewPath)
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
+	}
+
+	if err := d.brewInfrastructure.WriteBrewBundle(brewPath, bundles); err != nil {
+		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
 	}
 
 	return nil
