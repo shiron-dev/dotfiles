@@ -99,6 +99,11 @@ This script will install dependencies and setup dotfiles.
 
 	c.ansibleUC.SetWorkingDir(filepath.Join(dotPath, "scripts/ansible"))
 
+	c.printoutUC.PrintMdf(`
+## Run Ansible playbook
+
+`)
+
 	ok := c.getYN("Do you want to run Ansible?", true)
 	if ok {
 		err = c.ansibleUC.RunPlaybook("hosts.yml", "site.yml")
