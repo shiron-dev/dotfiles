@@ -34,10 +34,6 @@ export PATH="$PATH:/Users/shiron/Library/Android/sdk/platform-tools"
 
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 
-export SDKMAN_DIR=$(brew --prefix sdkman-cli)/libexec
-[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
-
-
 export PATH="$PATH":"/Users/shiron/projects/tools/bin"
 
 alias docker-compose-rm="docker compose down --rmi all --volumes --remove-orphans"
