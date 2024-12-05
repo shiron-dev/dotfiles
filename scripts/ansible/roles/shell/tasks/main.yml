@@ -30,18 +30,13 @@
 
 - name: Set config items
   ansible.builtin.set_fact:
-    config_items: |
-      {{ config_files.files
-      | map(attribute='path')
-      | select('match', '.*\\.config')
-      | map('replace', vars.config_dir + '/', '')
-      | map('replace', '.config/', '')
-      | list }}
+    # yamllint disable-line rule:line-length
+    config_items: "{{ config_files.files | map(attribute='path') | select('match', '.*\\.config') | map('replace', vars.config_dir + '/', '') | map('replace', '.config/', '') | list }}"
 
 - name: Check ~/.config/* files
   ansible.builtin.stat:
     path: "~/.config/{{ item }}"
-  with_items: "{{ config_items }}"
+  with_items: "{{ vars.config_items }}"
   register: config_files
 
 - name: Remove ~/.config/*
@@ -56,11 +51,11 @@
     path: "~/.config/{{ item | dirname }}"
     state: directory
     mode: "0755"
-  with_items: "{{ config_items }}"
+  with_items: "{{ vars.config_items }}"
 
 - name: Make ~/.config symlink
   ansible.builtin.file:
     src: "{{ vars.config_dir }}/{{ item | dirname }}/.config/{{ item | basename }}"
     dest: "~/.config/{{ item }}"
     state: link
-  with_items: "{{ config_items }}"
+  with_items: "{{ vars.config_items }}"
