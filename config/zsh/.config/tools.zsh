@@ -56,6 +56,12 @@ export PATH=$PATH:$GOBIN
 # My tools
 export PATH="$PATH":"/Users/shiron/projects/tools/bin"
 
+if [ ! -f "/Users/shiron/projects/dotfiles/scripts/dofy/dofy" ]; then
+  echo "Building dofy..."
+  (cd ~/projects/dotfiles/scripts/dofy && go build -o dofy cmd/main.go)
+fi
+alias dofy="/Users/shiron/projects/dotfiles/scripts/dofy/dofy"
+
 # My Aliases
 alias docker-compose-rm="docker compose down --rmi all --volumes --remove-orphans"
 alias lsusb="system_profiler SPUSBDataType"
