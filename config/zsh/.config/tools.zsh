@@ -60,6 +60,9 @@ alias ld='lazydocker'
 # fzf
 source <(fzf --zsh)
 
+# zoxide
+eval "$(zoxide init zsh)"
+
 # My tools
 export PATH="$PATH":"/Users/shiron/projects/tools/bin"
 
