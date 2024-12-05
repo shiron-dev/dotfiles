@@ -39,3 +39,6 @@ function ghq-fzf() {
 zle -N ghq-fzf
 bindkey '^]' ghq-fzf
 alias pj='ghq-fzf'
+
+alias o.='open .'
+alias c.='code .'
