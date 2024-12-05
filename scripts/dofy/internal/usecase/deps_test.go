@@ -242,6 +242,11 @@ func TestDepsUsecaseImpl_InstallBrewBundle(t *testing.T) {
 				},
 			},
 				nil).AnyTimes()
+			mBrew.EXPECT().WriteBrewBundle(gomock.Any(), gomock.Eq([]domain.BrewBundle{
+				{
+					Name: "git", Others: []string{}, BundleType: domain.BrewBundleTypeFormula, Categories: []string{},
+				},
+			})).Return(nil).AnyTimes()
 
 			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, mFile, mGit, mPrintOut)
 			if err != nil {
