@@ -53,6 +53,10 @@ export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
 
+# lazy
+alias lg='lazygit'
+alias ld='lazydocker'
+
 # My tools
 export PATH="$PATH":"/Users/shiron/projects/tools/bin"
 
