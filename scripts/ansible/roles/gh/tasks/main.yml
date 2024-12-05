@@ -1,0 +1,15 @@
+---
+- name: Get gh extensions list
+  ansible.builtin.command:
+    cmd: "gh extensions list"
+  changed_when: false
+  register: gh_extensions
+
+- name: Install gh extensions
+  ansible.builtin.command:
+    cmd: "gh extensions install {{ item }}"
+  changed_when: true
+  when: item not in gh_extensions.stdout
+  with_items:
+    - "github/gh-copilot"
+    - "dlvhdr/gh-dash"
