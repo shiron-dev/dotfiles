@@ -42,3 +42,7 @@ alias pj='ghq-fzf'
 
 alias o.='open .'
 alias c.='code .'
+
+function cg(){
+  cd "$(git rev-parse --show-toplevel)"
+}
