@@ -23,6 +23,7 @@ const resolveBrewDiffWithEditorMaxCount = 3
 
 var errResolveBrewDiffWithEditorMaxCount = errors.New("resolve brew diff with editor max count error")
 
+//nolint:interfacebloat
 type DepsUsecase interface {
 	CheckInstalled(name string) bool
 	InstallHomebrew(ctx context.Context) error
@@ -283,7 +284,6 @@ func (d *DepsUsecaseImpl) updateBrewfile(brewPath string, brewTmpPath string) er
 	return nil
 }
 
-//nolint:funlen
 func (d *DepsUsecaseImpl) resolveBrewDiff(brewPath string, brewTmpPath string) error {
 	diffBundles, diffTmpBundles, err := d.brewUC.CheckDiffBrewBundle(brewPath, brewTmpPath)
 	if err != nil {
