@@ -1,0 +1,19 @@
+---
+- name: Get home dir
+  ansible.builtin.command:
+    cmd: echo ~
+  check_mode: false
+  changed_when: false
+  register: home_dir
+
+- name: Set home dir
+  ansible.builtin.set_fact:
+    home_dir: "{{ home_dir.stdout }}"
+
+- name: Set dotfiles dir
+  ansible.builtin.set_fact:
+    dotfiles_dir: "{{ vars.home_dir }}/projects/dotfiles"
+
+- name: Set config dir
+  ansible.builtin.set_fact:
+    config_dir: "{{ vars.dotfiles_dir }}/config"

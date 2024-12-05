@@ -2,6 +2,8 @@ package infrastructure
 
 import (
 	"os/exec"
+	"os/user"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -12,6 +14,7 @@ type ConfigInfrastructure interface {
 	GetOS() (string, error)
 	GetOSVersion() (string, error)
 	GetArch() (string, error)
+	GetDotfilesDir() (string, error)
 }
 
 type ConfigInfrastructureImpl struct{}
@@ -40,4 +43,13 @@ func (c *ConfigInfrastructureImpl) GetArch() (string, error) {
 	}
 
 	return strings.TrimSpace(string(arch)), nil
+}
+
+func (c *ConfigInfrastructureImpl) GetDotfilesDir() (string, error) {
+	usr, err := user.Current()
+	if err != nil {
+		return "", errors.Wrap(err, "deps usecase: failed to get current user")
+	}
+
+	return filepath.Join(usr.HomeDir, "/projects/dotfiles/"), nil
 }

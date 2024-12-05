@@ -23,6 +23,7 @@ const resolveBrewDiffWithEditorMaxCount = 3
 
 var errResolveBrewDiffWithEditorMaxCount = errors.New("resolve brew diff with editor max count error")
 
+//nolint:interfacebloat
 type DepsUsecase interface {
 	CheckInstalled(name string) bool
 	InstallHomebrew(ctx context.Context) error
@@ -39,6 +40,7 @@ type DepsUsecase interface {
 	updateBrewfile(brewPath string, brewTmpPath string) error
 	resolveBrewDiff(brewPath string, brewTmpPath string) error
 	resolveBrewDiffWithEditor(ctx context.Context, brewPath string) error
+	fmtBrewfile(brewPath string) error
 }
 
 type DepsUsecaseImpl struct {
@@ -149,8 +151,8 @@ func (d *DepsUsecaseImpl) InstallBrewBundle(forceInstall bool) error {
 		return errors.Wrap(err, "deps usecase: failed to get current user")
 	}
 
-	brewPath := usr.HomeDir + "/projects/dotfiles/data/Brewfile"
-	brewTmpPath := usr.HomeDir + "/projects/dotfiles/data/Brewfile.tmp"
+	brewPath := usr.HomeDir + "/projects/dotfiles/data/brew/Brewfile"
+	brewTmpPath := usr.HomeDir + "/projects/dotfiles/data/brew/Brewfile.tmp"
 
 	d.printOutUC.PrintMdf(`
 ## Installing brew packages
@@ -182,6 +184,15 @@ Install the packages using Homebrew Bundle.
 		if err != nil {
 			return errors.Wrap(err, "deps usecase: failed to update Brewfile")
 		}
+	}
+
+	d.printOutUC.PrintMdf(`
+### Format Brewfile
+`)
+
+	err = d.fmtBrewfile(brewPath)
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to format Brewfile")
 	}
 
 	d.printOutUC.PrintMdf(`
@@ -273,7 +284,6 @@ func (d *DepsUsecaseImpl) updateBrewfile(brewPath string, brewTmpPath string) er
 	return nil
 }
 
-//nolint:funlen
 func (d *DepsUsecaseImpl) resolveBrewDiff(brewPath string, brewTmpPath string) error {
 	diffBundles, diffTmpBundles, err := d.brewUC.CheckDiffBrewBundle(brewPath, brewTmpPath)
 	if err != nil {
@@ -327,15 +337,6 @@ func (d *DepsUsecaseImpl) resolveBrewDiff(brewPath string, brewTmpPath string) e
 		return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff with editor")
 	}
 
-	bundles, err = d.brewInfrastructure.ReadBrewBundle(brewPath)
-	if err != nil {
-		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
-	}
-
-	if err := d.brewInfrastructure.WriteBrewBundle(brewPath, bundles); err != nil {
-		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
-	}
-
 	return nil
 }
 
@@ -374,6 +375,19 @@ func (d *DepsUsecaseImpl) resolveBrewDiffWithEditor(ctx context.Context, brewPat
 		if err != nil {
 			return errors.Wrap(err, "deps usecase: failed to resolve Brewfile diff with editor")
 		}
+	}
+
+	return nil
+}
+
+func (d *DepsUsecaseImpl) fmtBrewfile(brewPath string) error {
+	bundles, err := d.brewInfrastructure.ReadBrewBundle(brewPath)
+	if err != nil {
+		return errors.Wrap(err, "deps usecase: failed to read Brewfile")
+	}
+
+	if err := d.brewInfrastructure.WriteBrewBundle(brewPath, bundles); err != nil {
+		return errors.Wrap(err, "deps usecase: failed to write Brewfile")
 	}
 
 	return nil

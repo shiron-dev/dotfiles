@@ -31,6 +31,8 @@ var controllerSet = wire.NewSet(
 
 // Infrastructure
 var infrastructureSet = wire.NewSet(
+	wire.Bind(new(infrastructure.AnsibleInfrastructure), new(*infrastructure.AnsibleInfrastructureImpl)),
+	infrastructure.NewAnsibleInfrastructure,
 	wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)),
 	providePrintOutInfrastructure,
 	wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)),
@@ -47,6 +49,8 @@ var infrastructureSet = wire.NewSet(
 
 // Usecase
 var usecaseSet = wire.NewSet(
+	wire.Bind(new(usecase.AnsibleUsecase), new(*usecase.AnsibleUsecaseImpl)),
+	usecase.NewAnsibleUsecase,
 	wire.Bind(new(usecase.PrintOutUsecase), new(*usecase.PrintOutUsecaseImpl)),
 	usecase.NewPrintOutUsecase,
 	wire.Bind(new(usecase.ConfigUsecase), new(*usecase.ConfigUsecaseImpl)),
@@ -72,6 +76,7 @@ func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*Controllers
 }
 
 type TestInfrastructureSet struct {
+	AnsibleInfrastructure  infrastructure.AnsibleInfrastructure
 	BrewInfrastructure     infrastructure.BrewInfrastructure
 	ConfigInfrastructure   infrastructure.ConfigInfrastructure
 	DepsInfrastructure     infrastructure.DepsInfrastructure
@@ -89,6 +94,7 @@ func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*Tes
 }
 
 type TestUsecaseSet struct {
+	AnsibleUsecase  usecase.AnsibleUsecase
 	BrewUsecase     usecase.BrewUsecase
 	ConfigUsecase   usecase.ConfigUsecase
 	DepsUsecase     usecase.DepsUsecase
@@ -96,6 +102,7 @@ type TestUsecaseSet struct {
 }
 
 func InitializeTestUsecaseSet(
+	mockAnsibleInfrastructure *mock_infrastructure.MockAnsibleInfrastructure,
 	mockBrewInfrastructure *mock_infrastructure.MockBrewInfrastructure,
 	mockConfigInfrastructure *mock_infrastructure.MockConfigInfrastructure,
 	mockDepsInfrastructure *mock_infrastructure.MockDepsInfrastructure,
@@ -104,6 +111,7 @@ func InitializeTestUsecaseSet(
 	mockPrintOutInfrastructure *mock_infrastructure.MockPrintOutInfrastructure,
 ) (*TestUsecaseSet, error) {
 	wire.Build(
+		wire.Bind(new(infrastructure.AnsibleInfrastructure), new(*mock_infrastructure.MockAnsibleInfrastructure)),
 		wire.Bind(new(infrastructure.BrewInfrastructure), new(*mock_infrastructure.MockBrewInfrastructure)),
 		wire.Bind(new(infrastructure.ConfigInfrastructure), new(*mock_infrastructure.MockConfigInfrastructure)),
 		wire.Bind(new(infrastructure.DepsInfrastructure), new(*mock_infrastructure.MockDepsInfrastructure)),

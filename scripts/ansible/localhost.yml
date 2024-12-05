@@ -1,0 +1,7 @@
+---
+- name: Localhost
+  hosts: localhost
+  connection: local
+  roles:
+    - set_facts
+    - shell

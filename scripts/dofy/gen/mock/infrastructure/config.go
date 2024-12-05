@@ -54,6 +54,21 @@ func (mr *MockConfigInfrastructureMockRecorder) GetArch() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetArch", reflect.TypeOf((*MockConfigInfrastructure)(nil).GetArch))
 }
 
+// GetDotfilesDir mocks base method.
+func (m *MockConfigInfrastructure) GetDotfilesDir() (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDotfilesDir")
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDotfilesDir indicates an expected call of GetDotfilesDir.
+func (mr *MockConfigInfrastructureMockRecorder) GetDotfilesDir() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDotfilesDir", reflect.TypeOf((*MockConfigInfrastructure)(nil).GetDotfilesDir))
+}
+
 // GetOS mocks base method.
 func (m *MockConfigInfrastructure) GetOS() (string, error) {
 	m.ctrl.T.Helper()

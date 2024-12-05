@@ -54,7 +54,7 @@ func TestBrewUsecaseImpl_InstallHomebrew(t *testing.T) {
 			mBrew.EXPECT().InstallHomebrew(gomock.Eq(tt.args.ctx), gomock.Eq(sout), gomock.Eq(serror)).Return(nil)
 			mBrew.EXPECT().SetHomebrewEnv(gomock.Eq("testOS")).Return(nil)
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -96,7 +96,7 @@ func TestBrewUsecaseImpl_InstallFormula(t *testing.T) {
 			mPrintOut := mock_infrastructure.NewMockPrintOutInfrastructure(ctrl)
 			mCfg := mock_infrastructure.NewMockConfigInfrastructure(ctrl)
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -158,7 +158,7 @@ func TestBrewUsecaseImpl_InstallBrewBundle(t *testing.T) {
 			mPrintOut.EXPECT().GetError().Return(&serror)
 			mBrew.EXPECT().InstallBrewBundle(gomock.Eq(tt.args.path), gomock.Eq(sout), gomock.Eq(serror)).Return(nil)
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -215,7 +215,7 @@ func TestBrewUsecaseImpl_DumpTmpBrewBundle(t *testing.T) {
 				gomock.Eq(serror),
 			).Return(nil)
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -268,7 +268,7 @@ func TestBrewUsecaseImpl_CheckDiffBrewBundle(t *testing.T) {
 			mBrew.EXPECT().ReadBrewBundle(tt.args.bundlePath).Return(tt.want, nil)
 			mBrew.EXPECT().ReadBrewBundle(tt.args.tmpPath).Return(tt.want1, nil)
 
-			uc, err := di.InitializeTestUsecaseSet(mBrew, mCfg, mDeps, nil, nil, mPrintOut)
+			uc, err := di.InitializeTestUsecaseSet(nil, mBrew, mCfg, mDeps, nil, nil, mPrintOut)
 			if err != nil {
 				t.Fatal(err)
 			}

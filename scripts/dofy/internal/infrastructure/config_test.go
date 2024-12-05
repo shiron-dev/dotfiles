@@ -3,6 +3,8 @@ package infrastructure_test
 import (
 	"os"
 	"os/exec"
+	"os/user"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
@@ -127,6 +129,49 @@ func TestConfigInfrastructureImpl_GetArch(t *testing.T) {
 
 			if got != tt.want {
 				t.Errorf("ConfigInfrastructureImpl.GetArch() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConfigInfrastructureImpl_GetDotfilesDir(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		want    string
+		wantErr bool
+	}{
+		{"no error", func() string {
+			usr, err := user.Current()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			return filepath.Join(usr.HomeDir, "/projects/dotfiles/")
+		}(), false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c := infra.ConfigInfrastructure
+
+			got, err := c.GetDotfilesDir()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ConfigInfrastructureImpl.GetDotfilesDir() error = %v, wantErr %v", err, tt.wantErr)
+
+				return
+			}
+
+			if got != tt.want {
+				t.Errorf("ConfigInfrastructureImpl.GetDotfilesDir() = %v, want %v", got, tt.want)
 			}
 		})
 	}

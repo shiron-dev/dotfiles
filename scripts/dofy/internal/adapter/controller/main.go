@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/usecase"
@@ -12,26 +13,31 @@ import (
 type DofyController interface {
 	Start()
 	getMode() string
+	getYN(msg string, def bool) bool
 }
 
 type DofyControllerImpl struct {
+	ansibleUC  usecase.AnsibleUsecase
 	printoutUC usecase.PrintOutUsecase
 	configUC   usecase.ConfigUsecase
 	depsUC     usecase.DepsUsecase
 }
 
 func NewDofyController(
+	ansibleUC usecase.AnsibleUsecase,
 	printoutUC usecase.PrintOutUsecase,
 	configUC usecase.ConfigUsecase,
 	depsUC usecase.DepsUsecase,
 ) *DofyControllerImpl {
 	return &DofyControllerImpl{
+		ansibleUC:  ansibleUC,
 		printoutUC: printoutUC,
 		configUC:   configUC,
 		depsUC:     depsUC,
 	}
 }
 
+//nolint:funlen
 func (c *DofyControllerImpl) Start() {
 	logfile := c.printoutUC.SetLogOutput()
 	defer logfile.Close()
@@ -85,6 +91,31 @@ This script will install dependencies and setup dotfiles.
 	if err != nil {
 		panic(err)
 	}
+
+	dotPath, err := c.configUC.GetDotfilesDir()
+	if err != nil {
+		panic(err)
+	}
+
+	c.ansibleUC.SetWorkingDir(filepath.Join(dotPath, "scripts/ansible"))
+
+	c.printoutUC.PrintMdf(`
+## Run Ansible playbook
+
+`)
+
+	ok := c.getYN("Do you want to run Ansible?", true)
+	if ok {
+		err = c.ansibleUC.RunPlaybook("hosts.yml", "site.yml")
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		err = c.ansibleUC.CheckPlaybook("hosts.yml", "site.yml")
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 func (c *DofyControllerImpl) getMode() string {
@@ -106,4 +137,26 @@ func (c *DofyControllerImpl) getMode() string {
 	}
 
 	return mode
+}
+
+func (c *DofyControllerImpl) getYN(msg string, def bool) bool {
+	var ynStr string
+	if def {
+		ynStr = "Y/n"
+	} else {
+		ynStr = "y/N"
+	}
+
+	c.printoutUC.Print(msg + " [" + ynStr + "]: ")
+
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		ynStr = strings.ToLower(strings.TrimSpace(scanner.Text()))
+	}
+
+	if ynStr == "" {
+		return def
+	}
+
+	return ynStr == "y"
 }
