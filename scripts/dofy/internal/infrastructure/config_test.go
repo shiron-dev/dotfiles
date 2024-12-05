@@ -148,7 +148,7 @@ func TestConfigInfrastructureImpl_GetDotfilesDir(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			return filepath.Join(usr.HomeDir, "/projects/dotfiles/")
+			return filepath.Join(usr.HomeDir, "/projects/github.com/shiron-dev/dotfiles/")
 		}(), false},
 	}
 

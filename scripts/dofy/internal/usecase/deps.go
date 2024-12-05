@@ -125,7 +125,7 @@ https://github.com/shiron-dev/dotfiles.git
 		return errors.Wrap(err, "deps usecase: failed to get current user")
 	}
 
-	if _, err := os.Stat(usr.HomeDir + "/projects/dotfiles"); err == nil {
+	if _, err := os.Stat(usr.HomeDir + "/projects/github.com/shiron-dev/dotfiles"); err == nil {
 		d.printOutUC.Println("dotfiles directory already exists")
 	} else {
 		d.printOutUC.Println("Cloning dotfiles repository")
@@ -135,7 +135,7 @@ https://github.com/shiron-dev/dotfiles.git
 			"git",
 			"clone",
 			"https://github.com/shiron-dev/dotfiles.git",
-			filepath.Join(usr.HomeDir, "/projects/dotfiles"),
+			filepath.Join(usr.HomeDir, "/projects/github.com/shiron-dev/dotfiles"),
 		)
 		if err := cmd.Run(); err != nil {
 			return errors.Wrap(err, "deps usecase: failed to clone dotfiles repository")
@@ -151,8 +151,8 @@ func (d *DepsUsecaseImpl) InstallBrewBundle(forceInstall bool) error {
 		return errors.Wrap(err, "deps usecase: failed to get current user")
 	}
 
-	brewPath := usr.HomeDir + "/projects/dotfiles/data/brew/Brewfile"
-	brewTmpPath := usr.HomeDir + "/projects/dotfiles/data/brew/Brewfile.tmp"
+	brewPath := usr.HomeDir + "/projects/github.com/shiron-dev/dotfiles/data/brew/Brewfile"
+	brewTmpPath := usr.HomeDir + "/projects/github.com/shiron-dev/dotfiles/data/brew/Brewfile.tmp"
 
 	d.printOutUC.PrintMdf(`
 ## Installing brew packages

@@ -103,6 +103,16 @@ Requires: init
 go test ./...
 ```
 
+### build
+
+Build the project.
+
+Requires: init
+
+```bash
+go build -o dofy cmd/main.go
+```
+
 ### clean
 
 ```bash

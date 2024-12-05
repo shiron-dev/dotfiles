@@ -51,5 +51,5 @@ func (c *ConfigInfrastructureImpl) GetDotfilesDir() (string, error) {
 		return "", errors.Wrap(err, "deps usecase: failed to get current user")
 	}
 
-	return filepath.Join(usr.HomeDir, "/projects/dotfiles/"), nil
+	return filepath.Join(usr.HomeDir, "/projects/github.com/shiron-dev/dotfiles/"), nil
 }

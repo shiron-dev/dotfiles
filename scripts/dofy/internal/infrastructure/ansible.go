@@ -38,6 +38,7 @@ func (a *AnsibleInfrastructureImpl) CheckPlaybook(
 	}
 
 	cmd := exec.Command("ansible-playbook", "-i", invPath, playbookPath, "-C")
+	cmd.Dir = a.workingDir
 	cmd.Stdout = sout
 	cmd.Stderr = serror
 
@@ -59,6 +60,7 @@ func (a *AnsibleInfrastructureImpl) RunPlaybook(
 	}
 
 	cmd := exec.Command("ansible-playbook", "-i", invPath, playbookPath)
+	cmd.Dir = a.workingDir
 	cmd.Stdout = sout
 	cmd.Stderr = serror
 
