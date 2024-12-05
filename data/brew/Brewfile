@@ -152,6 +152,7 @@ cask "betterdisplay"
 cask "obs"
 cask "openmtp"
 cask "voicevox"
+cask "wakatime"
 cask "webtorrent"
 cask "whisky"
 mas "AmorphousDiskMark", id: 1168254295
