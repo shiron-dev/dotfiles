@@ -85,4 +85,4 @@ function moveToTrash() {
 }
 alias rm='moveToTrash'
 
-function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
+function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@; }
