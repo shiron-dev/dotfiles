@@ -12,7 +12,7 @@
 
 - name: Set dotfiles dir
   ansible.builtin.set_fact:
-    dotfiles_dir: "{{ vars.home_dir }}/projects/dotfiles"
+    dotfiles_dir: "{{ vars.home_dir }}/projects/github.com/shiron-dev/dotfiles"
 
 - name: Set config dir
   ansible.builtin.set_fact:

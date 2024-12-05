@@ -11,14 +11,14 @@ https://github.com/shiron-dev/dotfiles
 
 EOM
 
-if [ -d ~/projects/dotfiles ]; then
+if [ -d ~/projects/github.com/shiron-dev/dotfiles ]; then
   cat <<EOM
 
 dotfiles repository already exists.
-Run setup from '~/projects/dotfiles'.
+Run setup from '~/projects/github.com/shiron-dev/dotfiles'.
 
 EOM
-  cd ~/projects/dotfiles/scripts/ && go run ~/projects/dotfiles/scripts/main.go
+  cd ~/projects/github.com/shiron-dev/dotfiles/scripts/ && go run ~/projects/github.com/shiron-dev/dotfiles/scripts/main.go
 else
   cat <<EOM
 

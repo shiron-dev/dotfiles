@@ -57,14 +57,17 @@ export PATH=$PATH:$GOBIN
 alias lg='lazygit'
 alias ld='lazydocker'
 
+# fzf
+source <(fzf --zsh)
+
 # My tools
 export PATH="$PATH":"/Users/shiron/projects/tools/bin"
 
-if [ ! -f "/Users/shiron/projects/dotfiles/scripts/dofy/dofy" ]; then
+if [ ! -f "/Users/shiron/projects/github.com/shiron-dev/dotfiles/scripts/dofy/dofy" ]; then
   echo "Building dofy..."
-  (cd ~/projects/dotfiles/scripts/dofy && go build -o dofy cmd/main.go)
+  (cd ~/projects/github.com/shiron-dev/dotfiles/scripts/dofy && go build -o dofy cmd/main.go)
 fi
-alias dofy="/Users/shiron/projects/dotfiles/scripts/dofy/dofy"
+alias dofy="/Users/shiron/projects/github.com/shiron-dev/dotfiles/scripts/dofy/dofy"
 
 # My Aliases
 alias docker-compose-rm="docker compose down --rmi all --volumes --remove-orphans"
