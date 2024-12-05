@@ -18,6 +18,7 @@ jobs:
       - yaml-lint
       - shell-lint
       - action-lint
+      - ansible-lint
       - golang-build-check
       - golang-vet-check
       - golang-fmt-check
