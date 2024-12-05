@@ -4,7 +4,7 @@ export DYLD_LIBRARY_PATH="/opt/homebrew/lib/"
 
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 
-eval "$(rbenv init - zsh)"
+eval "$(/opt/homebrew/bin/mise activate zsh)"
 
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
@@ -18,11 +18,6 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
-
 function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
 
 alias sed='gsed'
@@ -33,10 +28,10 @@ alias sed='gsed'
 export PATH="/opt/homebrew/opt/mysql-client@8.0/bin:$PATH"
 export PATH="/opt/homebrew/opt/gawk/libexec/gnubin:$PATH"
 
-if (which zprof > /dev/null 2>&1) ;then
-  zprof
-fi
-
 ZSH_TIME=$(/opt/homebrew/bin/gdate +%s%3N)
 DIFF=$(echo "$ZSH_TIME - $ZSH_STARTUP_TIME" | bc)
 echo zsh startup time $DIFF ms
+
+if (which zprof > /dev/null 2>&1) ;then
+  zprof
+fi

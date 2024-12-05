@@ -2,6 +2,7 @@ HISTFILE=$ZDOTDIR/.zsh-history
 HISTSIZE=100000
 SAVEHIST=10000000
 setopt inc_append_history
+setopt hist_ignore_dups
 setopt share_history
 setopt AUTO_CD
 setopt AUTO_PARAM_KEYS
@@ -25,7 +26,7 @@ alias python=python3
 alias pip=pip3
 
 export LC_ALL=en_US.UTF-8
-  
+
 alias lsusb=system_profiler SPUSBDataType
 
 export CPPFLAGS="-I/opt/homebrew/opt/openjdk@17/include"
@@ -67,5 +68,3 @@ function moveToTrash() {
   done
 }
 alias rm='moveToTrash'
-
-eval $(thefuck --alias)
