@@ -25,6 +25,7 @@ brew "mas"
 
 ## System Tools
 cask "1password"
+cask "alt-tab"
 cask "battery"
 cask "openinterminal"
 cask "raycast"
@@ -64,7 +65,10 @@ mas "DaVinci Resolve", id: 571213070
 
 ### Other Tools
 cask "betterdisplay"
+cask "itsycal"
 cask "jordanbaird-ice"
+cask "onyx"
+cask "timemachinestatus"
 cask "utm"
 cask "wakatime"
 cask "webtorrent"
