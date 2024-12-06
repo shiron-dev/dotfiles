@@ -43,6 +43,30 @@ alias pj='ghq-fzf'
 alias o.='open .'
 alias c.='code .'
 
-function cg(){
+function cg() {
   cd "$(git rev-parse --show-toplevel)"
 }
+
+function y() {
+  if [ "$1" != "" ]; then
+    if [ -d "$1" ]; then
+      yazi "$1"
+    else
+      yazi "$(zoxide query $1)"
+    fi
+  else
+    yazi
+  fi
+  return $?
+}
+
+function yazi-cd() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
+alias yazi='yazi-cd'
