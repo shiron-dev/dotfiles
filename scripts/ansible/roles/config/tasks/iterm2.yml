@@ -1,0 +1,28 @@
+---
+- name: Check com.googlecode.iterm2.plist PrefsCustomFolder
+  ansible.builtin.command:
+    cmd: defaults read com.googlecode.iterm2.plist PrefsCustomFolder
+  register: iterm2_prefs_custom_folder
+  failed_when: false
+  changed_when: false
+  ignore_errors: true
+
+- name: Set com.googlecode.iterm2.plist PrefsCustomFolder
+  ansible.builtin.command:
+    cmd: defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "~/.config/iterm2/"
+  changed_when: true
+  when: iterm2_prefs_custom_folder.stdout != vars.home_dir + "/.config/iterm2/"
+
+- name: Check com.googlecode.iterm2.plist LoadPrefsFromCustomFolder
+  ansible.builtin.command:
+    cmd: defaults read com.googlecode.iterm2.plist LoadPrefsFromCustomFolder
+  register: iterm2_load_prefs_from_custom_folder
+  failed_when: false
+  changed_when: false
+  ignore_errors: true
+
+- name: Set com.googlecode.iterm2.plist LoadPrefsFromCustomFolder
+  ansible.builtin.command:
+    cmd: defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
+  changed_when: true
+  when: iterm2_load_prefs_from_custom_folder.stdout == "0"
