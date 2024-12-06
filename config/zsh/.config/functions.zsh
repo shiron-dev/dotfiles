@@ -70,3 +70,5 @@ function yazi-cd() {
 }
 
 alias yazi='yazi-cd'
+
+alias ghb='gh browse'
