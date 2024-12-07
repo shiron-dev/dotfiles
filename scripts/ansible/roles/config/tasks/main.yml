@@ -38,6 +38,9 @@
     state: link
   with_items: "{{ vars.config_items }}"
 
+- name: Set zsh
+  ansible.builtin.import_tasks: zsh.yml
+
 - name: Set iTerm2
   ansible.builtin.import_tasks: iterm2.yml
 

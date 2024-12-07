@@ -4,6 +4,5 @@
   connection: local
   roles:
     - set_facts
-    - shell
     - config
     - gh
