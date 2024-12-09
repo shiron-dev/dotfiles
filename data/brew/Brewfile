@@ -15,6 +15,9 @@ brew "tesseract"
 brew "ttyd"
 brew "unbound"
 
+# Fonts
+cask "font-roboto-mono-nerd-font"
+
 # Tools
 
 ## Core Tools
