@@ -1,0 +1,158 @@
+{
+  "C_Cpp.clang_format_fallbackStyle": "Google",
+  "C_Cpp.updateChannel": "Insiders",
+  "[cpp]": {
+    "editor.semanticHighlighting.enabled": true,
+    "editor.suggest.insertMode": "replace",
+    "editor.wordBasedSuggestions": "off"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.tabSize": 2
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+  },
+  "auto-close-tag.SublimeText3Mode": true,
+  "cSpell.useGitignore": false,
+  "cSpell.userWords": [
+    "shiron",
+    "Usecase"
+  ],
+  "cmake.configureOnOpen": true,
+  "dart.flutterSdkPath": "C:\\PATH\\flutter",
+  "deepl.formality": "default",
+  "deepl.splitSentences": "1",
+  "deepl.tagHandling": "off",
+  "deepl.translationMode": "Replace",
+  "diffEditor.ignoreTrimWhitespace": false,
+  "editor.accessibilitySupport": "off",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.guides.bracketPairs": true,
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggestSelection": "first",
+  "editor.tabSize": 2,
+  "eslint.codeAction.showDocumentation": {
+    "enable": false
+  },
+  "eslint.nodePath": "",
+  "explorer.compactFolders": false,
+  "files.autoSave": "onFocusChange",
+  "files.insertFinalNewline": true,
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  "github.copilot.enable": {
+    "*": true,
+    "markdown": true,
+    "plaintext": true,
+    "scminput": false,
+    "typescript": true,
+    "yaml": true
+  },
+  "githubPullRequests.createOnPublishBranch": "never",
+  "githubPullRequests.pullBranch": "never",
+  "gitlens.codeLens.enabled": false,
+  "gitlens.hovers.currentLine.over": "line",
+  "go.lintFlags": [
+    "--config=${workspaceFolder}/.golangci.yaml",
+    "--fast"
+  ],
+  "go.lintTool": "golangci-lint",
+  "gopls": {
+    "ui.diagnostic.staticcheck": true
+  },
+  "hediet.vscode-drawio.resizeImages": null,
+  "hediet.vscode-drawio.theme": "atlas",
+  "html.autoClosingTags": false,
+  "idf.customExtraPaths": "C:\\Espressif\\tools\\xtensa-esp-elf-gdb\\12.1_20221002\\xtensa-esp-elf-gdb\\bin;C:\\Espressif\\tools\\riscv32-esp-elf-gdb\\12.1_20221002\\riscv32-esp-elf-gdb\\bin;C:\\Espressif\\tools\\xtensa-esp32-elf\\esp-12.2.0_20230208\\xtensa-esp32-elf\\bin;C:\\Espressif\\tools\\xtensa-esp32s2-elf\\esp-12.2.0_20230208\\xtensa-esp32s2-elf\\bin;C:\\Espressif\\tools\\xtensa-esp32s3-elf\\esp-12.2.0_20230208\\xtensa-esp32s3-elf\\bin;C:\\Espressif\\tools\\riscv32-esp-elf\\esp-12.2.0_20230208\\riscv32-esp-elf\\bin;C:\\Espressif\\tools\\esp32ulp-elf\\2.35_20220830\\esp32ulp-elf\\bin;C:\\Espressif\\tools\\cmake\\3.24.0\\bin;C:\\Espressif\\tools\\openocd-esp32\\v0.12.0-esp32-20230921\\openocd-esp32\\bin;C:\\Espressif\\tools\\ninja\\1.10.2;C:\\Espressif\\tools\\idf-exe\\1.0.3;C:\\Espressif\\tools\\ccache\\4.8\\ccache-4.8-windows-x86_64;C:\\Espressif\\tools\\dfu-util\\0.11\\dfu-util-0.11-win64;C:\\Espressif\\tools\\esp-rom-elfs\\20230320",
+  "idf.customExtraVars": {
+    "ESP_ROM_ELF_DIR": "C:\\Espressif\\tools\\esp-rom-elfs\\20230320/",
+    "IDF_CCACHE_ENABLE": "1",
+    "OPENOCD_SCRIPTS": "C:\\Espressif\\tools\\openocd-esp32\\v0.12.0-esp32-20230921/openocd-esp32/share/openocd/scripts"
+  },
+  "idf.espIdfPath": "/Users/shiron/esp-idf",
+  "idf.espIdfPathWin": "C:/Espressif/frameworks/esp-idf-v5.1.2-2/",
+  "idf.gitPath": "git",
+  "idf.gitPathWin": "C:\\Espressif\\tools\\idf-git\\2.39.2\\cmd\\git.exe",
+  "idf.pythonBinPathWin": "C:/Espressif/python_env/idf5.1_py3.11_env/Scripts/python.exe",
+  "idf.toolsPath": "/Users/shiron/.espressif",
+  "idf.toolsPathWin": "C:\\Espressif",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "jest.autoRevealOutput": "off",
+  "js/ts.implicitProjectConfig.strictNullChecks": true,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "liveServer.settings.donotVerifyTags": true,
+  "liveshare.comments": false,
+  "liveshare.presence": false,
+  "lldb.launch.expressions": "native",
+  "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
+  "markdown-preview-enhanced.previewTheme": "github-light.css",
+  "markdown-preview-enhanced.revealjsTheme": "beige.css",
+  "powershell.promptToUpdatePowerShell": false,
+  "python.defaultInterpreterPath": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.10_3.10.240.0_x64__qbz5n2kfra8p0\\python3.10.exe",
+  "remote.SSH.remotePlatform": {
+    "arm": "linux",
+    "awsbot": "linux"
+  },
+  "terminal.external.osxExec": "iTerm.app",
+  "terminal.integrated.allowedLinkSchemes": [
+    "file",
+    "http",
+    "https",
+    "mailto",
+    "vscode",
+    "vscode-insiders",
+    "docker-desktop"
+  ],
+  "terminal.integrated.env.osx": {
+    "CW_NEW_SESSION": "1",
+    "FIG_NEW_SESSION": "1",
+    "Q_NEW_SESSION": "1"
+  },
+  "terminal.integrated.fontFamily": "MesloLGS NF",
+  "terminal.integrated.macOptionIsMeta": true,
+  "todo-tree.general.tags": [
+    "BUG",
+    "HACK",
+    "FIXME",
+    "TODO",
+    "XXX",
+    "REVIEW",
+    "OPTIMIZE",
+    "WARNING"
+  ],
+  "typescript.autoClosingTags": false,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "vscodeGoogleTranslate.preferredLanguage": "Japanese",
+  "vsicons.dontShowNewVersionMessage": true,
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "workbench.editor.languageDetection": false,
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter.notebook.ipynb"
+  },
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.settings.applyToAllProfiles": [
+    "workbench.editor.languageDetection"
+  ],
+  "workbench.startupEditor": "none",
+  "notebook.lineNumbers": "on",
+  "notebook.output.scrolling": true
+}

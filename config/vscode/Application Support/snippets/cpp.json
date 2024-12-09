@@ -1,0 +1,282 @@
+{
+	// Place your AtCoder ワークスペース snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"AtCoder": {
+		"prefix": "atC",
+		"body": [
+			"#include <bits/stdc++.h>",
+			"using namespace std;",
+			"using ll = long long;",
+			"using p = pair<int, int>;",
+			"#define INF 1001001001",
+			"#define PI 3.14159265359",
+			"#define rep(i, n) for (int i = 0; i < (int)(n); ++i)",
+			"#define repX(i, n , x) for (int i = (int)(x); i < (int)(n); ++i)",
+			"#define repB(i, n) for (int i = n; i >= 1; --i)",
+			"#define repBX(i, n , x) for (int i = (int)(n); i >= int(X); --i)",
+			"#define dup(x,y) (((x)+(y)-1)/(y))",
+			"",
+			"int main() {",
+			"    $0",
+			"    ",
+			"    return 0;",
+			"}"
+		],
+		"description": "crate 1row"
+	},
+	"AtCoderLongLong": {
+		"prefix": "atCLL",
+		"body": [
+			"#include <bits/stdc++.h>",
+			"using namespace std;",
+			"using ll = long long;",
+			"using p = pair<ll, ll>;",
+			"#define INF 1001001001",
+			"#define PI 3.14159265359",
+			"#define rep(i, n) for (ll i = 0; i < (ll)(n); ++i)",
+			"#define repX(i, n , x) for (ll i = (ll)(x); i < (ll)(n); ++i)",
+			"#define repB(i, n) for (ll i = n; i >= 1; --i)",
+			"#define repBX(i, n , x) for (ll i = (ll)(n); i >= ll(x); --i)",
+			"#define dup(x,y) (((x)+(y)-1)/(y))",
+			"",
+			"int main() {",
+			"    $0",
+			"    ",
+			"    return 0;",
+			"}"
+		],
+		"description": "crate 1row"
+	},
+	"getDigit": {
+		"prefix": "gD",
+		"body": [
+			"unsigned getDigit(unsigned num)",
+			"{",
+			"    unsigned digit = 0;",
+			"    while (num != 0)",
+			"    {",
+			"        num /= 10;",
+			"        digit++;",
+			"    }",
+			"    return digit;",
+			"}"
+		],
+		"description": "crate 1row"
+	},
+	"chmaxmin": {
+		"prefix": "CHMAXMIN",
+		"body": [
+			"template<class T> inline bool chmin(T& a, T b) {",
+			"    if (a > b) { a = b; return true; } return false;",
+			"}",
+			"template<class T> inline bool chmax(T& a, T b) {",
+			"    if (a < b) { a = b; return true; } return false;",
+			"}"
+		],
+		"description": "crate 1row"
+	},
+	"gcdlcm": {
+		"prefix": "gcdlcm",
+		"body": [
+			"ll gcd(ll a, ll b) {",
+			"    if (a % b == 0) {",
+			"        return (b);",
+			"    } else {",
+			"        return (gcd(b, a % b));",
+			"    }",
+			"}",
+			"ll lcm(ll a, ll b) { return a * b / gcd(a, b); }"
+		],
+		"description": "crate 1row"
+	},
+	"combination": {
+		"prefix": "COM",
+		"body": [
+			"vector<int> nnV(100000000),nrV(100000000);",
+			"int combination(int n,int r){",
+			"    int nn=1,nr=1;",
+			"    if(n==r||r==0) return 1;",
+			"    if(nnV[n/10]!=0){",
+			"        nn = nnV[n/10];",
+			"        if(nrV[r/10]!=0){",
+			"            nr = nrV[r/10];",
+			"        }else{",
+			"            rep(i,r) nr = nr * (i+1);",
+			"            nrV[r/10]=nr;",
+			"        }",
+			"    }else{",
+			"        rep(i,n)if(i>=r) nn = nn*(i+1);",
+			"        else nr = nr*(i+1);",
+			"        nnV[n/10]=nn;",
+			"        nrV[r/10]=nr; ",
+			"    }",
+			"    return nn/nr;",
+			"}"
+		],
+		"description": "crate 1row"
+	},
+	"primeNumber": {
+		"prefix": "primeNum",
+		"body": [
+			"vector<ll> primeNumber(ll n)",
+			"{",
+			"    vector<ll> prime(0);",
+			"    vector<bool> isPrime(n, true);",
+			"    isPrime[0] = isPrime[1] = false;",
+			"    int count = 0;",
+			"    repX(i, n + 1, 2)",
+			"    {",
+			"        if (isPrime[i])",
+			"        {",
+			"            prime.push_back(i);",
+			"            for (ll j = 2 * i; j <= n; j += i)",
+			"                isPrime[j] = false;",
+			"        }",
+			"    }",
+			"    return prime;",
+			"}"
+		],
+		"description": "crate 1row"
+	},
+	"factorize-Prime": {
+		"prefix": "factorizeP",
+		"body": [
+			"vector<pair<ll, int>> factorize(ll n)",
+			"{",
+			"    vector<pair<ll, int>> res;",
+			"    vector<ll> prime = primeNumber(n);",
+			"    rep(i,prime.size())",
+			"    {",
+			"        if (n % prime[i])",
+			"            continue;",
+			"        res.emplace_back(prime[i], 0);",
+			"        while (n % prime[i] == 0)",
+			"        {",
+			"            n /= prime[i];",
+			"            res.back().second++;",
+			"        }",
+			"    }",
+			"    if (n != 1)",
+			"        res.emplace_back(n, 1);",
+			"    return res;",
+			"}"
+		],
+		"description": "crate 1row"
+	},
+	"factorize-Nomal": {
+		"prefix": "factorizeN",
+		"body": [
+			"vector<pair<ll, int>> factorize(ll n)",
+			"{",
+			"    vector<pair<ll, int>> res;",
+			"    for (ll i = 2; i + i <= n; i++)",
+			"    {",
+			"        if (n % i)",
+			"            continue;",
+			"        res.emplace_back(i, 0);",
+			"        while (n % i == 0)",
+			"        {",
+			"            n /= i;",
+			"            res.back().second++;",
+			"        }",
+			"        cout << i << endl;",
+			"    }",
+			"    if (n != 1)",
+			"        res.emplace_back(n, 1);",
+			"    return res;",
+			"}"
+		],
+		"description": "crate 1row"
+	},
+	"IntToLongLong": {
+		"prefix": [
+			"kindann",
+			"toLongLong"
+		],
+		"body": [
+			"#define int long long"
+		],
+		"description": "crate 1row"
+	},
+	"llSUM": {
+		"prefix": [
+			"SUM"
+		],
+		"body": [
+			"ll toSum(ll l,ll r){",
+			"    return (l+r)*(r-l+1)/2;",
+			"}"
+		],
+		"description": "crate 1row"
+	},
+	"modint": {
+		"prefix": [
+			"MODINT"
+		],
+		"body": [
+			"const int mod = 1000000007;",
+			"//const int mod = 998244353;",
+			"struct mint {",
+			"    ll x;",
+			"    mint(ll x = 0) : x(( x % mod + mod) % mod) {}",
+			"    ",
+			"    mint &operator+=(const mint &a) { if ((x += a.x) >= mod) x -= mod; return *this; }",
+			"    mint &operator-=(const mint &a) { if ((x += mod - a.x) >= mod) x -= mod; return *this; }",
+			"    mint &operator*=(const mint &a) { (x *= a.x) %= mod; return *this; }",
+			"    mint &operator/=(const mint &a) { return (*this) *= a.inv(); }",
+			"    mint operator+(const mint a) const { return mint(*this) += a; }",
+			"    mint operator-(const mint a) const { return mint(*this) -= a; }",
+			"    mint operator*(const mint a) const { return mint(*this) *= a; }",
+			"    mint operator/(const mint a) const { return mint(*this) /= a; }",
+			"    ",
+			"    mint inv() const { return pow(mod - 2); }",
+			"    mint pow(ll n) const {",
+			"        if (!n) return 1;",
+			"        mint a = pow(n>>1);a *= a;",
+			"        if (n&1) a *= *this;",
+			"        return a;",
+			"    }",
+			"};",
+			"istream &operator>>(istream &is, const mint &a) { return is >> a.x; }",
+			"ostream &operator<<(ostream &os, const mint &a) { return os << a.x; }"
+		],
+		"description": "crate 1row"
+	},
+	"combinationMint": {
+		"prefix": [
+			"COMB"
+		],
+		"body": [
+			"struct combination {",
+			"  vector<mint> fact, ifact;",
+			"  combination(int n):fact(n+1),ifact(n+1) {",
+			"    assert(n < mod);",
+			"    fact[0] = 1;",
+			"    for (int i = 1; i <= n; ++i) fact[i] = fact[i-1]*i;",
+			"    ifact[n] = fact[n].inv();",
+			"    for (int i = n; i >= 1; --i) ifact[i-1] = ifact[i]*i;",
+			"  }",
+			"  mint operator()(int n, int k) {",
+			"    if (k < 0 || k > n) return 0;",
+			"    return fact[n]*ifact[k]*ifact[n-k];",
+			"  }",
+			"};"
+		],
+		"description": "crate 1row"
+	}
+
+}
