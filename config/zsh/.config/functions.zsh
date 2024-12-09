@@ -31,17 +31,19 @@ alias gc="ghq get"
 function _ghq-fzf() {
   local src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
-    BUFFER="cd $(ghq root)/$src"
+    BUFFER="code $(ghq root)/$src"
     zle accept-line
   fi
   zle -R -c
 }
+
 function ghq-fzf() {
   local src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
-    cd $(ghq root)/"$src" || exit
+    cd $(ghq root)/$src || exit
   fi
 }
+
 zle -N _ghq-fzf
 bindkey '^]' _ghq-fzf
 alias pj='ghq-fzf'
