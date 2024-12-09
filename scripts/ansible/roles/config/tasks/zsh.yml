@@ -1,0 +1,22 @@
+---
+- name: Check zsh files in ~/
+  ansible.builtin.stat:
+    path: "{{ item | replace(vars.config_dir + '/zsh/', '~/') }}"
+  with_fileglob:
+    - "{{ vars.config_dir }}/zsh/.*"
+  register: zsh_files
+
+- name: Remove zsh files in ~/
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  when: item.stat.exists and not item.stat.islnk
+  with_items: "{{ zsh_files.results }}"
+
+- name: Make zsh symlink to ~/
+  ansible.builtin.file:
+    src: "{{ item }}"
+    dest: "{{ item | replace(vars.config_dir + '/zsh/', '~/') }}"
+    state: link
+  with_fileglob:
+    - "{{ vars.config_dir }}/zsh/.*"

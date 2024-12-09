@@ -1,0 +1,29 @@
+[core]
+	autocrlf = input
+	excludesFile = /Users/shiron/.config/git/ignore
+	editor = code --wait
+	ignorecase = true
+[gpg]
+	program = /opt/homebrew/bin/gpg
+[user]
+	name = shiron
+	email = shiron4710.dev@gmail.com
+[init]
+	defaultBranch = main
+[commit]
+	gpgsign = true
+[pull]
+	rebase = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[push]
+	autoSetupRemote = true
+[diff]
+    tool = default-difftool
+[difftool "default-difftool"]
+    cmd = code --wait --diff $LOCAL $REMOTE
+[ghq]
+	root = ~/projects

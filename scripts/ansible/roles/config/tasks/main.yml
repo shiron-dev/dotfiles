@@ -1,0 +1,77 @@
+---
+- name: Find all files in config dir
+  ansible.builtin.find:
+    paths: "{{ vars.config_dir }}"
+    hidden: true
+    recurse: true
+  register: config_files
+
+- name: Set config items
+  ansible.builtin.set_fact:
+    # yamllint disable-line rule:line-length
+    config_items: "{{ config_files.files | map(attribute='path') | select('match', '.*\\.config') | map('replace', vars.config_dir + '/', '') | map('replace', '.config/', '') | list }}"
+    # yamllint disable-line rule:line-length
+    local_share_items: "{{ config_files.files | map(attribute='path') | select('match', '.*\\.local/share') | map('replace', vars.config_dir + '/', '') | map('replace', '.local/share/', '') | list }}"
+
+- name: Check ~/.config/* files
+  ansible.builtin.stat:
+    path: "~/.config/{{ item }}"
+  with_items: "{{ vars.config_items }}"
+  register: config_files
+
+- name: Remove ~/.config/*
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  when: item.stat.exists and not item.stat.islnk
+  with_items: "{{ config_files.results }}"
+
+- name: Mkdir ~/.config
+  ansible.builtin.file:
+    path: "~/.config/{{ item | dirname }}"
+    state: directory
+    mode: "0755"
+  with_items: "{{ vars.config_items }}"
+
+- name: Make ~/.config symlink
+  ansible.builtin.file:
+    src: "{{ vars.config_dir }}/{{ item | regex_replace('^([^/]+)/', '\\1/.config/') }}"
+    dest: "~/.config/{{ item }}"
+    state: link
+  with_items: "{{ vars.config_items }}"
+
+- name: Check ~/.local/share/* files
+  ansible.builtin.stat:
+    path: "~/.local/share/{{ item }}"
+  with_items: "{{ vars.local_share_items }}"
+  register: local_share_files
+
+- name: Remove ~/.local/share/*
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  when: item.stat.exists and not item.stat.islnk
+  with_items: "{{ local_share_files.results }}"
+
+- name: Mkdir ~/.local/share/
+  ansible.builtin.file:
+    path: "~/.local/share/{{ item | dirname }}"
+    state: directory
+    mode: "0755"
+  with_items: "{{ vars.local_share_items }}"
+
+- name: Make ~/.local/share/ symlink
+  ansible.builtin.file:
+    src: "{{ vars.config_dir }}/{{ item | regex_replace('^([^/]+)/', '\\1/.local/share/') }}"
+    dest: "~/.local/share/{{ item }}"
+    state: link
+  with_items: "{{ vars.local_share_items }}"
+
+- name: Set zsh
+  ansible.builtin.import_tasks: zsh.yml
+
+- name: Set iTerm2
+  ansible.builtin.import_tasks: iterm2.yml
+
+- name: Set yazi
+  ansible.builtin.import_tasks: yazi.yml

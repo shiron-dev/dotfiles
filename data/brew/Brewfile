@@ -1,45 +1,5 @@
 # Brewfile made by dofy
 
-# Taps
-tap "ariga/tap"
-tap "bufbuild/buf"
-tap "charmbracelet/tap"
-tap "cloudflare/cloudflare"
-tap "go-task/tap"
-tap "grishka/grishka"
-tap "hashicorp/tap"
-tap "homebrew/bundle"
-tap "homebrew/core"
-tap "homebrew/services"
-tap "jesseduffield/lazydocker"
-tap "jesseduffield/lazygit"
-tap "joerdav/xc"
-tap "shyiko/ktlint"
-tap "teamookla/speedtest"
-tap "voicevox/voicevox"
-
-# Core Tools
-brew "mas"
-brew "sheldon"
-cask "1password"
-cask "arc"
-cask "battery"
-cask "google-chrome"
-cask "openinterminal"
-cask "raycast"
-
-# Core Dev Tools
-brew "git"
-brew "git-lfs"
-brew "mise"
-cask "docker"
-cask "firefox@developer-edition"
-cask "gitify"
-cask "iterm2"
-cask "jetbrains-toolbox"
-cask "visual-studio-code"
-mas "Xcode", id: 497799835
-
 # Lib
 brew "gmp"
 brew "harfbuzz"
@@ -55,22 +15,93 @@ brew "tesseract"
 brew "ttyd"
 brew "unbound"
 
-# Dev Tools
-brew "act"
-brew "actionlint"
-brew "ansible"
-brew "ansible-lint"
-brew "arduino-cli"
-brew "ariga/tap/atlas"
+# Tools
+
+## Core Tools
+tap "homebrew/bundle"
+tap "homebrew/core"
+tap "homebrew/services"
+brew "mas"
+
+## System Tools
+cask "1password"
+cask "alt-tab"
+cask "battery"
+cask "openinterminal"
+cask "raycast"
+
+## Usual Tools
+
+### SNS
+cask "discord"
+cask "notion"
+cask "slack"
+cask "zoom"
+mas "LINE", id: 539883307
+
+### Office
+cask "microsoft-auto-update"
+cask "microsoft-excel"
+cask "microsoft-powerpoint"
+cask "microsoft-word"
+
+### Browser
+cask "arc"
+cask "firefox@developer-edition"
+cask "google-chrome"
+cask "microsoft-edge"
+cask "tor-browser"
+
+### Tools creatives
+tap "voicevox/voicevox"
+cask "audacity"
+cask "gimp"
+cask "inkscape"
+cask "master-pdf-editor"
+cask "obs"
+cask "vlc"
+cask "voicevox"
+mas "DaVinci Resolve", id: 571213070
+
+### Other Tools
+cask "betterdisplay"
+cask "itsycal"
+cask "jordanbaird-ice"
+cask "onyx"
+cask "timemachinestatus"
+cask "utm"
+cask "wakatime"
+cask "webtorrent"
+cask "whisky"
+mas "AmorphousDiskMark", id: 1168254295
+mas "Amphetamine", id: 937984704
+mas "Goodnotes", id: 1444383602
+
+## Dev Tools
+
+### Dev Manager
+brew "mise"
+brew "volta"
+
+### Editor
+cask "jetbrains-toolbox"
+cask "visual-studio-code"
+mas "Xcode", id: 497799835
+
+### Core
+brew "git"
+brew "git-lfs"
+brew "pinentry-mac"
+cask "iterm2"
+
+### shell
+tap "jesseduffield/lazydocker"
+tap "jesseduffield/lazygit"
 brew "arp-scan"
-brew "awscli"
 brew "bat"
-brew "bufbuild/buf/buf"
-brew "charmbracelet/tap/vhs"
-brew "cloudflared"
 brew "coreutils"
 brew "curl"
-brew "docker-buildx"
+brew "fd"
 brew "ffmpeg"
 brew "fzf"
 brew "gawk"
@@ -80,90 +111,79 @@ brew "ghq"
 brew "gnu-sed"
 brew "gnupg"
 brew "gnutls"
-brew "go"
-brew "go-task/tap/go-task"
-brew "gofumpt"
-brew "golangci-lint"
-brew "graphviz"
 brew "grpcurl"
-brew "hadolint"
-brew "hashicorp/tap/packer"
-brew "hashicorp/tap/terraform"
-brew "infracost"
+brew "htop"
 brew "jesseduffield/lazydocker/lazydocker"
 brew "jesseduffield/lazygit/lazygit"
-brew "joerdav/xc/xc"
 brew "jq"
-brew "just"
-brew "markdownlint-cli2"
-brew "mysql-client@8.0"
 brew "nano"
+brew "navi"
 brew "netcat"
 brew "nmap"
-brew "pinentry-mac"
-brew "protobuf"
-brew "pyenv"
-brew "rbenv"
-brew "rust"
-brew "shellcheck"
-brew "shyiko/ktlint/ktlint"
-brew "sqlfluff"
-brew "stow"
-brew "teamookla/speedtest/speedtest"
+brew "sheldon"
 brew "tree"
-brew "volta"
 brew "watch"
 brew "wget"
-brew "yamllint"
+brew "yazi"
 brew "yq"
 brew "yt-dlp"
 brew "zoxide"
-cask "arduino-ide"
-cask "google-cloud-sdk"
-cask "jordanbaird-ice"
-cask "master-pdf-editor"
-cask "mysqlworkbench"
-cask "pgadmin4"
+
+### Task Runner
+tap "go-task/tap"
+tap "joerdav/xc"
+brew "go-task/tap/go-task"
+brew "joerdav/xc/xc"
+
+### Tools
+cask "docker"
+cask "gitify"
 cask "postman"
-cask "postman"
-cask "raspberry-pi-imager"
-cask "session-manager-plugin"
-cask "tailscale"
-cask "unity-hub"
-cask "utm"
 cask "wireshark"
 
-# Tools Internet
-cask "discord"
-cask "microsoft-edge"
-cask "notion"
-cask "slack"
-cask "tor-browser"
-cask "zoom"
-mas "LINE", id: 539883307
+### Support Tools
+tap "ariga/tap"
+tap "hashicorp/tap"
+brew "ansible"
+brew "ariga/tap/atlas"
+brew "docker-buildx"
+brew "graphviz"
+brew "hashicorp/tap/packer"
+brew "hashicorp/tap/terraform"
+brew "mysql-client@8.0"
+cask "mysqlworkbench"
+cask "pgadmin4"
 
-# Tools creatives
-cask "audacity"
-cask "gimp"
-cask "inkscape"
-cask "vlc"
-mas "DaVinci Resolve", id: 571213070
+### Service Tools
+tap "cloudflare/cloudflare"
+brew "awscli"
+brew "cloudflared"
+cask "google-cloud-sdk"
+cask "session-manager-plugin"
+cask "tailscale"
 
-# Tools
-cask "appcleaner"
-cask "betterdisplay"
-cask "obs"
-cask "openmtp"
-cask "voicevox"
-cask "wakatime"
-cask "webtorrent"
-cask "whisky"
-mas "AmorphousDiskMark", id: 1168254295
-mas "Amphetamine", id: 937984704
-mas "Goodnotes", id: 1444383602
+### In Development Tools
 
-# Office
-cask "microsoft-auto-update"
-cask "microsoft-excel"
-cask "microsoft-powerpoint"
-cask "microsoft-word"
+#### Language And Stacks
+tap "bufbuild/buf"
+brew "arduino-cli"
+brew "bufbuild/buf/buf"
+brew "go"
+brew "protobuf"
+brew "rust"
+cask "unity-hub"
+
+##### QA
+tap "shyiko/ktlint"
+brew "act"
+brew "actionlint"
+brew "ansible-lint"
+brew "gofumpt"
+brew "golangci-lint"
+brew "hadolint"
+brew "infracost"
+brew "markdownlint-cli2"
+brew "shellcheck"
+brew "shyiko/ktlint/ktlint"
+brew "sqlfluff"
+brew "yamllint"
