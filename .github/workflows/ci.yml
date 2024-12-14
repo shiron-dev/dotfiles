@@ -75,7 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run ansible-lint
-        uses: ansible/ansible-lint@6fbb12e9d8e8464fe8dbc36f1829fa6a8d229c08 # v24.12.0
+        uses: ansible/ansible-lint@4d295e82dd814c6f5793f898ed881358a5c42361 # v24.12.1
         with:
           working_directory: "scripts/ansible"
           requirements_file: "requirements.yml"
