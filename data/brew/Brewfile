@@ -53,7 +53,9 @@ cask "microsoft-edge"
 cask "tor-browser"
 
 ### Tools creatives
+tap "shiron-dev/tap"
 tap "voicevox/voicevox"
+cask "aivis-speech"
 cask "audacity"
 cask "gimp"
 cask "inkscape"
