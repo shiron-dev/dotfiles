@@ -15,6 +15,9 @@ brew "tesseract"
 brew "ttyd"
 brew "unbound"
 
+# Fonts
+cask "font-roboto-mono-nerd-font"
+
 # Tools
 
 ## Core Tools
@@ -103,6 +106,7 @@ brew "arp-scan"
 brew "bat"
 brew "coreutils"
 brew "curl"
+brew "exiftool"
 brew "fd"
 brew "ffmpeg"
 brew "fzf"
