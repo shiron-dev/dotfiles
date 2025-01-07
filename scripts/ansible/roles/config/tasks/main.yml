@@ -75,3 +75,6 @@
 
 - name: Set yazi
   ansible.builtin.import_tasks: yazi.yml
+
+- name: Set vscode
+  ansible.builtin.import_tasks: vscode.yml
