@@ -127,7 +127,7 @@
     "FIG_NEW_SESSION": "1",
     "Q_NEW_SESSION": "1"
   },
-  "terminal.integrated.fontFamily": "MesloLGS NF",
+  "terminal.integrated.fontFamily": "RobotoMonoNF-Rg",
   "terminal.integrated.macOptionIsMeta": true,
   "todo-tree.general.tags": [
     "BUG",
@@ -154,5 +154,6 @@
   ],
   "workbench.startupEditor": "none",
   "notebook.lineNumbers": "on",
-  "notebook.output.scrolling": true
+  "notebook.output.scrolling": true,
+  "editor.fontFamily": "RobotoMonoNF-Rg, Menlo, Monaco, 'Courier New', monospace"
 }
