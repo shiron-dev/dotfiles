@@ -155,5 +155,16 @@
   "workbench.startupEditor": "none",
   "notebook.lineNumbers": "on",
   "notebook.output.scrolling": true,
-  "editor.fontFamily": "RobotoMonoNF-Rg, Menlo, Monaco, 'Courier New', monospace"
+  "editor.fontFamily": "RobotoMonoNF-Rg, Menlo, Monaco, 'Courier New', monospace",
+  "background.enabled": false,
+  "go.toolsManagement.autoUpdate": true,
+  "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": ".*\\.(yml|yaml)$",
+                "cmd": "yamlfmt ${file}",
+                "autoShowOutputPanel": "error"
+            }
+        ]
+    }
 }
