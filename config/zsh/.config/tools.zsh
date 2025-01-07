@@ -48,6 +48,9 @@ export PATH="$PATH:/opt/homebrew/opt/mysql-client@8.0/bin"
 # Tailscale
 alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
 
+# OrbStack
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+
 # Golang
 export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
@@ -63,8 +66,14 @@ source <(fzf --zsh)
 # zoxide
 eval "$(zoxide init zsh)"
 
+# Android
+
+export ANDROID_HOME="/Users/$USER/Library/Android/sdk"
+export PATH="$PATH":"$ANDROID_HOME/tools":"$ANDROID_HOME/build-tools/35.0.0"
+
 # My tools
 export PATH="$PATH":"/Users/shiron/projects/tools/bin"
+export PATH="$PATH":"/Users/shiron/projects/github.com/shiron-dev/arcanum-hue/bin"
 
 if [ ! -f "/Users/shiron/projects/github.com/shiron-dev/dotfiles/scripts/dofy/dofy" ]; then
   echo "Building dofy..."
@@ -73,8 +82,11 @@ fi
 alias dofy="/Users/shiron/projects/github.com/shiron-dev/dotfiles/scripts/dofy/dofy"
 
 # My Aliases
+alias grep="ggrep"
+
 alias docker-compose-rm="docker compose down --rmi all --volumes --remove-orphans"
 alias lsusb="system_profiler SPUSBDataType"
+alias gic="git clean -Xdf"
 
 # My functions
 source ~/.config/zsh/functions.zsh
