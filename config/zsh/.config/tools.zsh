@@ -67,9 +67,11 @@ source <(fzf --zsh)
 eval "$(zoxide init zsh)"
 
 # Android
-
 export ANDROID_HOME="/Users/$USER/Library/Android/sdk"
 export PATH="$PATH":"$ANDROID_HOME/tools":"$ANDROID_HOME/build-tools/35.0.0"
+
+# pipx
+export PATH="$PATH:/Users/shiron/.local/bin"
 
 # My tools
 export PATH="$PATH":"/Users/shiron/projects/tools/bin"
