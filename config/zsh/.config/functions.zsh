@@ -121,5 +121,9 @@ nv() {
   fi
 }
 
+asn() {
+  curl "ipinfo.io/$1/org"
+}
+
 zle -N _navi_widget
 bindkey '^g' _navi_widget

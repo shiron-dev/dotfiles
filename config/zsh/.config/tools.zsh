@@ -12,16 +12,16 @@ eval "$(/opt/homebrew/bin/mise activate zsh)"
 bindkey "^[[H" beginning-of-line
 bindkey "^[[F" end-of-line
 
-# volta
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
-
 # pnpm
 export PNPM_HOME="/Users/shiron/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
+
+# volta
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
 
 # gnu
 export PATH="$PATH:/opt/homebrew/opt/gawk/libexec/gnubin"
@@ -67,9 +67,11 @@ source <(fzf --zsh)
 eval "$(zoxide init zsh)"
 
 # Android
-
 export ANDROID_HOME="/Users/$USER/Library/Android/sdk"
 export PATH="$PATH":"$ANDROID_HOME/tools":"$ANDROID_HOME/build-tools/35.0.0"
+
+# pipx
+export PATH="$PATH:/Users/shiron/.local/bin"
 
 # My tools
 export PATH="$PATH":"/Users/shiron/projects/tools/bin"
