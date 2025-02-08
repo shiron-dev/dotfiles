@@ -183,3 +183,52 @@ func TestGitInfrastructureImpl_CheckoutFile(t *testing.T) {
 		})
 	}
 }
+
+func TestGitInfrastructureImpl_IsGitDiff(t *testing.T) {
+	t.Parallel()
+
+	gitRepo, filePath := makeTestFile(t)
+
+	type args struct {
+		path []string
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		gitRepo string
+		want    bool
+		wantErr bool
+	}{
+		{"no error", args{[]string{filePath}}, gitRepo, false, false},
+		{"no git repo", args{[]string{filePath}}, "", false, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			infra, err := di.InitializeTestInfrastructureSet(os.Stdout, os.Stderr)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			git := infra.GitInfrastructure
+
+			if tt.gitRepo != "" {
+				git.SetGitDir(tt.gitRepo)
+			}
+
+			got, err := git.IsGitDiff(tt.args.path...)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GitInfrastructureImpl.IsGitDiff() error = %v, wantErr %v", err, tt.wantErr)
+
+				return
+			}
+
+			if got != tt.want {
+				t.Errorf("GitInfrastructureImpl.IsGitDiff() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -30,7 +30,9 @@ func InitializeControllerSet(stdout stdoutType, stderr stderrType) (*Controllers
 	gitInfrastructureImpl := infrastructure.NewGitInfrastructure()
 	brewUsecaseImpl := usecase.NewBrewUsecase(brewInfrastructureImpl, depsInfrastructureImpl, printOutUsecaseImpl, configUsecaseImpl)
 	depsUsecaseImpl := usecase.NewDepsUsecase(depsInfrastructureImpl, brewInfrastructureImpl, fileInfrastructureImpl, gitInfrastructureImpl, printOutUsecaseImpl, brewUsecaseImpl)
-	dofyControllerImpl := controller.NewDofyController(ansibleUsecaseImpl, printOutUsecaseImpl, configUsecaseImpl, depsUsecaseImpl)
+	vsCodeInfrastructureImpl := infrastructure.NewVSCodeInfrastructure()
+	vsCodeUsecaseImpl := usecase.NewVSCodeUsecase(vsCodeInfrastructureImpl, gitInfrastructureImpl, fileInfrastructureImpl, printOutUsecaseImpl, configUsecaseImpl)
+	dofyControllerImpl := controller.NewDofyController(ansibleUsecaseImpl, printOutUsecaseImpl, configUsecaseImpl, depsUsecaseImpl, vsCodeUsecaseImpl)
 	controllersSet := &ControllersSet{
 		DofyController: dofyControllerImpl,
 	}
@@ -93,7 +95,7 @@ var controllerSet = wire.NewSet(wire.Bind(new(controller.DofyController), new(*c
 var infrastructureSet = wire.NewSet(wire.Bind(new(infrastructure.AnsibleInfrastructure), new(*infrastructure.AnsibleInfrastructureImpl)), infrastructure.NewAnsibleInfrastructure, wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)), providePrintOutInfrastructure, wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)), infrastructure.NewConfigInfrastructure, wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)), infrastructure.NewBrewInfrastructure, wire.Bind(new(infrastructure.DepsInfrastructure), new(*infrastructure.DepsInfrastructureImpl)), infrastructure.NewDepsInfrastructure, wire.Bind(new(infrastructure.FileInfrastructure), new(*infrastructure.FileInfrastructureImpl)), infrastructure.NewFileInfrastructure, wire.Bind(new(infrastructure.GitInfrastructure), new(*infrastructure.GitInfrastructureImpl)), infrastructure.NewGitInfrastructure, wire.Bind(new(infrastructure.VSCodeInfrastructure), new(*infrastructure.VSCodeInfrastructureImpl)), infrastructure.NewVSCodeInfrastructure)
 
 // Usecase
-var usecaseSet = wire.NewSet(wire.Bind(new(usecase.AnsibleUsecase), new(*usecase.AnsibleUsecaseImpl)), usecase.NewAnsibleUsecase, wire.Bind(new(usecase.PrintOutUsecase), new(*usecase.PrintOutUsecaseImpl)), usecase.NewPrintOutUsecase, wire.Bind(new(usecase.ConfigUsecase), new(*usecase.ConfigUsecaseImpl)), usecase.NewConfigUsecase, wire.Bind(new(usecase.BrewUsecase), new(*usecase.BrewUsecaseImpl)), usecase.NewBrewUsecase, wire.Bind(new(usecase.DepsUsecase), new(*usecase.DepsUsecaseImpl)), usecase.NewDepsUsecase)
+var usecaseSet = wire.NewSet(wire.Bind(new(usecase.AnsibleUsecase), new(*usecase.AnsibleUsecaseImpl)), usecase.NewAnsibleUsecase, wire.Bind(new(usecase.PrintOutUsecase), new(*usecase.PrintOutUsecaseImpl)), usecase.NewPrintOutUsecase, wire.Bind(new(usecase.ConfigUsecase), new(*usecase.ConfigUsecaseImpl)), usecase.NewConfigUsecase, wire.Bind(new(usecase.BrewUsecase), new(*usecase.BrewUsecaseImpl)), usecase.NewBrewUsecase, wire.Bind(new(usecase.DepsUsecase), new(*usecase.DepsUsecaseImpl)), usecase.NewDepsUsecase, wire.Bind(new(usecase.VSCodeUsecase), new(*usecase.VSCodeUsecaseImpl)), usecase.NewVSCodeUsecase)
 
 type ControllersSet struct {
 	DofyController controller.DofyController

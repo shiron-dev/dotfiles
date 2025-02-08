@@ -74,6 +74,25 @@ func (mr *MockGitInfrastructureMockRecorder) GitDifftool(ctx, sout, serror any, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitDifftool", reflect.TypeOf((*MockGitInfrastructure)(nil).GitDifftool), varargs...)
 }
 
+// IsGitDiff mocks base method.
+func (m *MockGitInfrastructure) IsGitDiff(path ...string) (bool, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{}
+	for _, a := range path {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "IsGitDiff", varargs...)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IsGitDiff indicates an expected call of IsGitDiff.
+func (mr *MockGitInfrastructureMockRecorder) IsGitDiff(path ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsGitDiff", reflect.TypeOf((*MockGitInfrastructure)(nil).IsGitDiff), path...)
+}
+
 // SetGitDir mocks base method.
 func (m *MockGitInfrastructure) SetGitDir(path string) {
 	m.ctrl.T.Helper()

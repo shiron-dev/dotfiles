@@ -61,6 +61,8 @@ var usecaseSet = wire.NewSet(
 	usecase.NewBrewUsecase,
 	wire.Bind(new(usecase.DepsUsecase), new(*usecase.DepsUsecaseImpl)),
 	usecase.NewDepsUsecase,
+	wire.Bind(new(usecase.VSCodeUsecase), new(*usecase.VSCodeUsecaseImpl)),
+	usecase.NewVSCodeUsecase,
 )
 
 type ControllersSet struct {

@@ -11,6 +11,7 @@ import (
 type GitInfrastructure interface {
 	SetGitDir(path string)
 	GitDifftool(ctx context.Context, sout io.Writer, serror io.Writer, path ...string) error
+	IsGitDiff(path ...string) (bool, error)
 	CheckoutFile(path string) error
 }
 
@@ -68,4 +69,22 @@ func (g *GitInfrastructureImpl) CheckoutFile(path string) error {
 	}
 
 	return nil
+}
+
+func (g *GitInfrastructureImpl) IsGitDiff(path ...string) (bool, error) {
+	if g.gitDir == "" {
+		return false, ErrGitDirNotSet
+	}
+
+	args := []string{"diff", "--quiet"}
+	args = append(args, path...)
+
+	cmd := exec.Command("git", args...)
+	cmd.Dir = g.gitDir
+
+	if err := cmd.Run(); err != nil {
+		return true, nil
+	}
+
+	return false, nil
 }

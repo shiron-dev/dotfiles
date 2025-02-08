@@ -21,6 +21,7 @@ type DofyControllerImpl struct {
 	printoutUC usecase.PrintOutUsecase
 	configUC   usecase.ConfigUsecase
 	depsUC     usecase.DepsUsecase
+	vsCodeUC   usecase.VSCodeUsecase
 }
 
 func NewDofyController(
@@ -28,12 +29,14 @@ func NewDofyController(
 	printoutUC usecase.PrintOutUsecase,
 	configUC usecase.ConfigUsecase,
 	depsUC usecase.DepsUsecase,
+	vsCodeUC usecase.VSCodeUsecase,
 ) *DofyControllerImpl {
 	return &DofyControllerImpl{
 		ansibleUC:  ansibleUC,
 		printoutUC: printoutUC,
 		configUC:   configUC,
 		depsUC:     depsUC,
+		vsCodeUC:   vsCodeUC,
 	}
 }
 
@@ -93,6 +96,11 @@ This script will install dependencies and setup dotfiles.
 	}
 
 	dotPath, err := c.configUC.GetDotfilesDir()
+	if err != nil {
+		panic(err)
+	}
+
+	err = c.vsCodeUC.SaveExtensions()
 	if err != nil {
 		panic(err)
 	}
