@@ -1,0 +1,10 @@
+- name: Dump vscode extensions
+  ansible.builtin.command: "{{ code_command }} --list-extensions"
+  register: vscode_extensions
+  changed_when: false
+
+- name: Install vscode extensions
+  ansible.builtin.command: "{{ code_command }} --install-extension {{ item }}"
+  with_lines: cat {{ vars.config_dir }}/vscode/extensions
+  changed_when: true
+  when: item not in vscode_extensions.stdout_lines and item != ''

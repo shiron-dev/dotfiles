@@ -1,0 +1,7 @@
+- name: Install vscode extensions
+  ansible.builtin.include_tasks: install.yml
+  with_items:
+    - "code"
+    - "code-insiders"
+  loop_control:
+    loop_var: code_command
