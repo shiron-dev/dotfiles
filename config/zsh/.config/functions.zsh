@@ -50,6 +50,7 @@ alias pj='ghq-fzf'
 
 alias o.='open .'
 alias c.='code .'
+alias ci.='code-insiders .'
 
 function cg() {
   cd "$(git rev-parse --show-toplevel)" || exit
