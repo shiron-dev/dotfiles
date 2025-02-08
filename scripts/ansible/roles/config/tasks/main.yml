@@ -1,4 +1,3 @@
----
 - name: Find all files in config dir
   ansible.builtin.find:
     paths: "{{ vars.config_dir }}"
@@ -77,4 +76,9 @@
   ansible.builtin.import_tasks: yazi.yml
 
 - name: Set vscode
-  ansible.builtin.import_tasks: vscode.yml
+  ansible.builtin.include_tasks: vscode.yml
+  with_items:
+    - "Code"
+    - "Code - Insiders"
+  loop_control:
+    loop_var: vscode_dir_name
