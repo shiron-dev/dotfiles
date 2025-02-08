@@ -45,6 +45,8 @@ var infrastructureSet = wire.NewSet(
 	infrastructure.NewFileInfrastructure,
 	wire.Bind(new(infrastructure.GitInfrastructure), new(*infrastructure.GitInfrastructureImpl)),
 	infrastructure.NewGitInfrastructure,
+	wire.Bind(new(infrastructure.VSCodeInfrastructure), new(*infrastructure.VSCodeInfrastructureImpl)),
+	infrastructure.NewVSCodeInfrastructure,
 )
 
 // Usecase
@@ -59,6 +61,8 @@ var usecaseSet = wire.NewSet(
 	usecase.NewBrewUsecase,
 	wire.Bind(new(usecase.DepsUsecase), new(*usecase.DepsUsecaseImpl)),
 	usecase.NewDepsUsecase,
+	wire.Bind(new(usecase.VSCodeUsecase), new(*usecase.VSCodeUsecaseImpl)),
+	usecase.NewVSCodeUsecase,
 )
 
 type ControllersSet struct {
@@ -83,6 +87,7 @@ type TestInfrastructureSet struct {
 	FileInfrastructure     infrastructure.FileInfrastructure
 	GitInfrastructure      infrastructure.GitInfrastructure
 	PrintOutInfrastructure infrastructure.PrintOutInfrastructure
+	VSCodeInfrastructure   infrastructure.VSCodeInfrastructure
 }
 
 func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*TestInfrastructureSet, error) {
