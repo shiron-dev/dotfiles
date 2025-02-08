@@ -45,6 +45,7 @@ func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*Tes
 	fileInfrastructureImpl := infrastructure.NewFileInfrastructure()
 	gitInfrastructureImpl := infrastructure.NewGitInfrastructure()
 	printOutInfrastructureImpl := providePrintOutInfrastructure(stdout, stderr)
+	vsCodeInfrastructureImpl := infrastructure.NewVSCodeInfrastructure()
 	testInfrastructureSet := &TestInfrastructureSet{
 		AnsibleInfrastructure:  ansibleInfrastructureImpl,
 		BrewInfrastructure:     brewInfrastructureImpl,
@@ -53,6 +54,7 @@ func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*Tes
 		FileInfrastructure:     fileInfrastructureImpl,
 		GitInfrastructure:      gitInfrastructureImpl,
 		PrintOutInfrastructure: printOutInfrastructureImpl,
+		VSCodeInfrastructure:   vsCodeInfrastructureImpl,
 	}
 	return testInfrastructureSet, nil
 }
@@ -88,7 +90,7 @@ func providePrintOutInfrastructure(stdout stdoutType, stderr stderrType) *infras
 var controllerSet = wire.NewSet(wire.Bind(new(controller.DofyController), new(*controller.DofyControllerImpl)), controller.NewDofyController)
 
 // Infrastructure
-var infrastructureSet = wire.NewSet(wire.Bind(new(infrastructure.AnsibleInfrastructure), new(*infrastructure.AnsibleInfrastructureImpl)), infrastructure.NewAnsibleInfrastructure, wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)), providePrintOutInfrastructure, wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)), infrastructure.NewConfigInfrastructure, wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)), infrastructure.NewBrewInfrastructure, wire.Bind(new(infrastructure.DepsInfrastructure), new(*infrastructure.DepsInfrastructureImpl)), infrastructure.NewDepsInfrastructure, wire.Bind(new(infrastructure.FileInfrastructure), new(*infrastructure.FileInfrastructureImpl)), infrastructure.NewFileInfrastructure, wire.Bind(new(infrastructure.GitInfrastructure), new(*infrastructure.GitInfrastructureImpl)), infrastructure.NewGitInfrastructure)
+var infrastructureSet = wire.NewSet(wire.Bind(new(infrastructure.AnsibleInfrastructure), new(*infrastructure.AnsibleInfrastructureImpl)), infrastructure.NewAnsibleInfrastructure, wire.Bind(new(infrastructure.PrintOutInfrastructure), new(*infrastructure.PrintOutInfrastructureImpl)), providePrintOutInfrastructure, wire.Bind(new(infrastructure.ConfigInfrastructure), new(*infrastructure.ConfigInfrastructureImpl)), infrastructure.NewConfigInfrastructure, wire.Bind(new(infrastructure.BrewInfrastructure), new(*infrastructure.BrewInfrastructureImpl)), infrastructure.NewBrewInfrastructure, wire.Bind(new(infrastructure.DepsInfrastructure), new(*infrastructure.DepsInfrastructureImpl)), infrastructure.NewDepsInfrastructure, wire.Bind(new(infrastructure.FileInfrastructure), new(*infrastructure.FileInfrastructureImpl)), infrastructure.NewFileInfrastructure, wire.Bind(new(infrastructure.GitInfrastructure), new(*infrastructure.GitInfrastructureImpl)), infrastructure.NewGitInfrastructure, wire.Bind(new(infrastructure.VSCodeInfrastructure), new(*infrastructure.VSCodeInfrastructureImpl)), infrastructure.NewVSCodeInfrastructure)
 
 // Usecase
 var usecaseSet = wire.NewSet(wire.Bind(new(usecase.AnsibleUsecase), new(*usecase.AnsibleUsecaseImpl)), usecase.NewAnsibleUsecase, wire.Bind(new(usecase.PrintOutUsecase), new(*usecase.PrintOutUsecaseImpl)), usecase.NewPrintOutUsecase, wire.Bind(new(usecase.ConfigUsecase), new(*usecase.ConfigUsecaseImpl)), usecase.NewConfigUsecase, wire.Bind(new(usecase.BrewUsecase), new(*usecase.BrewUsecaseImpl)), usecase.NewBrewUsecase, wire.Bind(new(usecase.DepsUsecase), new(*usecase.DepsUsecaseImpl)), usecase.NewDepsUsecase)
@@ -105,6 +107,7 @@ type TestInfrastructureSet struct {
 	FileInfrastructure     infrastructure.FileInfrastructure
 	GitInfrastructure      infrastructure.GitInfrastructure
 	PrintOutInfrastructure infrastructure.PrintOutInfrastructure
+	VSCodeInfrastructure   infrastructure.VSCodeInfrastructure
 }
 
 type TestUsecaseSet struct {

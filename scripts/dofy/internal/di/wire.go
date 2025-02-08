@@ -45,6 +45,8 @@ var infrastructureSet = wire.NewSet(
 	infrastructure.NewFileInfrastructure,
 	wire.Bind(new(infrastructure.GitInfrastructure), new(*infrastructure.GitInfrastructureImpl)),
 	infrastructure.NewGitInfrastructure,
+	wire.Bind(new(infrastructure.VSCodeInfrastructure), new(*infrastructure.VSCodeInfrastructureImpl)),
+	infrastructure.NewVSCodeInfrastructure,
 )
 
 // Usecase
@@ -83,6 +85,7 @@ type TestInfrastructureSet struct {
 	FileInfrastructure     infrastructure.FileInfrastructure
 	GitInfrastructure      infrastructure.GitInfrastructure
 	PrintOutInfrastructure infrastructure.PrintOutInfrastructure
+	VSCodeInfrastructure   infrastructure.VSCodeInfrastructure
 }
 
 func InitializeTestInfrastructureSet(stdout stdoutType, stderr stderrType) (*TestInfrastructureSet, error) {
