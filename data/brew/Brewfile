@@ -94,6 +94,7 @@ brew "volta"
 ### Editor
 cask "jetbrains-toolbox"
 cask "visual-studio-code"
+cask "visual-studio-code@insiders"
 mas "Xcode", id: 497799835
 
 ### Core
