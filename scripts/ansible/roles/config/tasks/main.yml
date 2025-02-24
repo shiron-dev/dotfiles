@@ -82,3 +82,6 @@
     - "Code - Insiders"
   loop_control:
     loop_var: vscode_dir_name
+
+- name: Set terraform
+  ansible.builtin.import_tasks: terraform.yml

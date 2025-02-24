@@ -3,6 +3,6 @@
   connection: local
   roles:
     - set_facts
-    # - config
-    # - gh
+    - config
+    - gh
     - vscode
