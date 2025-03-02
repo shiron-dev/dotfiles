@@ -72,8 +72,8 @@
 - name: Set iTerm2
   ansible.builtin.import_tasks: iterm2.yml
 
-- name: Set yazi
-  ansible.builtin.import_tasks: yazi.yml
+# - name: Set yazi
+#   ansible.builtin.import_tasks: yazi.yml
 
 - name: Set vscode
   ansible.builtin.include_tasks: vscode.yml
