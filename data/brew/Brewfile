@@ -20,6 +20,9 @@ brew "unbound"
 # Fonts
 cask "font-roboto-mono-nerd-font"
 
+# Toys
+cask "steam"
+
 # Tools
 
 ## Core Tools
@@ -64,6 +67,8 @@ cask "aivis-speech"
 cask "audacity"
 cask "gimp"
 cask "inkscape"
+cask "kicad"
+cask "ltspice"
 cask "master-pdf-editor"
 cask "obs"
 cask "vb-cable"

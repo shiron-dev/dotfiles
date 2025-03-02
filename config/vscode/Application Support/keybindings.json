@@ -103,5 +103,30 @@
     "key": "cmd+p",
     "command": "-workbench.action.quickOpenNavigateNextInFilePicker",
     "when": "inFilesPicker && inQuickOpen"
+  },
+  {
+    "key": "alt+backspace",
+    "command": "deleteWordLeft",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "alt+backspace",
+    "command": "-deleteWordLeft",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+backspace",
+    "command": "editor.action.deleteLines",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "shift+cmd+k",
+    "command": "-editor.action.deleteLines",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+backspace",
+    "command": "-deleteAllLeft",
+    "when": "textInputFocus && !editorReadonly"
   }
 ]
