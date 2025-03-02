@@ -27,11 +27,11 @@ firefox-devtools.vscode-firefox-debug
 github.codespaces
 github.copilot
 github.copilot-chat
-github.copilot-labs
 github.remotehub
 github.vscode-github-actions
 github.vscode-pull-request-github
 golang.go
+google.geminicodeassist
 gruntfuggly.todo-tree
 hashicorp.terraform
 janisdd.vscode-edit-csv
@@ -76,6 +76,7 @@ redhat.vscode-yaml
 ritwickdey.liveserver
 rust-lang.rust-analyzer
 rvest.vs-code-prettier-eslint
+saoudrizwan.claude-dev
 shd101wyy.markdown-preview-enhanced
 shopify.ruby-extensions-pack
 shopify.ruby-lsp
