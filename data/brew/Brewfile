@@ -20,6 +20,9 @@ brew "unbound"
 # Fonts
 cask "font-roboto-mono-nerd-font"
 
+# Toys
+cask "steam"
+
 # Tools
 
 ## Core Tools
