@@ -2,7 +2,17 @@
   hosts: localhost
   connection: local
   roles:
-    - set_facts
-    - config
-    - gh
-    - vscode
+    - role: set_facts
+      tags:
+        - config
+        - gh
+        - vscode
+    - role: config
+      tags:
+        - config
+    - role: gh
+      tags:
+        - gh
+    - role: vscode
+      tags:
+        - vscode
