@@ -172,5 +172,6 @@
             }
         ]
     },
-    "github.copilot.nextEditSuggestions.enabled": true
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "cloudcode.duetAI.project": ""
 }
