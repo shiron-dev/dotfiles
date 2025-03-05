@@ -16,6 +16,7 @@ type BrewBundle struct {
 	Others     []string
 	BundleType BrewBundleType
 	Categories []string
+	Mode       string
 }
 
 func BrewBundleTypeFromString(str string) BrewBundleType {
@@ -33,8 +34,8 @@ func BrewBundleTypeFromString(str string) BrewBundleType {
 	}
 }
 
-func (b BrewBundle) String() string {
-	var str string
+func (b BrewBundle) BundleFormat() string {
+	str := ""
 
 	switch b.BundleType {
 	case BrewBundleTypeTap:
@@ -51,6 +52,19 @@ func (b BrewBundle) String() string {
 	if len(b.Others) > 0 {
 		str += ", " + strings.Join(b.Others, ", ")
 	}
+
+	return str
+}
+
+func (b BrewBundle) String() string {
+	str := "{ "
+
+	str += b.BundleFormat()
+
+	str += " { " + strings.Join(b.Categories, ", ") + " }"
+	str += " :" + b.Mode
+
+	str += " }"
 
 	return str
 }

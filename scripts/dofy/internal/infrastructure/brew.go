@@ -151,7 +151,7 @@ func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(path string, isMac bool, sout
 }
 
 func (b *BrewInfrastructureImpl) InstallBrewBundle(path string, sout io.Writer, serror io.Writer) error {
-	cmd := exec.Command("brew", "bundle", "--no-lock", "--file", path)
+	cmd := exec.Command("brew", "bundle", "--file", path)
 	cmd.Stdout = sout
 	cmd.Stderr = serror
 
@@ -224,11 +224,36 @@ func (b *BrewInfrastructureImpl) ReadBrewBundle(path string) ([]domain.BrewBundl
 			Name:       strings.TrimSpace(strings.Trim(strings.ReplaceAll(cFormula[0], ",", ""), "\"")),
 			Others:     others,
 			BundleType: domain.BrewBundleTypeFromString(prefix),
-			Categories: append([]string{}, lastCategories...),
+			Categories: trimCategoriesMode(lastCategories),
+			Mode:       getModeFromCategories(lastCategories),
 		})
 	}
 
 	return bundles, nil
+}
+
+func getModeFromCategories(lastCategories []string) string {
+	mode := "all"
+
+	for _, cate := range lastCategories {
+		if strings.Contains(cate, ":") {
+			mode = strings.Split(cate, ":")[1]
+		}
+	}
+
+	return mode
+}
+
+func trimCategoriesMode(categories []string) []string {
+	ret := make([]string, len(categories))
+	copy(ret, categories)
+
+	for i, cate := range ret {
+		ret[i] = strings.Split(cate, ":")[0]
+		ret[i] = strings.TrimSpace(ret[i])
+	}
+
+	return ret
 }
 
 func getCategory(line string, lastCategories []string) []string {
@@ -242,9 +267,8 @@ func getCategory(line string, lastCategories []string) []string {
 		}
 	}
 
-	size := len(lastCategories)
-	for i := count - 1; i < size; i++ {
-		lastCategories = lastCategories[:len(lastCategories)-1]
+	if count <= len(lastCategories) {
+		lastCategories = lastCategories[:count-1]
 	}
 
 	lastCategories = append(lastCategories, strings.TrimSpace(line[count:]))
@@ -252,6 +276,7 @@ func getCategory(line string, lastCategories []string) []string {
 	return lastCategories
 }
 
+//nolint:cyclop,funlen
 func (b *BrewInfrastructureImpl) WriteBrewBundle(path string, bundles []domain.BrewBundle) error {
 	file, err := os.Create(path)
 	if err != nil {
@@ -266,6 +291,10 @@ func (b *BrewInfrastructureImpl) WriteBrewBundle(path string, bundles []domain.B
 	bundleMap := sortByCategories(bundles)
 
 	lastCategories := []string{}
+	lastModeHist := []struct {
+		Mode     string
+		CateSize int
+	}{{Mode: "all", CateSize: 1}}
 
 	writeString := ""
 
@@ -283,12 +312,29 @@ func (b *BrewInfrastructureImpl) WriteBrewBundle(path string, bundles []domain.B
 				writeString += "#"
 			}
 
-			writeString += " " + cate + "\n"
+			writeString += " " + cate
+
+			if i+1 < lastModeHist[len(lastModeHist)-1].CateSize {
+				lastModeHist = lastModeHist[:len(lastModeHist)-1]
+			}
+
+			if lastModeHist[len(lastModeHist)-1].Mode != bundle.Mode {
+				writeString += " :" + bundle.Mode
+				lastModeHist = append(lastModeHist, struct {
+					Mode     string
+					CateSize int
+				}{
+					Mode:     bundle.Mode,
+					CateSize: i + 1,
+				})
+			}
+
+			writeString += "\n"
 		}
 
 		lastCategories = bundle.Categories
 
-		writeString += bundle.String() + "\n"
+		writeString += bundle.BundleFormat() + "\n"
 	}
 
 	if _, err := file.WriteString(writeString); err != nil {
