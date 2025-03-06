@@ -1,12 +1,12 @@
 [core]
 	autocrlf = input
-	excludesFile = /Users/shiron/.config/git/ignore
+	excludesFile = ~/.config/git/ignore
 	editor = code --wait
 	ignorecase = true
 [gpg]
 	program = /opt/homebrew/bin/gpg
 [user]
-	name = shiron
+	name = Itsuki Shirahige
 	email = shiron4710.dev@gmail.com
 [init]
 	defaultBranch = main

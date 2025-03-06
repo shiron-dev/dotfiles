@@ -694,7 +694,7 @@
 			<key>Window Type</key>
 			<integer>5</integer>
 			<key>Working Directory</key>
-			<string>/Users/shiron/projects</string>
+			<string>~/projects</string>
 		</dict>
 	</array>
 	<key>OpenArrangementAtStartup</key>

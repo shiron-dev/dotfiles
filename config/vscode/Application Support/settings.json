@@ -88,12 +88,12 @@
     "IDF_CCACHE_ENABLE": "1",
     "OPENOCD_SCRIPTS": "C:\\Espressif\\tools\\openocd-esp32\\v0.12.0-esp32-20230921/openocd-esp32/share/openocd/scripts"
   },
-  "idf.espIdfPath": "/Users/shiron/esp-idf",
+  "idf.espIdfPath": "~/esp-idf",
   "idf.espIdfPathWin": "C:/Espressif/frameworks/esp-idf-v5.1.2-2/",
   "idf.gitPath": "git",
   "idf.gitPathWin": "C:\\Espressif\\tools\\idf-git\\2.39.2\\cmd\\git.exe",
   "idf.pythonBinPathWin": "C:/Espressif/python_env/idf5.1_py3.11_env/Scripts/python.exe",
-  "idf.toolsPath": "/Users/shiron/.espressif",
+  "idf.toolsPath": "~/.espressif",
   "idf.toolsPathWin": "C:\\Espressif",
   "javascript.updateImportsOnFileMove.enabled": "always",
   "jest.autoRevealOutput": "off",
@@ -159,19 +159,19 @@
   "background.enabled": false,
   "go.toolsManagement.autoUpdate": true,
   "emeraldwalk.runonsave": {
-        "commands": [
-            {
-                "match": ".*\\.(yml|yaml)$",
-                "cmd": "yamlfmt ${file}",
-                "autoShowOutputPanel": "error"
-            },
-            {
-                "match": ".*\\.proto$",
-                "cmd": "buf format -w ${file}",
-                "autoShowOutputPanel": "error"
-            }
-        ]
-    },
-    "github.copilot.nextEditSuggestions.enabled": true,
-    "cloudcode.duetAI.project": ""
+    "commands": [
+      {
+        "match": ".*\\.(yml|yaml)$",
+        "cmd": "yamlfmt ${file}",
+        "autoShowOutputPanel": "error"
+      },
+      {
+        "match": ".*\\.proto$",
+        "cmd": "buf format -w ${file}",
+        "autoShowOutputPanel": "error"
+      }
+    ]
+  },
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "cloudcode.duetAI.project": ""
 }

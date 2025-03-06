@@ -58,18 +58,18 @@ function cg() {
   cd "$(git rev-parse --show-toplevel)" || exit
 }
 
-function y() {
-  if [ "$1" != "" ]; then
-    if [ -d "$1" ]; then
-      yazi "$1"
-    else
-      yazi "$(zoxide query "$1")"
-    fi
-  else
-    yazi
-  fi
-  return $?
-}
+# function y() {
+#   if [ "$1" != "" ]; then
+#     if [ -d "$1" ]; then
+#       yazi "$1"
+#     else
+#       yazi "$(zoxide query "$1")"
+#     fi
+#   else
+#     yazi
+#   fi
+#   return $?
+# }
 
 function yazi-cd() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd

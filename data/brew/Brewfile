@@ -1,22 +1,5 @@
 # Brewfile made by dofy
 
-# Lib
-brew "gmp"
-brew "harfbuzz"
-brew "libass"
-brew "libassuan"
-brew "libomp"
-brew "librsvg"
-brew "opus"
-brew "pango"
-brew "pinentry"
-brew "pkgconf"
-brew "portaudio"
-brew "ta-lib"
-brew "tesseract"
-brew "ttyd"
-brew "unbound"
-
 # Fonts
 cask "font-roboto-mono-nerd-font"
 
@@ -24,20 +7,14 @@ cask "font-roboto-mono-nerd-font"
 
 ## Core Tools
 tap "homebrew/bundle"
-tap "homebrew/core"
 tap "homebrew/services"
 brew "mas"
 
 ### SNS
 cask "slack"
-cask "zoom"
 
 ### Browser
-cask "firefox@developer-edition"
 cask "google-chrome"
-
-### Other Tools
-cask "jordanbaird-ice"
 
 ## Dev Tools
 
@@ -47,8 +24,6 @@ brew "volta"
 
 ### Editor
 cask "visual-studio-code"
-cask "visual-studio-code@insiders"
-mas "Xcode", id: 497799835
 
 ### Core
 brew "git"
@@ -81,10 +56,6 @@ brew "yq"
 
 ### Tools
 cask "gitify"
-cask "orbstack"
-cask "postman"
-cask "rancher"
-cask "wireshark"
 
 ### Support Tools
 brew "ansible"
@@ -92,7 +63,7 @@ brew "ansible"
 ### In Development Tools
 
 #### Language And Stacks
-brew "go"
+brew "go@1.23"
 
 ##### QA
 brew "actionlint"

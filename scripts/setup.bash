@@ -18,7 +18,7 @@ dotfiles repository already exists.
 Run setup from '~/projects/github.com/shiron-dev/dotfiles'.
 
 EOM
-  cd ~/projects/github.com/shiron-dev/dotfiles/scripts/ && go run ~/projects/github.com/shiron-dev/dotfiles/scripts/main.go
+  cd ~/projects/github.com/shiron-dev/dotfiles/scripts/dofy/ && go run ~/projects/github.com/shiron-dev/dotfiles/scripts/dofy/cmd/main.go
 else
   cat <<EOM
 
