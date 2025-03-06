@@ -173,5 +173,6 @@
     ]
   },
   "github.copilot.nextEditSuggestions.enabled": true,
-  "cloudcode.duetAI.project": ""
+  "cloudcode.duetAI.project": "",
+  "redhat.telemetry.enabled": false
 }
