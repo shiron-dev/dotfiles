@@ -58,8 +58,8 @@ brew "wget"
 brew "yq"
 
 ### Tools
+cask "docker"
 cask "gitify"
-cask "rancher"
 
 ### Support Tools
 brew "ansible"
