@@ -92,3 +92,7 @@ alias gic="git clean -Xdf"
 
 # My functions
 source ~/.config/zsh/functions.zsh
+
+# Works
+
+export FIREBASE_CREDENTIALS="~/works/firebase_adminsdk_service_account.json"

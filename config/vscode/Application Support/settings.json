@@ -174,5 +174,6 @@
   },
   "github.copilot.nextEditSuggestions.enabled": true,
   "cloudcode.duetAI.project": "",
-  "redhat.telemetry.enabled": false
+  "redhat.telemetry.enabled": false,
+  "go.useLanguageServer": true,
 }
