@@ -10,7 +10,7 @@ tap "homebrew/bundle"
 tap "homebrew/services"
 brew "mas"
 
-## System Tools 
+## System Tools
 cask "raycast"
 
 ### SNS
