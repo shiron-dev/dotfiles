@@ -1,4 +1,21 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>shiron-dev/renovate-config"]
+  "extends": [
+    "github>shiron-dev/renovate-config"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "homebrew/actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true,
+      "minimumReleaseAge": "30 days"
+    }
+  ]
 }
