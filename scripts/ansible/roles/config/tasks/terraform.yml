@@ -12,7 +12,7 @@
 - name: Get $GOBIN
   ansible.builtin.shell: "echo $GOBIN"
   changed_when: false
-  when: true
+  check_mode: false
   register: gobin
 
 - name: Set $GOBIN
