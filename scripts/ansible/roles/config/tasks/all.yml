@@ -1,0 +1,58 @@
+- name: Set dir_symlinks
+  ansible.builtin.set_fact:
+    replace_list:
+      - ".config"
+      - ".local/share"
+    dir_symlinks:
+      - ".local/share/navi/cheats/"
+
+- name: Find all files in config dir
+  ansible.builtin.find:
+    paths: "{{ vars.config_dir }}"
+    hidden: true
+    recurse: true
+  register: config_files
+
+- name: Get file paths from config_files
+  ansible.builtin.set_fact:
+    config_paths: "{{ config_files.files | map(attribute='path') | map('replace', vars.config_dir + '/', '') | list }}"
+
+- name: Transform matched paths
+  ansible.builtin.set_fact:
+    config_items: "{{ config_paths | select('match', '.*(' + replace_list | join('|') + ')') | list }}"
+
+- name: Transform paths using patterns
+  ansible.builtin.set_fact:
+    config_items: "{{ config_items | map('regex_replace', '^([^/]+)/' + item | regex_escape + '/(.*)$', item + '/\\1/\\2') | list }}"
+  loop: "{{ replace_list }}"
+
+- name: Remove unwanted paths
+  ansible.builtin.set_fact:
+    config_items: "{{ config_items | reject('match', '.*(' + dir_symlinks | join('|') + ')') | list }}"
+
+- name: Check config_items files
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  with_items: "{{ vars.config_items }}"
+  register: check_config_items
+
+- name: Remove config_items files
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  when: item.stat.exists and not item.stat.islnk
+  with_items: "{{ check_config_items.results }}"
+
+- name: Mkdir config paths
+  ansible.builtin.file:
+    path: "~/{{ item | dirname }}"
+    state: directory
+    mode: "0755"
+  with_items: "{{ vars.config_items }}"
+
+- name: Make config symlinks
+  ansible.builtin.file:
+    src: "{{ vars.config_dir }}/{{ item | regex_replace('^(\\.config|\\.local/share)/([^/]+)(.*)', '\\2/\\1\\3') }}"
+    dest: "~/{{ item }}"
+    state: link
+  with_items: "{{ vars.config_items }}"
