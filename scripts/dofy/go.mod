@@ -7,7 +7,7 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/google/wire v0.6.0
 	github.com/pkg/errors v0.9.1
-	go.uber.org/mock v0.5.1
+	go.uber.org/mock v0.5.2
 )
 
 require (
