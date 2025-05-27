@@ -78,7 +78,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-golang
-      - uses: Homebrew/actions/setup-homebrew@9db18afa3016668c5f7e0b5d65c4eed7c1c0739e
+      - uses: Homebrew/actions/setup-homebrew@b04401e20b1aef21843d7c3e261d27a89f65af7d
       - name: Run go test
         id: golang-test
         run: |
@@ -175,7 +175,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-golang
-      - uses: Homebrew/actions/setup-homebrew@9db18afa3016668c5f7e0b5d65c4eed7c1c0739e
+      - uses: Homebrew/actions/setup-homebrew@b04401e20b1aef21843d7c3e261d27a89f65af7d
       - name: Set up gotestfmt
         uses: gotesttools/gotestfmt-action@8b4478c7019be847373babde9300210e7de34bfb # v2.5.0
         with:
