@@ -83,6 +83,7 @@ func (g *GitInfrastructureImpl) IsGitDiff(path ...string) (bool, error) {
 	cmd.Dir = g.gitDir
 
 	if err := cmd.Run(); err != nil {
+		//nolint:nilerr
 		return true, nil
 	}
 

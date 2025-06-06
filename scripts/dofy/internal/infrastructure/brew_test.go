@@ -67,7 +67,7 @@ func TestBrewInfrastructureImpl_InstallHomebrew(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{"no error", args{context.Background()}, false},
+		{"no error", args{t.Context()}, false},
 	}
 
 	//nolint:paralleltest
@@ -263,6 +263,7 @@ func TestBrewInfrastructureImpl_DumpTmpBrewBundle(t *testing.T) {
 func TestBrewInfrastructureImpl_InstallBrewBundle(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "/Brewfile")
 
+	//nolint:gosec
 	if file, err := os.Create(path); err != nil {
 		t.Fatal(err)
 	} else {

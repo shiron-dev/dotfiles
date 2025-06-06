@@ -3,6 +3,7 @@ package controller
 import (
 	"bufio"
 	"context"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -40,10 +41,14 @@ func NewDofyController(
 	}
 }
 
-//nolint:funlen
+//nolint:funlen,cyclop
 func (c *DofyControllerImpl) Start() {
 	logfile := c.printoutUC.SetLogOutput()
-	defer logfile.Close()
+	defer func() {
+		if err := logfile.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	c.printoutUC.PrintMdf(`
 

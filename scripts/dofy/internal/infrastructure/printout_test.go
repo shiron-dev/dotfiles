@@ -47,11 +47,17 @@ func TestPrintOutInfrastructureImpl_Print(t *testing.T) {
 
 			logPath := filepath.Join(t.TempDir(), tt.name+".log")
 
+			//nolint:gosec
 			logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_RDWR, filePermission)
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer logFile.Close()
+
+			defer func() {
+				if err := logFile.Close(); err != nil {
+					t.Fatal(err)
+				}
+			}()
 
 			p.SetLogOutput(logFile)
 

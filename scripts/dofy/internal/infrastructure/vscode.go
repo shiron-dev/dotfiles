@@ -1,6 +1,10 @@
 package infrastructure
 
-import "os/exec"
+import (
+	"os/exec"
+
+	"github.com/pkg/errors"
+)
 
 type VSCodeInfrastructure interface {
 	ListExtensions() ([]string, error)
@@ -15,7 +19,7 @@ func NewVSCodeInfrastructure() *VSCodeInfrastructureImpl {
 func (v *VSCodeInfrastructureImpl) ListExtensions() ([]string, error) {
 	cmd := exec.Command("code", "--list-extensions")
 	if out, err := cmd.Output(); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "vscode infrastructure: failed to list extensions")
 	} else {
 		return []string{string(out)}, nil
 	}

@@ -1,20 +1,20 @@
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    - exportloopref
     - depguard
-
-issues:
-  exclude-dirs:
-    - gen
-  exclude-rules:
-    - path: '.*_test.go'
-      linters:
-        - containedctx
-        - funlen
-        - varnamelen
-        - nestif
-        - gocognit
-        - tparallel
-        - cyclop
-        - dupl
+    - revive
+  exclusions:
+    paths:
+      - gen
+    rules:
+      - path: ".*_test.go"
+        linters:
+          - containedctx
+          - funlen
+          - varnamelen
+          - nestif
+          - gocognit
+          - tparallel
+          - cyclop
+          - dupl

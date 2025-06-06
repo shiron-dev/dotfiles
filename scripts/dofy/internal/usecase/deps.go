@@ -160,14 +160,14 @@ func (d *DepsUsecaseImpl) InstallBrewBundle(forceInstall bool) error {
 Install the packages using Homebrew Bundle.
 `)
 
-// 	d.printOutUC.PrintMdf(`
-// ### Install brew bundle
+	// 	d.printOutUC.PrintMdf(`
+	// ### Install brew bundle
 
-// ` + "`brew tap Homebrew/bundle`\n")
+	// ` + "`brew tap Homebrew/bundle`\n")
 
-// 	if err := d.brewUC.InstallFormula("Homebrew/bundle", domain.BrewBundleTypeTap); err != nil {
-// 		return errors.Wrap(err, "deps usecase: failed to install Homebrew/bundle")
-// 	}
+	// 	if err := d.brewUC.InstallFormula("Homebrew/bundle", domain.BrewBundleTypeTap); err != nil {
+	// 		return errors.Wrap(err, "deps usecase: failed to install Homebrew/bundle")
+	// 	}
 
 	err = d.brewUC.DumpTmpBrewBundle(brewTmpPath)
 	if err != nil {

@@ -70,7 +70,7 @@ func TestDepsUsecaseImpl_InstallHomebrew(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{"no error", args{context.Background()}, false},
+		{"no error", args{t.Context()}, false},
 	}
 
 	for _, tt := range tests {

@@ -33,6 +33,7 @@ func NewPrintOutInfrastructure(stdout io.Writer, stderr io.Writer) *PrintOutInfr
 
 func (p *PrintOutInfrastructureImpl) Print(str string) {
 	log.Print(str)
+	//nolint:errcheck
 	fmt.Fprint(p.stdout, str)
 }
 

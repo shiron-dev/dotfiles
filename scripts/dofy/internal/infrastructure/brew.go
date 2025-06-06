@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -45,7 +46,12 @@ func (b *BrewInfrastructureImpl) InstallHomebrew(ctx context.Context, sout io.Wr
 	if err != nil {
 		return errors.Wrap(err, "brew infrastructure: failed to send request")
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	bytes, _ := io.ReadAll(resp.Body)
 
@@ -71,6 +77,7 @@ func (b *BrewInfrastructureImpl) SetHomebrewEnv(goos string) error {
 		brewPath = "/home/linuxbrew/.linuxbrew/bin/brew"
 	}
 
+	//nolint:gosec
 	cmd := exec.Command(brewPath, "shellenv")
 
 	shellenv, err := cmd.Output()
@@ -82,8 +89,11 @@ func (b *BrewInfrastructureImpl) SetHomebrewEnv(goos string) error {
 		if strings.HasPrefix(line, "export PATH=") {
 			//nolint:gosec
 			cmd = exec.Command("sh", "-c", "echo "+strings.Replace(line, "export PATH=", "", 1))
+
 			out, _ := cmd.Output()
-			os.Setenv("PATH", strings.Trim(string(out), "\""))
+			if err := os.Setenv("PATH", strings.Trim(string(out), "\"")); err != nil {
+				return errors.Wrap(err, "brew infrastructure: failed to set env")
+			}
 		}
 	}
 
@@ -128,7 +138,11 @@ func (b *BrewInfrastructureImpl) InstallByMas(pkg string, sout io.Writer, serror
 
 func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(path string, isMac bool, sout io.Writer, serror io.Writer) error {
 	if _, err := os.Stat(path); err == nil {
-		os.Remove(path)
+		if err := os.Remove(path); err != nil {
+			return errors.Wrap(err, "brew infrastructure: failed to remove file")
+		}
+	} else {
+		return errors.Wrap(err, "brew infrastructure: failed to stat file")
 	}
 
 	args := []string{"bundle", "dump", "--tap", "--formula"}
@@ -181,11 +195,17 @@ func (b *BrewInfrastructureImpl) CleanupBrewBundle(path string, isForce bool, so
 }
 
 func (b *BrewInfrastructureImpl) ReadBrewBundle(path string) ([]domain.BrewBundle, error) {
+	//nolint:gosec
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, errors.Wrap(err, "deps infrastructure: failed to open file")
 	}
-	defer file.Close()
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	scanner := bufio.NewScanner(file)
 
@@ -252,12 +272,18 @@ func getCategory(line string, lastCategories []string) []string {
 	return lastCategories
 }
 
-func (b *BrewInfrastructureImpl) WriteBrewBundle(path string, bundles []domain.BrewBundle) error {
+func (b *BrewInfrastructureImpl) WriteBrewBundle(path string, bundles []domain.BrewBundle) error { //nolint:cyclop
+	//nolint:gosec
 	file, err := os.Create(path)
 	if err != nil {
 		return errors.Wrap(err, "deps infrastructure: failed to create file")
 	}
-	defer file.Close()
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	if _, err := file.WriteString("# Brewfile made by dofy\n"); err != nil {
 		return errors.Wrap(err, "deps infrastructure: failed to write file")

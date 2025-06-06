@@ -24,6 +24,7 @@ func (f *FileInfrastructureImpl) ReadFile(path string) ([]byte, error) {
 		return nil, errors.Wrap(err, "file infrastructure: failed to open file")
 	}
 
+	//nolint:gosec
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, errors.Wrap(err, "file infrastructure: failed to read file")
