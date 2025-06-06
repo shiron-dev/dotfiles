@@ -26,7 +26,6 @@ cask "steam"
 # Tools
 
 ## Core Tools
-tap "homebrew/bundle"
 tap "homebrew/core"
 tap "homebrew/services"
 brew "mas"
