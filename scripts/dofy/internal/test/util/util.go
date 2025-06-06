@@ -16,11 +16,17 @@ func MakeUnOpenableFile(t *testing.T) (string, error) {
 
 	path := t.TempDir() + "/unopenable"
 
+	//nolint:gosec
 	file, err := os.Create(path)
 	if err != nil {
 		return path, errors.Wrap(err, "failed to create file")
 	}
-	defer file.Close()
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
 
 	err = os.Chmod(path, 0)
 

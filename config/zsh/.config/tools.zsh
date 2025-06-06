@@ -1,3 +1,6 @@
+# code to cursor
+alias code="cursor"
+
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:/opt/homebrew/lib/"
@@ -28,6 +31,12 @@ export PATH="$PATH:/opt/homebrew/opt/gawk/libexec/gnubin"
 alias gcc="gcc-14"
 alias g++="g++-14"
 alias sed='gsed'
+alias awk='gawk'
+alias grep='ggrep'
+alias ls='gls --color=auto'
+
+export CPATH="$CPATH:/opt/homebrew/include"
+export LIBRARY_PATH="$LIBRARY_PATH:/opt/homebrew/lib"
 
 # python
 alias python="python3"
@@ -72,6 +81,9 @@ export PATH="$PATH":"$ANDROID_HOME/tools":"$ANDROID_HOME/build-tools/35.0.0"
 
 # pipx
 export PATH="$PATH:/Users/shiron/.local/bin"
+
+# psql
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 
 # My tools
 export PATH="$PATH":"/Users/shiron/projects/tools/bin"

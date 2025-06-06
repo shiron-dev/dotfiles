@@ -70,7 +70,7 @@ func TestDepsUsecaseImpl_InstallHomebrew(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{"no error", args{context.Background()}, false},
+		{"no error", args{t.Context()}, false},
 	}
 
 	for _, tt := range tests {
@@ -233,7 +233,6 @@ func TestDepsUsecaseImpl_InstallBrewBundle(t *testing.T) {
 			mCfg.EXPECT().GetOS().Return("testOS", nil)
 			mCfg.EXPECT().GetOSVersion().Return("testOSVersion", nil)
 			mCfg.EXPECT().GetArch().Return("testArch", nil)
-			mBrew.EXPECT().InstallTap(gomock.Any(), sout, serror).Return(nil)
 			mBrew.EXPECT().DumpTmpBrewBundle(gomock.Any(), false, sout, serror).Return(nil)
 			mBrew.EXPECT().InstallBrewBundle(gomock.Any(), sout, serror).Return(nil)
 			mBrew.EXPECT().ReadBrewBundle(gomock.Any()).Return([]domain.BrewBundle{

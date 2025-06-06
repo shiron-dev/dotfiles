@@ -13,11 +13,17 @@ import (
 func createFile(t *testing.T, path string, content string) {
 	t.Helper()
 
+	//nolint:gosec
 	file, err := os.Create(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer file.Close()
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
 
 	_, err = file.WriteString(content)
 	if err != nil {

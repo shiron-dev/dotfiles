@@ -27,7 +27,7 @@ func TestBrewUsecaseImpl_InstallHomebrew(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{"normal", args{context.Background()}, false},
+		{"normal", args{t.Context()}, false},
 	}
 
 	for _, tt := range tests {
@@ -117,6 +117,7 @@ func TestBrewUsecaseImpl_InstallBrewBundle(t *testing.T) {
 
 	path := filepath.Join(t.TempDir(), "/Brewfile")
 
+	//nolint:gosec
 	if file, err := os.Create(path); err != nil {
 		t.Fatal(err)
 	} else {

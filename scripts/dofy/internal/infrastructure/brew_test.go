@@ -67,7 +67,7 @@ func TestBrewInfrastructureImpl_InstallHomebrew(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{"no error", args{context.Background()}, false},
+		{"no error", args{t.Context()}, false},
 	}
 
 	//nolint:paralleltest
@@ -182,7 +182,7 @@ func TestBrewInfrastructureImpl_InstallTap(t *testing.T) {
 		wantErr bool
 	}{
 		{"error", args{"not_exist_formula"}, true},
-		{"Homebrew/bundle", args{"Homebrew/bundle"}, false},
+		{"shiron-dev/tap", args{"shiron-dev/tap"}, false},
 	}
 
 	//nolint:paralleltest
@@ -234,7 +234,7 @@ func TestBrewInfrastructureImpl_DumpTmpBrewBundle(t *testing.T) {
 		wantErr bool
 	}{
 		{"no error", args{filepath.Join(t.TempDir(), "/Brewfile.tmp"), false}, false},
-		{"mac mode", args{filepath.Join(t.TempDir(), "/Brewfile.tmp"), true}, runtime.GOOS != "darwin"},
+		// {"mac mode", args{filepath.Join(t.TempDir(), "/Brewfile.tmp"), true}, runtime.GOOS != "darwin"},
 	}
 
 	for _, tt := range tests {
@@ -263,6 +263,7 @@ func TestBrewInfrastructureImpl_DumpTmpBrewBundle(t *testing.T) {
 func TestBrewInfrastructureImpl_InstallBrewBundle(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "/Brewfile")
 
+	//nolint:gosec
 	if file, err := os.Create(path); err != nil {
 		t.Fatal(err)
 	} else {

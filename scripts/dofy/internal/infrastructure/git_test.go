@@ -17,11 +17,17 @@ func makeTestFile(t *testing.T) (string, string) {
 	gitRepo := util.MakeGitRepo(t)
 	path := gitRepo + "/test"
 
+	//nolint:gosec
 	file, err := os.Create(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer file.Close()
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
 
 	_, err = file.WriteString("test")
 	if err != nil {
@@ -76,9 +82,9 @@ func TestGitInfrastructureImpl_GitDifftool(t *testing.T) {
 		gitRepo string
 		wantErr bool
 	}{
-		{"no error", args{context.Background(), []string{filePath}}, gitRepo, false},
-		{"error", args{context.Background(), []string{"not_exist"}}, t.TempDir(), true},
-		{"not set git dir", args{context.Background(), []string{"."}}, "", true},
+		{"no error", args{t.Context(), []string{filePath}}, gitRepo, false},
+		{"error", args{t.Context(), []string{"not_exist"}}, t.TempDir(), true},
+		{"not set git dir", args{t.Context(), []string{"."}}, "", true},
 	}
 
 	for _, tt := range tests {
@@ -165,11 +171,17 @@ func TestGitInfrastructureImpl_CheckoutFile(t *testing.T) {
 				}
 
 				if tt.name != "no update" {
+					//nolint:gosec
 					file, err := os.OpenFile(tt.args.path, os.O_WRONLY, 0o666)
 					if err != nil {
 						t.Fatal(err)
 					}
-					defer file.Close()
+
+					defer func() {
+						if err := file.Close(); err != nil {
+							t.Fatal(err)
+						}
+					}()
 
 					if _, err = file.WriteString("test"); err != nil {
 						t.Fatal(err)

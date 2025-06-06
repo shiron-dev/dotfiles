@@ -159,19 +159,69 @@
   "background.enabled": false,
   "go.toolsManagement.autoUpdate": true,
   "emeraldwalk.runonsave": {
-        "commands": [
-            {
-                "match": ".*\\.(yml|yaml)$",
-                "cmd": "yamlfmt ${file}",
-                "autoShowOutputPanel": "error"
-            },
-            {
-                "match": ".*\\.proto$",
-                "cmd": "buf format -w ${file}",
-                "autoShowOutputPanel": "error"
-            }
-        ]
+    "commands": [
+      {
+        "match": ".*\\.(yml|yaml)$",
+        "cmd": "yamlfmt ${file}",
+        "autoShowOutputPanel": "error"
+      },
+      {
+        "match": ".*\\.proto$",
+        "cmd": "buf format -w ${file}",
+        "autoShowOutputPanel": "error"
+      }
+    ]
+  },
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "geminicodeassist.project": "",
+  "geminicodeassist.inlineSuggestions.enableAuto": false,
+  "diffEditor.codeLens": true,
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use conventional commit message format. Scope must be included. Body should be included if the commit is somewhat large."
     },
-    "github.copilot.nextEditSuggestions.enabled": true,
-    "cloudcode.duetAI.project": ""
+    {
+      "text": "In many cases, such as when touching .github and below, the ci type is applicable."
+    },
+    {
+      "text": "Please use English."
+    },
+    {
+      "text": "One of type: `build: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)`"
+    },
+    {
+      "text": "One of type: `ci: Changes to our CI configuration files and scripts (example scopes: github, renovate)`"
+    },
+    {
+      "text": "One of type: `docs: Documentation only changes`"
+    },
+    {
+      "text": "One of type: `feat: A new feature`"
+    },
+    {
+      "text": "One of type: `fix: A bug fix`"
+    },
+    {
+      "text": "One of type: `perf: A code change that improves performance`"
+    },
+    {
+      "text": "One of type: `refactor: A code change that neither fixes a bug nor adds a feature`"
+    },
+    {
+      "text": "One of type: `style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)`"
+    },
+    {
+      "text": "One of type: `test: Adding missing tests or correcting existing tests`"
+    }
+  ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "accessibility.voice.speechLanguage": "ja-JP",
+  "liveshare.accessibility.voice": "ja-JP-Nanami",
+  "protoc": {
+    "options": [
+      "-I=~/.cache/buf/v1/module/data/buf.build"
+    ]
+  }
 }

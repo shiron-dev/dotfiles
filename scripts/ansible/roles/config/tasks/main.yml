@@ -20,3 +20,6 @@
 
 - name: Set terraform
   ansible.builtin.import_tasks: terraform.yml
+
+- name: Set root
+  ansible.builtin.import_tasks: root.yml
