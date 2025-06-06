@@ -151,7 +151,7 @@ func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(path string, isMac bool, sout
 }
 
 func (b *BrewInfrastructureImpl) InstallBrewBundle(path string, sout io.Writer, serror io.Writer) error {
-	cmd := exec.Command("brew", "bundle", "--no-lock", "--file", path)
+	cmd := exec.Command("brew", "bundle", "--file", path)
 	cmd.Stdout = sout
 	cmd.Stderr = serror
 
