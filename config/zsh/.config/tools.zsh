@@ -1,3 +1,6 @@
+# code to cursor
+alias code="cursor"
+
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:/opt/homebrew/lib/"

@@ -1,7 +1,7 @@
 [core]
 	autocrlf = input
 	excludesFile = /Users/shiron/.config/git/ignore
-	editor = code --wait
+	editor = cursor --wait
 	ignorecase = true
 [gpg]
 	program = /opt/homebrew/bin/gpg
