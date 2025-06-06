@@ -5,10 +5,15 @@ import (
 	"testing"
 
 	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/di"
+	"github.com/shiron-dev/dotfiles/scripts/dofy/internal/test/util"
 )
 
 func TestVSCodeInfrastructureImpl_ListExtensions(t *testing.T) {
 	t.Parallel()
+
+	if util.IsCI() {
+		t.Skip("skipping test; running on CI")
+	}
 
 	tests := []struct {
 		name    string

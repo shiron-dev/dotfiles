@@ -141,8 +141,6 @@ func (b *BrewInfrastructureImpl) DumpTmpBrewBundle(path string, isMac bool, sout
 		if err := os.Remove(path); err != nil {
 			return errors.Wrap(err, "brew infrastructure: failed to remove file")
 		}
-	} else {
-		return errors.Wrap(err, "brew infrastructure: failed to stat file")
 	}
 
 	args := []string{"bundle", "dump", "--tap", "--formula"}
