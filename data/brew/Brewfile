@@ -1,11 +1,13 @@
 # Brewfile made by dofy
 
 # Lib
+brew "boost"
 brew "gmp"
 brew "harfbuzz"
 brew "libass"
 brew "libassuan"
 brew "libomp"
+brew "libpq"
 brew "librsvg"
 brew "opus"
 brew "pango"
@@ -16,6 +18,7 @@ brew "ta-lib"
 brew "tesseract"
 brew "ttyd"
 brew "unbound"
+brew "z3"
 
 # Fonts
 cask "font-roboto-mono-nerd-font"
@@ -33,6 +36,7 @@ brew "mas"
 ## System Tools
 cask "1password"
 cask "battery"
+cask "finicky"
 cask "openinterminal"
 cask "raycast"
 
@@ -75,11 +79,18 @@ cask "vlc"
 cask "voicevox"
 mas "DaVinci Resolve", id: 571213070
 
+### Other Office Tools
+cask "fujitsu-scansnap-home"
+cask "rwts-pdfwriter"
+
 ### Other Tools
+cask "adobe-acrobat-reader"
 cask "betterdisplay"
 cask "itsycal"
 cask "jordanbaird-ice"
+cask "macs-fan-control"
 cask "onyx"
+cask "stats"
 cask "timemachinestatus"
 cask "utm"
 cask "wakatime"
@@ -87,7 +98,9 @@ cask "webtorrent"
 cask "whisky"
 mas "AmorphousDiskMark", id: 1168254295
 mas "Amphetamine", id: 937984704
+mas "Cloud Battery", id: 1481005137
 mas "Goodnotes", id: 1444383602
+mas "MeetingBar", id: 1532419400
 
 ## Dev Tools
 
@@ -96,6 +109,8 @@ brew "mise"
 brew "volta"
 
 ### Editor
+cask "arduino-ide"
+cask "cursor"
 cask "jetbrains-toolbox"
 cask "visual-studio-code"
 cask "visual-studio-code@insiders"
@@ -137,6 +152,7 @@ brew "navi"
 brew "netcat"
 brew "nmap"
 brew "parallel"
+brew "rename"
 brew "sheldon"
 brew "tree"
 brew "watch"
@@ -151,6 +167,7 @@ tap "go-task/tap"
 tap "joerdav/xc"
 brew "go-task/tap/go-task"
 brew "joerdav/xc/xc"
+brew "just"
 
 ### Tools
 cask "docker"
@@ -161,23 +178,30 @@ cask "wireshark"
 
 ### Support Tools
 tap "ariga/tap"
+tap "buildpacks/tap"
 tap "goreleaser/tap"
 tap "hashicorp/tap"
 brew "ansible"
 brew "ariga/tap/atlas"
+brew "buildpacks/tap/pack"
 brew "docker-buildx"
 brew "goreleaser/tap/goreleaser"
 brew "graphviz"
 brew "hashicorp/tap/packer"
+brew "mysql-client"
 brew "mysql-client@8.0"
-brew "terraform"
+cask "commander-one"
 cask "mysqlworkbench"
 cask "pgadmin4"
 
 ### Service Tools
 tap "cloudflare/cloudflare"
 brew "awscli"
+brew "azure-cli"
+brew "cloud-sql-proxy"
 brew "cloudflared"
+cask "claude"
+cask "figma"
 cask "google-cloud-sdk"
 cask "session-manager-plugin"
 cask "tailscale"
@@ -193,6 +217,7 @@ brew "go"
 brew "pipx"
 brew "protobuf"
 brew "rust"
+cask "flutter"
 cask "unity-hub"
 
 ##### QA
@@ -204,9 +229,9 @@ brew "gofumpt"
 brew "golangci-lint"
 brew "hadolint"
 brew "infracost"
-brew "markdownlint-cli2"
 brew "shellcheck"
 brew "shyiko/ktlint/ktlint"
 brew "sqlfluff"
+brew "tflint"
 brew "yamlfmt"
 brew "yamllint"
