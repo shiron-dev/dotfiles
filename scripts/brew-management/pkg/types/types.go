@@ -44,13 +44,7 @@ type InstallOptions struct {
 	Verbose        bool
 	Groups         []string
 	Tags           []string
-	ExcludeGroups  []string
-	ExcludeTags    []string
 	Profile        string
-	TapsOnly       bool
-	BrewsOnly      bool
-	CasksOnly      bool
-	MasOnly        bool
 	SkipTaps       bool
 	SkipBrews      bool
 	SkipCasks      bool

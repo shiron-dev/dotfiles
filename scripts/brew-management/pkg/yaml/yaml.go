@@ -129,7 +129,6 @@ func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOpt
 		if exists {
 			options.Groups = append(options.Groups, profile.Groups...)
 			options.Tags = append(options.Tags, profile.Tags...)
-			options.ExcludeTags = append(options.ExcludeTags, profile.ExcludeTags...)
 		}
 	}
 
@@ -142,10 +141,6 @@ func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOpt
 	}
 
 	for _, groupName := range groupsToProcess {
-		if utils.ContainsString(options.ExcludeGroups, groupName) {
-			continue
-		}
-
 		group, exists := config.Groups[groupName]
 		if !exists {
 			continue
@@ -154,9 +149,6 @@ func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOpt
 		for _, pkg := range group.Packages {
 			// Apply tag filters
 			if len(options.Tags) > 0 && !utils.HasIntersection(pkg.Tags, options.Tags) {
-				continue
-			}
-			if len(options.ExcludeTags) > 0 && utils.HasIntersection(pkg.Tags, options.ExcludeTags) {
 				continue
 			}
 

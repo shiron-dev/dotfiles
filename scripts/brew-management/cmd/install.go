@@ -15,13 +15,7 @@ import (
 var (
 	groups        string
 	tags          string
-	excludeGroups string
-	excludeTags   string
 	profile       string
-	tapsOnly      bool
-	brewsOnly     bool
-	casksOnly     bool
-	masOnly       bool
 	skipTaps      bool
 	skipBrews     bool
 	skipCasks     bool
@@ -66,13 +60,7 @@ Examples:
 			Verbose:        verbose,
 			Groups:         utils.SplitCommaSeparated(groups),
 			Tags:           utils.SplitCommaSeparated(tags),
-			ExcludeGroups:  utils.SplitCommaSeparated(excludeGroups),
-			ExcludeTags:    utils.SplitCommaSeparated(excludeTags),
 			Profile:        profile,
-			TapsOnly:       tapsOnly,
-			BrewsOnly:      brewsOnly,
-			CasksOnly:      casksOnly,
-			MasOnly:        masOnly,
 			SkipTaps:       skipTaps,
 			SkipBrews:      skipBrews,
 			SkipCasks:      skipCasks,
@@ -105,8 +93,6 @@ Examples:
 		utils.PrintStatus(utils.Green, "Installation completed successfully!")
 	},
 }
-
-
 
 func handleListCommands(yamlFile string) error {
 	config, err := yamlPkg.LoadGroupedConfig(yamlFile)
@@ -188,19 +174,12 @@ func handleListCommands(yamlFile string) error {
 func init() {
 	rootCmd.AddCommand(installCmd)
 
-
 	// Installation filters
 	installCmd.Flags().StringVarP(&groups, "groups", "g", "", "Install only specified groups (comma-separated)")
 	installCmd.Flags().StringVarP(&tags, "tags", "t", "", "Install only packages with specified tags (comma-separated)")
-	installCmd.Flags().StringVar(&excludeGroups, "exclude-groups", "", "Exclude specified groups (comma-separated)")
-	installCmd.Flags().StringVar(&excludeTags, "exclude-tags", "", "Exclude packages with specified tags (comma-separated)")
 	installCmd.Flags().StringVarP(&profile, "profile", "p", "", "Install using predefined profile")
 
-	// Package type filters
-	installCmd.Flags().BoolVar(&tapsOnly, "taps-only", false, "Install only taps")
-	installCmd.Flags().BoolVar(&brewsOnly, "brews-only", false, "Install only brew formulae")
-	installCmd.Flags().BoolVar(&casksOnly, "casks-only", false, "Install only casks")
-	installCmd.Flags().BoolVar(&masOnly, "mas-only", false, "Install only Mac App Store apps")
+	// Package type skip flags
 	installCmd.Flags().BoolVar(&skipTaps, "skip-taps", false, "Skip installing taps")
 	installCmd.Flags().BoolVar(&skipBrews, "skip-brews", false, "Skip installing brew formulae")
 	installCmd.Flags().BoolVar(&skipCasks, "skip-casks", false, "Skip installing casks")
@@ -210,6 +189,4 @@ func init() {
 	installCmd.Flags().BoolVar(&listGroups, "list-groups", false, "List available groups")
 	installCmd.Flags().BoolVar(&listTags, "list-tags", false, "List available tags")
 	installCmd.Flags().BoolVar(&listProfiles, "list-profiles", false, "List available profiles")
-
-
 } 

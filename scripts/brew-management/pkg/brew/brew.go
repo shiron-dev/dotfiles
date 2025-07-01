@@ -23,7 +23,7 @@ func InstallPackages(packages []types.Package, options *types.InstallOptions) er
 
 	// Install in order: taps, brews, casks, mas
 	order := []string{"tap", "brew", "cask", "mas"}
-	
+
 	for _, pkgType := range order {
 		packages := packagesByType[pkgType]
 		if len(packages) == 0 {
@@ -35,10 +35,8 @@ func InstallPackages(packages []types.Package, options *types.InstallOptions) er
 			continue
 		}
 
-		if shouldInstallOnlyType(pkgType, options) || (!options.TapsOnly && !options.BrewsOnly && !options.CasksOnly && !options.MasOnly) {
-			if err := installPackagesByType(pkgType, packages, options); err != nil {
-				return fmt.Errorf("failed to install %s packages: %w", pkgType, err)
-			}
+		if err := installPackagesByType(pkgType, packages, options); err != nil {
+			return fmt.Errorf("failed to install %s packages: %w", pkgType, err)
 		}
 	}
 
@@ -56,21 +54,6 @@ func shouldSkipType(pkgType string, options *types.InstallOptions) bool {
 		return options.SkipCasks
 	case "mas":
 		return options.SkipMas
-	}
-	return false
-}
-
-// shouldInstallOnlyType checks if only this package type should be installed
-func shouldInstallOnlyType(pkgType string, options *types.InstallOptions) bool {
-	switch pkgType {
-	case "tap":
-		return options.TapsOnly
-	case "brew":
-		return options.BrewsOnly
-	case "cask":
-		return options.CasksOnly
-	case "mas":
-		return options.MasOnly
 	}
 	return false
 }
@@ -191,5 +174,3 @@ func installMas(name string, id int64, verbose bool) error {
 
 	return utils.RunCommandSilent("mas", "install", strconv.FormatInt(id, 10))
 }
-
- 
