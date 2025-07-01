@@ -1,0 +1,200 @@
+# YAML-based Brew packages configuration with groups and tags
+# This file defines packages with group and tag classification
+
+metadata:
+  version: "2.1"
+  supports_groups: true
+  supports_tags: true
+
+# Define groups with packages
+groups:
+  core:
+    description: "Essential development tools"
+    priority: 1
+    packages:
+      - name: homebrew/core
+        type: tap
+        tags: [essential]
+      - name: homebrew/services
+        type: tap
+        tags: [essential, services]
+      - name: git
+        type: brew
+        tags: [essential, version-control]
+        description: "Distributed version control system"
+      - name: git-lfs
+        type: brew
+        tags: [git, large-files]
+      - name: mas
+        type: brew
+        tags: [essential, app-store]
+
+  development:
+    description: "Development tools and environments"
+    priority: 2
+    packages:
+      - name: jesseduffield/lazydocker
+        type: tap
+        tags: [docker, gui]
+      - name: jesseduffield/lazygit
+        type: tap
+        tags: [git, gui]
+      - name: go-task/tap
+        type: tap
+        tags: [task-runner, go]
+      - name: hashicorp/tap
+        type: tap
+        tags: [infrastructure, cloud]
+      - name: bat
+        type: brew
+        tags: [cli, text, productivity]
+        description: "A cat clone with syntax highlighting"
+      - name: fd
+        type: brew
+        tags: [cli, search, productivity]
+      - name: fzf
+        type: brew
+        tags: [cli, search, productivity]
+      - name: ripgrep
+        type: brew
+        tags: [cli, search, productivity]
+      - name: yq
+        type: brew
+        tags: [cli, yaml, json]
+      - name: jq
+        type: brew
+        tags: [cli, json]
+      - name: go
+        type: brew
+        tags: [language, golang]
+      - name: rust
+        type: brew
+        tags: [language, rust]
+      - name: python@3.12
+        type: brew
+        tags: [language, python]
+      - name: docker-buildx
+        type: brew
+        tags: [docker, container]
+      - name: ansible
+        type: brew
+        tags: [automation, infrastructure]
+      - name: terraform
+        type: brew
+        tags: [infrastructure, cloud]
+      - name: visual-studio-code
+        type: cask
+        tags: [editor, microsoft]
+        description: "Code editor from Microsoft"
+      - name: cursor
+        type: cask
+        tags: [editor, ai]
+      - name: docker
+        type: cask
+        tags: [container, development]
+      - name: postman
+        type: cask
+        tags: [api, testing]
+      - name: "Xcode"
+        type: mas
+        id: 497799835
+        tags: [ios, apple, development]
+
+  productivity:
+    description: "Productivity and office applications"
+    priority: 3
+    packages:
+      - name: notion
+        type: cask
+        tags: [notes, collaboration]
+      - name: slack
+        type: cask
+        tags: [communication, team]
+      - name: zoom
+        type: cask
+        tags: [video-call, meeting]
+      - name: google-chrome
+        type: cask
+        tags: [browser, google]
+      - name: firefox
+        type: cask
+        tags: [browser, mozilla]
+      - name: arc
+        type: cask
+        tags: [browser, modern]
+      - name: "LINE"
+        type: mas
+        id: 539883307
+        tags: [messaging, social]
+      - name: "MeetingBar"
+        type: mas
+        id: 1532419400
+        tags: [calendar, meeting]
+
+  creative:
+    description: "Creative and multimedia tools"
+    priority: 4
+    packages:
+      - name: figma
+        type: cask
+        tags: [design, ui-ux]
+      - name: obs
+        type: cask
+        tags: [streaming, recording]
+      - name: vlc
+        type: cask
+        tags: [media-player, video]
+
+  system:
+    description: "System utilities and tools"
+    priority: 5
+    packages:
+      - name: htop
+        type: brew
+        tags: [monitoring, system]
+      - name: tree
+        type: brew
+        tags: [filesystem, cli]
+      - name: watch
+        type: brew
+        tags: [monitoring, cli]
+      - name: raycast
+        type: cask
+        tags: [launcher, productivity]
+      - name: 1password
+        type: cask
+        tags: [security, password]
+      - name: stats
+        type: cask
+        tags: [monitoring, system]
+      - name: "Amphetamine"
+        type: mas
+        id: 937984704
+        tags: [utility, prevent-sleep]
+
+  optional:
+    description: "Optional and experimental tools"
+    priority: 10
+    packages: []
+
+# Installation profiles - predefined combinations
+profiles:
+  minimal:
+    description: "Minimal development setup"
+    groups: [core]
+    tags: [essential]
+
+  developer:
+    description: "Full development environment"
+    groups: [core, development]
+    exclude_tags: [experimental]
+
+  full:
+    description: "Complete setup with all tools"
+    groups: [core, development, productivity, creative, system]
+    exclude_tags: []
+
+  system-admin:
+    description: "System administration tools"
+    groups: [core, development, system]
+    tags: [monitoring, infrastructure, cli]
