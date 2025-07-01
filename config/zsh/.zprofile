@@ -8,4 +8,15 @@ setopt share_history
 setopt AUTO_CD
 setopt AUTO_PARAM_KEYS
 
+is_cursor() {
+  [[ "$PAGER" == "head -n 10000 | cat" ]]
+}
+
+zshaddhistory() {
+    if is_cursor; then
+        return 1
+    fi
+    return 0
+}
+
 export LC_ALL="en_US.UTF-8"
