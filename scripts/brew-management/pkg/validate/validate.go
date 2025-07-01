@@ -61,7 +61,7 @@ func ValidateYAMLFile(filePath string, options *types.ValidateOptions) error {
 		validationErrors = append(validationErrors, "Simple YAML format is no longer supported")
 	default:
 		// Try to detect format by content
-		if strings.Contains(cleanContent, "groups:") && strings.Contains(cleanContent, "metadata:") {
+		if strings.Contains(cleanContent, "groups:") {
 			validationErrors = validateGroupedYAML(cleanContent, options.Verbose)
 		} else {
 			validationErrors = append(validationErrors, "Simple YAML format is no longer supported")
@@ -96,10 +96,6 @@ func validateGroupedYAML(content string, verbose bool) []string {
 	}
 
 	// Check required fields
-	if config.Metadata.Version == "" {
-		errors = append(errors, "Missing metadata.version")
-	}
-
 	if len(config.Groups) == 0 {
 		errors = append(errors, "Missing groups section")
 	}

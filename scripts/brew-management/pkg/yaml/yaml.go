@@ -71,11 +71,6 @@ func LoadGroupedConfig(filePath string) (*types.PackageGrouped, error) {
 // createDefaultGroupedConfig creates a default empty configuration
 func createDefaultGroupedConfig() *types.PackageGrouped {
 	return &types.PackageGrouped{
-		Metadata: types.Metadata{
-			Version:        "1.0",
-			SupportsGroups: true,
-			SupportsTags:   true,
-		},
 		Groups:   make(map[string]types.Group),
 		Profiles: make(map[string]types.Profile),
 	}
@@ -114,9 +109,7 @@ func SaveGroupedConfig(config *types.PackageGrouped, filePath string) error {
 	}
 
 	// Add yaml-language-server comment
-	content := "# yaml-language-server: $schema=schemas/packages-grouped.schema.json\n"
-	content += "# YAML-based Brew packages configuration with groups and tags\n"
-	content += "# This file defines packages with group and tag classification\n\n"
+	content := "# yaml-language-server: $schema=schemas/packages-grouped.schema.json\n\n"
 	content += string(data)
 
 	if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {

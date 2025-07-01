@@ -2,16 +2,8 @@ package types
 
 // PackageGrouped represents the grouped YAML configuration format
 type PackageGrouped struct {
-	Metadata Metadata          `yaml:"metadata"`
 	Groups   map[string]Group  `yaml:"groups"`
 	Profiles map[string]Profile `yaml:"profiles"`
-}
-
-// Metadata contains version and feature information
-type Metadata struct {
-	Version        string `yaml:"version"`
-	SupportsGroups bool   `yaml:"supports_groups"`
-	SupportsTags   bool   `yaml:"supports_tags"`
 }
 
 // Group represents a package group with description and priority

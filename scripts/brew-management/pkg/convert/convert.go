@@ -143,11 +143,6 @@ func convertToGroupedFormat(data *BrewfileData, verbose bool) *types.PackageGrou
 	}
 
 	config := &types.PackageGrouped{
-		Metadata: types.Metadata{
-			Version:        "2.1",
-			SupportsGroups: true,
-			SupportsTags:   true,
-		},
 		Groups:   make(map[string]types.Group),
 		Profiles: make(map[string]types.Profile),
 	}
