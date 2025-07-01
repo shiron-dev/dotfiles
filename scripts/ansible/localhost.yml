@@ -1,6 +1,8 @@
 - name: Localhost
   hosts: localhost
   connection: local
+  gather_facts: False
+  strategy: free
   roles:
     - role: set_facts
       tags:
