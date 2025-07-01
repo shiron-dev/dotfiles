@@ -13,10 +13,7 @@ var (
 	backup       bool
 	sortPackages bool
 	showOnly     bool
-	defaultGroup string
-	defaultTags  string
 	interactive  bool
-	autoDetect   bool
 )
 
 // syncCmd represents the sync command
@@ -46,10 +43,10 @@ Examples:
 			Backup:       backup,
 			Sort:         sortPackages,
 			ShowOnly:     showOnly,
-			DefaultGroup: defaultGroup,
-			DefaultTags:  utils.SplitCommaSeparated(defaultTags),
+			DefaultGroup: "",
+			DefaultTags:  nil,
 			Interactive:  interactive,
-			AutoDetect:   autoDetect,
+			AutoDetect:   false,
 		}
 
 		// Perform sync
@@ -60,20 +57,12 @@ Examples:
 	},
 }
 
-
-
 func init() {
 	rootCmd.AddCommand(syncCmd)
-
 
 	// Sync options for grouped format
 	syncCmd.Flags().BoolVarP(&backup, "backup", "b", false, "Create backup of YAML file before modification")
 	syncCmd.Flags().BoolVarP(&sortPackages, "sort", "s", false, "Sort packages alphabetically within categories")
 	syncCmd.Flags().BoolVar(&showOnly, "show-only", false, "Only show missing packages without modifying the file")
-	syncCmd.Flags().StringVar(&defaultGroup, "default-group", "", "Assign this group to newly added packages (default: optional)")
-	syncCmd.Flags().StringVar(&defaultTags, "default-tags", "", "Assign these tags to newly added packages (comma-separated)")
 	syncCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Prompt for group/tag assignment for each new package")
-	syncCmd.Flags().BoolVarP(&autoDetect, "auto-detect", "a", false, "Try to auto-detect appropriate groups/tags based on package names")
-
-
 } 

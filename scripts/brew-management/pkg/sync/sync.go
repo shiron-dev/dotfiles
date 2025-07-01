@@ -171,7 +171,7 @@ func showMissingPackages(packages []MissingPackage) {
 func addMissingPackagesToGrouped(config *types.PackageGrouped, missing []MissingPackage, options *types.SyncOptions) error {
 	defaultGroup := options.DefaultGroup
 	if defaultGroup == "" {
-		defaultGroup = "optional"
+		defaultGroup = "uncategorized"
 	}
 
 	// Ensure default group exists
@@ -185,14 +185,7 @@ func addMissingPackagesToGrouped(config *types.PackageGrouped, missing []Missing
 
 	for _, pkg := range missing {
 		targetGroup := defaultGroup
-		tags := options.DefaultTags
-
-		// Auto-detect or interactive assignment
-		if options.AutoDetect {
-			targetGroup = utils.AutoDetectGroup(pkg.Name, pkg.Type)
-			detectedTags := utils.AutoDetectTags(pkg.Name, pkg.Type)
-			tags = append(tags, detectedTags...)
-		}
+		tags := []string{}
 
 		if options.Interactive {
 			response, err := promptForPackageAssignment(pkg, targetGroup, tags)
