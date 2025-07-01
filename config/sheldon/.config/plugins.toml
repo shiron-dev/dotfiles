@@ -24,6 +24,7 @@ apply = ["source"]
 
 [plugins.powerlevel10k]
 github = "romkatv/powerlevel10k"
+profiles = ["default"]
 apply = ["source"]
 [plugins.powerlevel10k.hooks]
 post = """
