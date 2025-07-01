@@ -14,8 +14,9 @@ import (
 
 // LoadGroupedConfig loads a grouped YAML configuration file
 func LoadGroupedConfig(filePath string) (*types.PackageGrouped, error) {
+	// If file doesn't exist, return a default empty configuration
 	if !utils.FileExists(filePath) {
-		return nil, fmt.Errorf("YAML file not found: %s", filePath)
+		return createDefaultGroupedConfig(), nil
 	}
 
 	data, err := os.ReadFile(filePath)
@@ -23,29 +24,70 @@ func LoadGroupedConfig(filePath string) (*types.PackageGrouped, error) {
 		return nil, fmt.Errorf("failed to read YAML file: %w", err)
 	}
 
-	// Remove yaml-language-server comment if present
+	// If file is empty or contains only whitespace/comments, return default config
 	content := string(data)
 	lines := strings.Split(content, "\n")
 	var filteredLines []string
 	for _, line := range lines {
-		if !strings.HasPrefix(strings.TrimSpace(line), "# yaml-language-server:") {
+		trimmed := strings.TrimSpace(line)
+		// Skip comments and empty lines
+		if !strings.HasPrefix(trimmed, "#") && trimmed != "" {
 			filteredLines = append(filteredLines, line)
 		}
 	}
-	cleanContent := strings.Join(filteredLines, "\n")
+
+	// If no meaningful content found, return default config
+	if len(filteredLines) == 0 || strings.TrimSpace(strings.Join(filteredLines, "\n")) == "" {
+		return createDefaultGroupedConfig(), nil
+	}
+
+	// Remove yaml-language-server comment if present for parsing
+	var cleanLines []string
+	for _, line := range lines {
+		if !strings.HasPrefix(strings.TrimSpace(line), "# yaml-language-server:") {
+			cleanLines = append(cleanLines, line)
+		}
+	}
+	cleanContent := strings.Join(cleanLines, "\n")
 
 	var config types.PackageGrouped
 	if err := yaml.Unmarshal([]byte(cleanContent), &config); err != nil {
 		return nil, fmt.Errorf("failed to parse YAML: %w", err)
 	}
 
+	// Ensure Groups is initialized
+	if config.Groups == nil {
+		config.Groups = make(map[string]types.Group)
+	}
+
+	// Ensure Profiles is initialized
+	if config.Profiles == nil {
+		config.Profiles = make(map[string]types.Profile)
+	}
+
 	return &config, nil
 }
 
-
+// createDefaultGroupedConfig creates a default empty configuration
+func createDefaultGroupedConfig() *types.PackageGrouped {
+	return &types.PackageGrouped{
+		Metadata: types.Metadata{
+			Version:        "1.0",
+			SupportsGroups: true,
+			SupportsTags:   true,
+		},
+		Groups:   make(map[string]types.Group),
+		Profiles: make(map[string]types.Profile),
+	}
+}
 
 // SaveGroupedConfig saves a grouped configuration to YAML file
 func SaveGroupedConfig(config *types.PackageGrouped, filePath string) error {
+	// Create directory if it doesn't exist
+	if err := utils.EnsureDir(filePath); err != nil {
+		return fmt.Errorf("failed to create directory: %w", err)
+	}
+
 	// Sort groups by priority
 	type groupEntry struct {
 		name  string
@@ -84,8 +126,6 @@ func SaveGroupedConfig(config *types.PackageGrouped, filePath string) error {
 	return nil
 }
 
-
-
 // GetFilteredPackages returns packages filtered by groups, tags, and exclusions
 func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOptions) []types.Package {
 	var allPackages []types.Package
@@ -112,7 +152,7 @@ func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOpt
 		if utils.ContainsString(options.ExcludeGroups, groupName) {
 			continue
 		}
-		
+
 		group, exists := config.Groups[groupName]
 		if !exists {
 			continue
@@ -177,4 +217,4 @@ func GetInstalledPackages() (map[string][]string, []types.MasApp, error) {
 	}
 
 	return result, masApps, nil
-} 
+}

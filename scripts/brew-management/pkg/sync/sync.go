@@ -14,7 +14,10 @@ import (
 
 // SyncGroupedPackages synchronizes installed packages with grouped YAML config
 func SyncGroupedPackages(filePath string, options *types.SyncOptions) error {
-	if options.Backup {
+	// Check if file exists before backup
+	fileExists := utils.FileExists(filePath)
+	
+	if options.Backup && fileExists {
 		if err := utils.CreateBackup(filePath); err != nil {
 			return fmt.Errorf("failed to create backup: %w", err)
 		}
@@ -24,6 +27,11 @@ func SyncGroupedPackages(filePath string, options *types.SyncOptions) error {
 	config, err := yamlPkg.LoadGroupedConfig(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to load grouped config: %w", err)
+	}
+	
+	// Notify if we're starting with an empty configuration
+	if !fileExists || len(config.Groups) == 0 {
+		utils.PrintStatus(utils.Yellow, "Starting with empty configuration. All installed packages will be added.")
 	}
 
 	// Get currently installed packages

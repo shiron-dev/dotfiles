@@ -207,6 +207,22 @@ func AutoDetectTags(packageName, packageType string) []string {
 	return tags
 }
 
+// EnsureDir creates the directory for a file path if it doesn't exist
+func EnsureDir(filePath string) error {
+	dir := filepath.Dir(filePath)
+	if dir == "." || dir == "/" {
+		return nil
+	}
+	
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return fmt.Errorf("failed to create directory %s: %w", dir, err)
+		}
+		PrintStatus(Green, fmt.Sprintf("Created directory: %s", dir))
+	}
+	return nil
+}
+
 // CreateBackup creates a backup file with timestamp
 func CreateBackup(filePath string) error {
 	if !FileExists(filePath) {
