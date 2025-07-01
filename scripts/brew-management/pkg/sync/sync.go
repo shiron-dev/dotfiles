@@ -27,13 +27,13 @@ func SyncGroupedPackages(filePath string, options *types.SyncOptions) error {
 	}
 
 	// Get currently installed packages
-	installedPackages, err := yamlPkg.GetInstalledPackages()
+	installedPackagesMap, installedMasApps, err := yamlPkg.GetInstalledPackages()
 	if err != nil {
 		return fmt.Errorf("failed to get installed packages: %w", err)
 	}
 
 	// Find missing packages
-	missingPackages := findMissingPackages(config, installedPackages)
+	missingPackages := findMissingPackages(config, installedPackagesMap, installedMasApps)
 	
 	if len(missingPackages) == 0 {
 		utils.PrintStatus(utils.Green, "No new packages found. Configuration is up to date.")
@@ -72,115 +72,7 @@ func SyncGroupedPackages(filePath string, options *types.SyncOptions) error {
 	return nil
 }
 
-// SyncSimplePackages synchronizes installed packages with simple YAML config
-func SyncSimplePackages(filePath string, options *types.SyncOptions) error {
-	if options.Backup {
-		if err := utils.CreateBackup(filePath); err != nil {
-			return fmt.Errorf("failed to create backup: %w", err)
-		}
-	}
 
-	// Load existing config
-	config, err := yamlPkg.LoadSimpleConfig(filePath)
-	if err != nil {
-		return fmt.Errorf("failed to load simple config: %w", err)
-	}
-
-	// Get currently installed packages
-	installedPackages, err := yamlPkg.GetInstalledPackages()
-	if err != nil {
-		return fmt.Errorf("failed to get installed packages: %w", err)
-	}
-
-	// Find and add missing packages
-	var totalAdded int
-
-	// Add missing taps
-	for _, tap := range installedPackages.Taps {
-		if !utils.ContainsString(config.Taps, tap) {
-			if options.DryRun {
-				utils.PrintStatus(utils.Yellow, fmt.Sprintf("[DRY RUN] Would add tap: %s", tap))
-			} else {
-				config.Taps = append(config.Taps, tap)
-				utils.PrintStatus(utils.Green, fmt.Sprintf("Added tap: %s", tap))
-			}
-			totalAdded++
-		}
-	}
-
-	// Add missing brews
-	for _, brew := range installedPackages.Brews {
-		if !utils.ContainsString(config.Brews, brew) {
-			if options.DryRun {
-				utils.PrintStatus(utils.Yellow, fmt.Sprintf("[DRY RUN] Would add brew: %s", brew))
-			} else {
-				config.Brews = append(config.Brews, brew)
-				utils.PrintStatus(utils.Green, fmt.Sprintf("Added brew: %s", brew))
-			}
-			totalAdded++
-		}
-	}
-
-	// Add missing casks
-	for _, cask := range installedPackages.Casks {
-		if !utils.ContainsString(config.Casks, cask) {
-			if options.DryRun {
-				utils.PrintStatus(utils.Yellow, fmt.Sprintf("[DRY RUN] Would add cask: %s", cask))
-			} else {
-				config.Casks = append(config.Casks, cask)
-				utils.PrintStatus(utils.Green, fmt.Sprintf("Added cask: %s", cask))
-			}
-			totalAdded++
-		}
-	}
-
-	// Add missing mas apps
-	for _, app := range installedPackages.MasApps {
-		found := false
-		for _, existing := range config.MasApps {
-			if existing.ID == app.ID {
-				found = true
-				break
-			}
-		}
-		if !found {
-			if options.DryRun {
-				utils.PrintStatus(utils.Yellow, fmt.Sprintf("[DRY RUN] Would add mas app: %s", app.Name))
-			} else {
-				config.MasApps = append(config.MasApps, app)
-				utils.PrintStatus(utils.Green, fmt.Sprintf("Added mas app: %s", app.Name))
-			}
-			totalAdded++
-		}
-	}
-
-	if totalAdded == 0 {
-		utils.PrintStatus(utils.Green, "No new packages found. Configuration is up to date.")
-		return nil
-	}
-
-	if options.DryRun {
-		return nil
-	}
-
-	// Sort if requested
-	if options.Sort {
-		sort.Strings(config.Taps)
-		sort.Strings(config.Brews)
-		sort.Strings(config.Casks)
-		sort.Slice(config.MasApps, func(i, j int) bool {
-			return config.MasApps[i].Name < config.MasApps[j].Name
-		})
-	}
-
-	// Save updated config
-	if err := yamlPkg.SaveSimpleConfig(config, filePath); err != nil {
-		return fmt.Errorf("failed to save config: %w", err)
-	}
-
-	utils.PrintStatus(utils.Green, fmt.Sprintf("Successfully synchronized %d new packages", totalAdded))
-	return nil
-}
 
 // MissingPackage represents a package that is installed but not in config
 type MissingPackage struct {
@@ -190,7 +82,7 @@ type MissingPackage struct {
 }
 
 // findMissingPackages finds packages that are installed but not in the config
-func findMissingPackages(config *types.PackageGrouped, installed *types.PackageSimple) []MissingPackage {
+func findMissingPackages(config *types.PackageGrouped, installedPackagesMap map[string][]string, installedMasApps []types.MasApp) []MissingPackage {
 	var missing []MissingPackage
 
 	// Get all packages from config
@@ -203,7 +95,7 @@ func findMissingPackages(config *types.PackageGrouped, installed *types.PackageS
 	}
 
 	// Check taps
-	for _, tap := range installed.Taps {
+	for _, tap := range installedPackagesMap["taps"] {
 		key := fmt.Sprintf("tap:%s", tap)
 		if !configPackages[key] {
 			missing = append(missing, MissingPackage{Name: tap, Type: "tap"})
@@ -211,7 +103,7 @@ func findMissingPackages(config *types.PackageGrouped, installed *types.PackageS
 	}
 
 	// Check brews
-	for _, brew := range installed.Brews {
+	for _, brew := range installedPackagesMap["brews"] {
 		key := fmt.Sprintf("brew:%s", brew)
 		if !configPackages[key] {
 			missing = append(missing, MissingPackage{Name: brew, Type: "brew"})
@@ -219,7 +111,7 @@ func findMissingPackages(config *types.PackageGrouped, installed *types.PackageS
 	}
 
 	// Check casks
-	for _, cask := range installed.Casks {
+	for _, cask := range installedPackagesMap["casks"] {
 		key := fmt.Sprintf("cask:%s", cask)
 		if !configPackages[key] {
 			missing = append(missing, MissingPackage{Name: cask, Type: "cask"})
@@ -227,7 +119,7 @@ func findMissingPackages(config *types.PackageGrouped, installed *types.PackageS
 	}
 
 	// Check mas apps
-	for _, app := range installed.MasApps {
+	for _, app := range installedMasApps {
 		found := false
 		for _, group := range config.Groups {
 			for _, pkg := range group.Packages {

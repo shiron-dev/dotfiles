@@ -106,52 +106,7 @@ Examples:
 	},
 }
 
-// installSimpleCmd represents the install-simple command
-var installSimpleCmd = &cobra.Command{
-	Use:   "install-simple [yaml_file]",
-	Short: "Install packages from simple YAML configuration",
-	Long: `Install Homebrew packages from a simple YAML configuration file.
 
-Examples:
-  brew-manager install-simple                   # Install from default simple YAML
-  brew-manager install-simple --brews-only     # Install only brew formulae`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// Get YAML file path
-		yamlFile := getDefaultYAMLPath("packages.yml")
-		if len(args) > 0 {
-			yamlFile = args[0]
-		}
-
-		// Build install options
-		options := &types.InstallOptions{
-			DryRun:    dryRun,
-			Verbose:   verbose,
-			TapsOnly:  tapsOnly,
-			BrewsOnly: brewsOnly,
-			CasksOnly: casksOnly,
-			MasOnly:   masOnly,
-			SkipTaps:  skipTaps,
-			SkipBrews: skipBrews,
-			SkipCasks: skipCasks,
-			SkipMas:   skipMas,
-		}
-
-		// Load configuration
-		config, err := yamlPkg.LoadSimpleConfig(yamlFile)
-		if err != nil {
-			utils.PrintStatus(utils.Red, fmt.Sprintf("Error loading config: %v", err))
-			return
-		}
-
-		// Install packages
-		if err := brew.InstallSimplePackages(config, options); err != nil {
-			utils.PrintStatus(utils.Red, fmt.Sprintf("Installation failed: %v", err))
-			return
-		}
-
-		utils.PrintStatus(utils.Green, "Installation completed successfully!")
-	},
-}
 
 func handleListCommands(yamlFile string) error {
 	config, err := yamlPkg.LoadGroupedConfig(yamlFile)
@@ -232,7 +187,7 @@ func handleListCommands(yamlFile string) error {
 
 func init() {
 	rootCmd.AddCommand(installCmd)
-	rootCmd.AddCommand(installSimpleCmd)
+
 
 	// Installation filters
 	installCmd.Flags().StringVarP(&groups, "groups", "g", "", "Install only specified groups (comma-separated)")
@@ -256,13 +211,5 @@ func init() {
 	installCmd.Flags().BoolVar(&listTags, "list-tags", false, "List available tags")
 	installCmd.Flags().BoolVar(&listProfiles, "list-profiles", false, "List available profiles")
 
-	// Add same flags to install-simple for package type filtering
-	installSimpleCmd.Flags().BoolVar(&tapsOnly, "taps-only", false, "Install only taps")
-	installSimpleCmd.Flags().BoolVar(&brewsOnly, "brews-only", false, "Install only brew formulae")
-	installSimpleCmd.Flags().BoolVar(&casksOnly, "casks-only", false, "Install only casks")
-	installSimpleCmd.Flags().BoolVar(&masOnly, "mas-only", false, "Install only Mac App Store apps")
-	installSimpleCmd.Flags().BoolVar(&skipTaps, "skip-taps", false, "Skip installing taps")
-	installSimpleCmd.Flags().BoolVar(&skipBrews, "skip-brews", false, "Skip installing brew formulae")
-	installSimpleCmd.Flags().BoolVar(&skipCasks, "skip-casks", false, "Skip installing casks")
-	installSimpleCmd.Flags().BoolVar(&skipMas, "skip-mas", false, "Skip installing Mac App Store apps")
+
 } 

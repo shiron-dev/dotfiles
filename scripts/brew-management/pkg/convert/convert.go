@@ -29,18 +29,10 @@ func ConvertBrewfileToYAML(brewfilePath, yamlPath string, grouped bool, verbose 
 		return fmt.Errorf("failed to parse Brewfile: %w", err)
 	}
 
-	if grouped {
-		// Convert to grouped format
-		groupedConfig := convertToGroupedFormat(brewfileData, verbose)
-		if err := yamlPkg.SaveGroupedConfig(groupedConfig, yamlPath); err != nil {
-			return fmt.Errorf("failed to save grouped YAML: %w", err)
-		}
-	} else {
-		// Convert to simple format
-		simpleConfig := convertToSimpleFormat(brewfileData, verbose)
-		if err := yamlPkg.SaveSimpleConfig(simpleConfig, yamlPath); err != nil {
-			return fmt.Errorf("failed to save simple YAML: %w", err)
-		}
+	// Convert to grouped format (only supported format now)
+	groupedConfig := convertToGroupedFormat(brewfileData, verbose)
+	if err := yamlPkg.SaveGroupedConfig(groupedConfig, yamlPath); err != nil {
+		return fmt.Errorf("failed to save grouped YAML: %w", err)
 	}
 
 	utils.PrintStatus(utils.Green, fmt.Sprintf("Successfully converted Brewfile to: %s", yamlPath))
@@ -142,19 +134,7 @@ func parseBrewfile(filePath string, verbose bool) (*BrewfileData, error) {
 	return data, nil
 }
 
-// convertToSimpleFormat converts BrewfileData to simple YAML format
-func convertToSimpleFormat(data *BrewfileData, verbose bool) *types.PackageSimple {
-	if verbose {
-		utils.PrintStatus(utils.Blue, "Converting to simple YAML format")
-	}
 
-	return &types.PackageSimple{
-		Taps:    data.Taps,
-		Brews:   data.Brews,
-		Casks:   data.Casks,
-		MasApps: data.MasApps,
-	}
-}
 
 // convertToGroupedFormat converts BrewfileData to grouped YAML format
 func convertToGroupedFormat(data *BrewfileData, verbose bool) *types.PackageGrouped {

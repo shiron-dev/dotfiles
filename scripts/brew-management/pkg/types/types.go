@@ -38,13 +38,7 @@ type Profile struct {
 	ExcludeTags  []string `yaml:"exclude_tags,omitempty"`
 }
 
-// PackageSimple represents the simple YAML configuration format
-type PackageSimple struct {
-	Taps    []string `yaml:"taps,omitempty"`
-	Brews   []string `yaml:"brews,omitempty"`
-	Casks   []string `yaml:"casks,omitempty"`
-	MasApps []MasApp `yaml:"mas_apps,omitempty"`
-}
+
 
 // MasApp represents a Mac App Store application
 type MasApp struct {

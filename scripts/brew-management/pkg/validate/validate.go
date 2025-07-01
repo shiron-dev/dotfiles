@@ -58,13 +58,13 @@ func ValidateYAMLFile(filePath string, options *types.ValidateOptions) error {
 	case strings.Contains(filename, "grouped"):
 		validationErrors = validateGroupedYAML(cleanContent, options.Verbose)
 	case strings.Contains(filename, "packages"):
-		validationErrors = validateSimpleYAML(cleanContent, options.Verbose)
+		validationErrors = append(validationErrors, "Simple YAML format is no longer supported")
 	default:
 		// Try to detect format by content
 		if strings.Contains(cleanContent, "groups:") && strings.Contains(cleanContent, "metadata:") {
 			validationErrors = validateGroupedYAML(cleanContent, options.Verbose)
 		} else {
-			validationErrors = validateSimpleYAML(cleanContent, options.Verbose)
+			validationErrors = append(validationErrors, "Simple YAML format is no longer supported")
 		}
 	}
 
@@ -137,37 +137,7 @@ func validateGroupedYAML(content string, verbose bool) []string {
 	return errors
 }
 
-// validateSimpleYAML validates simple YAML format
-func validateSimpleYAML(content string, verbose bool) []string {
-	var errors []string
 
-	// Try to parse as simple config
-	var config types.PackageSimple
-	if err := yaml.Unmarshal([]byte(content), &config); err != nil {
-		errors = append(errors, fmt.Sprintf("Failed to parse as simple format: %v", err))
-		return errors
-	}
-
-	// Check that at least one package section exists
-	hasPackages := len(config.Taps) > 0 || len(config.Brews) > 0 || 
-		           len(config.Casks) > 0 || len(config.MasApps) > 0
-	
-	if !hasPackages {
-		errors = append(errors, "No package sections found (taps, brews, casks, mas_apps)")
-	}
-
-	// Validate mas_apps structure
-	for i, app := range config.MasApps {
-		if app.Name == "" {
-			errors = append(errors, fmt.Sprintf("Missing name in mas_apps[%d]", i))
-		}
-		if app.ID == 0 {
-			errors = append(errors, fmt.Sprintf("Missing id in mas_apps[%d]", i))
-		}
-	}
-
-	return errors
-}
 
 // ValidateAllYAMLFiles validates all YAML files in the data directory
 func ValidateAllYAMLFiles(dataDir string, options *types.ValidateOptions) error {
@@ -228,12 +198,7 @@ func TestYAMLLoad(filePath string, verbose bool) error {
 		}
 		utils.PrintStatus(utils.Green, "Successfully loaded grouped config")
 	} else {
-		_, err := yamlPkg.LoadSimpleConfig(filePath)
-		if err != nil {
-			utils.PrintStatus(utils.Red, fmt.Sprintf("Failed to load simple config: %v", err))
-			return err
-		}
-		utils.PrintStatus(utils.Green, "Successfully loaded simple config")
+		utils.PrintStatus(utils.Red, "Simple YAML format is no longer supported")
 	}
 
 	return nil

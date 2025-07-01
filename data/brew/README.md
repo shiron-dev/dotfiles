@@ -14,45 +14,7 @@ BrewfileのようにYAMLファイルからHomebrew packages（tap、brew、cask�
 - `install-brew-grouped.sh` - group/tag機能をサポートするインストーラースクリプト
 - `sync-brew-grouped.sh` - group/tag機能をサポートする同期スクリプト
 
-## YAMLファイル形式
-
-```yaml
-# YAML-based Brew packages configuration
-taps:
-  - homebrew/core
-  - homebrew/services
-
-brews:
-  - git
-  - yq
-  - mas
-
-casks:
-  - visual-studio-code
-  - docker
-
-mas_apps:
-  - name: "Xcode"
-    id: 497799835
-  - name: "LINE"
-    id: 539883307
-
-# 同期スクリプトが自動で追加する未分類セクション
-uncategorized_taps:
-  - example/tap
-
-uncategorized_brews:
-  - example-package
-
-uncategorized_casks:
-  - example-app
-
-uncategorized_mas_apps:
-  - name: "Example App"
-    id: 123456789
-```
-
-## 拡張YAML形式（Group/Tag機能）
+## YAML形式（Group/Tag機能）
 
 ```yaml
 # Group/Tag機能をサポートする拡張形式

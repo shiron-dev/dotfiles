@@ -60,41 +60,11 @@ Examples:
 	},
 }
 
-// syncSimpleCmd represents the sync-simple command
-var syncSimpleCmd = &cobra.Command{
-	Use:   "sync-simple [yaml_file]",
-	Short: "Sync installed packages to simple YAML configuration",
-	Long: `Sync currently installed Homebrew packages with simple YAML configuration file.
 
-Examples:
-  brew-manager sync-simple                    # Sync to simple format
-  brew-manager sync-simple --backup          # Create backup before sync`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// Get YAML file path
-		yamlFile := getDefaultYAMLPath("packages.yml")
-		if len(args) > 0 {
-			yamlFile = args[0]
-		}
-
-		// Build sync options
-		options := &types.SyncOptions{
-			DryRun:  dryRun,
-			Verbose: verbose,
-			Backup:  backup,
-			Sort:    sortPackages,
-		}
-
-		// Perform sync
-		if err := sync.SyncSimplePackages(yamlFile, options); err != nil {
-			utils.PrintStatus(utils.Red, fmt.Sprintf("Sync failed: %v", err))
-			return
-		}
-	},
-}
 
 func init() {
 	rootCmd.AddCommand(syncCmd)
-	rootCmd.AddCommand(syncSimpleCmd)
+
 
 	// Sync options for grouped format
 	syncCmd.Flags().BoolVarP(&backup, "backup", "b", false, "Create backup of YAML file before modification")
@@ -105,7 +75,5 @@ func init() {
 	syncCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Prompt for group/tag assignment for each new package")
 	syncCmd.Flags().BoolVarP(&autoDetect, "auto-detect", "a", false, "Try to auto-detect appropriate groups/tags based on package names")
 
-	// Sync options for simple format
-	syncSimpleCmd.Flags().BoolVarP(&backup, "backup", "b", false, "Create backup of YAML file before modification")
-	syncSimpleCmd.Flags().BoolVarP(&sortPackages, "sort", "s", false, "Sort packages alphabetically within categories")
+
 } 
