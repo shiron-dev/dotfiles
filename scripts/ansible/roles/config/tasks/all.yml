@@ -36,12 +36,17 @@
   with_items: "{{ vars.config_items }}"
   register: check_config_items
 
+- name: Backup config_items files
+  ansible.builtin.copy:
+    src: "{{ item.stat.path }}"
+    dest: "{{ vars.backup_dir }}/{{ item.stat.path }}"
+  with_items: "{{ check_config_items.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+
 - name: Remove config_items files
   ansible.builtin.file:
     path: "{{ item.stat.path }}"
     state: absent
-  when: item.stat.exists and not item.stat.islnk
-  with_items: "{{ check_config_items.results }}"
+  with_items: "{{ check_config_items.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
 
 - name: Mkdir config paths
   ansible.builtin.file:
