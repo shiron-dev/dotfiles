@@ -40,6 +40,7 @@
   ansible.builtin.copy:
     src: "{{ item.stat.path }}"
     dest: "{{ vars.backup_dir }}/{{ item.stat.path }}"
+    mode: "0644"
   with_items: "{{ check_config_items.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
 
 - name: Remove config_items files
@@ -76,6 +77,7 @@
   ansible.builtin.copy:
     src: "{{ item.stat.path }}"
     dest: "{{ vars.backup_dir }}/{{ item.stat.path }}"
+    mode: "0644"
   with_items: "{{ check_direct_home_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
 
 - name: Remove direct home files
