@@ -6,7 +6,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:/opt/homebrew/lib/"
 
 # sheldon
-if [[ "$PAGER" == "head -n 10000 | cat" ]]; then
+if is_cursor; then
   export SHELDON_PROFILE=cursor
 else
   export SHELDON_PROFILE=default
