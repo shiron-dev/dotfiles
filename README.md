@@ -1,1 +1,0 @@
-# shiron-dev's dotfiles
