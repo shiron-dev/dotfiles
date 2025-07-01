@@ -129,31 +129,31 @@
     "command": "-deleteAllLeft",
     "when": "textInputFocus && !editorReadonly"
   },
-  {
-    "key": "cmd+i",
-    "command": "-cloudcode.duetAI.showinEditor",
-    "when": "authLoggedIn && config.geminicodeassist.enable && editorTextFocus && shouldRegisterInEditorCommand && !inGeminiDiffView && !isInDiffEditor"
-  },
-  {
-    "key": "shift+cmd+i",
-    "command": "workbench.action.chat.startVoiceChat",
-    "when": "chatIsEnabled && hasSpeechProvider && inChatInput && !chatSessionRequestInProgress && !editorFocus && !notebookEditorFocused && !scopedVoiceChatGettingReady && !speechToTextInProgress || chatIsEnabled && hasSpeechProvider && inlineChatFocused && !chatSessionRequestInProgress && !editorFocus && !notebookEditorFocused && !scopedVoiceChatGettingReady && !speechToTextInProgress"
-  },
-  {
-    "key": "cmd+i",
-    "command": "-workbench.action.chat.startVoiceChat",
-    "when": "chatIsEnabled && hasSpeechProvider && inChatInput && !chatSessionRequestInProgress && !editorFocus && !notebookEditorFocused && !scopedVoiceChatGettingReady && !speechToTextInProgress || chatIsEnabled && hasSpeechProvider && inlineChatFocused && !chatSessionRequestInProgress && !editorFocus && !notebookEditorFocused && !scopedVoiceChatGettingReady && !speechToTextInProgress"
-  },
-  {
-    "key": "shift+cmd+i",
-    "command": "workbench.action.chat.stopListeningAndSubmit",
-    "when": "inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'editor' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'inline' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'quick' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'view' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'editor' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'inline' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'quick' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'view'"
-  },
-  {
-    "key": "cmd+i",
-    "command": "-workbench.action.chat.stopListeningAndSubmit",
-    "when": "inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'editor' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'inline' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'quick' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'view' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'editor' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'inline' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'quick' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'view'"
-  },
+  // {
+  //   "key": "cmd+i",
+  //   "command": "-cloudcode.duetAI.showinEditor",
+  //   "when": "authLoggedIn && config.geminicodeassist.enable && editorTextFocus && shouldRegisterInEditorCommand && !inGeminiDiffView && !isInDiffEditor"
+  // },
+  // {
+  //   "key": "shift+cmd+i",
+  //   "command": "workbench.action.chat.startVoiceChat",
+  //   "when": "chatIsEnabled && hasSpeechProvider && inChatInput && !chatSessionRequestInProgress && !editorFocus && !notebookEditorFocused && !scopedVoiceChatGettingReady && !speechToTextInProgress || chatIsEnabled && hasSpeechProvider && inlineChatFocused && !chatSessionRequestInProgress && !editorFocus && !notebookEditorFocused && !scopedVoiceChatGettingReady && !speechToTextInProgress"
+  // },
+  // {
+  //   "key": "cmd+i",
+  //   "command": "-workbench.action.chat.startVoiceChat",
+  //   "when": "chatIsEnabled && hasSpeechProvider && inChatInput && !chatSessionRequestInProgress && !editorFocus && !notebookEditorFocused && !scopedVoiceChatGettingReady && !speechToTextInProgress || chatIsEnabled && hasSpeechProvider && inlineChatFocused && !chatSessionRequestInProgress && !editorFocus && !notebookEditorFocused && !scopedVoiceChatGettingReady && !speechToTextInProgress"
+  // },
+  // {
+  //   "key": "shift+cmd+i",
+  //   "command": "workbench.action.chat.stopListeningAndSubmit",
+  //   "when": "inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'editor' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'inline' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'quick' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'view' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'editor' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'inline' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'quick' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'view'"
+  // },
+  // {
+  //   "key": "cmd+i",
+  //   "command": "-workbench.action.chat.stopListeningAndSubmit",
+  //   "when": "inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'editor' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'inline' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'quick' || inChatInput && voiceChatInProgress && scopedVoiceChatInProgress == 'view' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'editor' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'inline' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'quick' || inlineChatFocused && voiceChatInProgress && scopedVoiceChatInProgress == 'view'"
+  // },
   {
     "key": "cmd+k cmd+s",
     "command": "-workbench.action.openGlobalKeybindings"
@@ -178,19 +178,19 @@
     "command": "-aipopup.action.modal.generate",
     "when": "editorFocus && !composerBarIsVisible"
   },
-  {
-    "key": "cmd+i",
-    "command": "composer.startComposerPrompt"
-  },
-  {
-    "key": "cmd+i",
-    "command": "-composer.startComposerPrompt"
-  },
-  {
-    "key": "cmd+i",
-    "command": "composer.closeComposerTab",
-    "when": "composerFocused && !editorTextFocus || !editorTextFocus && focusedView =~ /^workbench.panel.aichat.view/"
-  },
+  // {
+  //   "key": "cmd+i",
+  //   "command": "composer.startComposerPrompt"
+  // },
+  // {
+  //   "key": "cmd+i",
+  //   "command": "-composer.startComposerPrompt"
+  // },
+  // {
+  //   "key": "cmd+i",
+  //   "command": "composer.closeComposerTab",
+  //   "when": "composerFocused && !editorTextFocus || !editorTextFocus && focusedView =~ /^workbench.panel.aichat.view/"
+  // },
   {
     "key": "cmd+w",
     "command": "-composer.closeComposerTab",
@@ -284,14 +284,14 @@
     "command": "-testing.runCurrentFile",
     "when": "editorTextFocus"
   },
-  {
-    "key": "shift+cmd+i",
-    "command": "composer.newAgentChat"
-  },
-  {
-    "key": "shift+cmd+i",
-    "command": "-composer.newAgentChat"
-  },
+  // {
+  //   "key": "shift+cmd+i",
+  //   "command": "composer.newAgentChat"
+  // },
+  // {
+  //   "key": "shift+cmd+i",
+  //   "command": "-composer.newAgentChat"
+  // },
   {
     "key": "shift+cmd+d",
     "command": "-composer.fixerrormessage",
@@ -302,36 +302,51 @@
     "command": "editor.action.selectHighlights",
     "when": "editorFocus"
   },
+  // {
+  //   "key": "shift+cmd+l",
+  //   "command": "-editor.action.selectHighlights",
+  //   "when": "editorFocus"
+  // },
+  // {
+  //   "key": "cmd+l",
+  //   "command": "-aichat.newchataction"
+  // },
+  // {
+  //   "key": "shift+cmd+l",
+  //   "command": "-notebook.selectAllFindMatches",
+  //   "when": "config.notebook.multiCursor.enabled && notebookFindWidgetFocused || config.notebook.multiCursor.enabled && notebookCellEditorFocused && activeEditor == 'workbench.editor.notebook'"
+  // },
+  // {
+  //   "key": "shift+cmd+l",
+  //   "command": "-selectAllSearchEditorMatches",
+  //   "when": "inSearchEditor"
+  // },
+  // {
+  //   "key": "shift+cmd+l",
+  //   "command": "-addCursorsAtSearchResults",
+  //   "when": "fileMatchOrMatchFocus && searchViewletVisible"
+  // },
+  // {
+  //   "key": "shift+cmd+l",
+  //   "command": "-aichat.insertselectionintochat"
+  // },
+  // {
+  //   "key": "shift+cmd+l",
+  //   "command": "aichat.insertselectionintochat"
+  // },
   {
-    "key": "shift+cmd+l",
-    "command": "-editor.action.selectHighlights",
-    "when": "editorFocus"
+    "key": "cmd+e",
+    "command": "-composer.showBackgroundAgentHistory",
+    "when": "backgroundComposerEnabled"
   },
   {
-    "key": "cmd+l",
-    "command": "-aichat.newchataction"
+    "key": "cmd+e",
+    "command": "-composer.showBackgroundAgentHistory",
+    "when": "backgroundComposerEnabled || showBackgroundAgentHistoryAction"
   },
   {
-    "key": "shift+cmd+l",
-    "command": "-notebook.selectAllFindMatches",
-    "when": "config.notebook.multiCursor.enabled && notebookFindWidgetFocused || config.notebook.multiCursor.enabled && notebookCellEditorFocused && activeEditor == 'workbench.editor.notebook'"
-  },
-  {
-    "key": "shift+cmd+l",
-    "command": "-selectAllSearchEditorMatches",
-    "when": "inSearchEditor"
-  },
-  {
-    "key": "shift+cmd+l",
-    "command": "-addCursorsAtSearchResults",
-    "when": "fileMatchOrMatchFocus && searchViewletVisible"
-  },
-  {
-    "key": "shift+cmd+l",
-    "command": "-aichat.insertselectionintochat"
-  },
-  {
-    "key": "shift+cmd+l",
-    "command": "aichat.insertselectionintochat"
+    "key": "cmd+enter",
+    "command": "workbench.action.toggleMaximizedPanel",
+    "when": "panelAlignment == 'center' || panelPosition != 'bottom' && panelPosition != 'top'"
   }
 ]

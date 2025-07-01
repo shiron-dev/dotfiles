@@ -1,5 +1,5 @@
 module.exports = {
-  defaultBrowser: "Arc",
+  defaultBrowser: "Google Chrome",
   handlers: [
     {
       match: ["discord.com*"],
