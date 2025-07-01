@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-    - '**.go'
-  
+      - '**.go'
+
 permissions:
   contents: write
   pull-requests: write
@@ -134,7 +134,7 @@ jobs:
         run: |
           mkdir -p ${{ env.HTML_REPORT_URL_PATH }}
           mv ./scripts/dofy/index.html ${{ env.HTML_REPORT_URL_PATH }}/index.html
-          
+
           git add ${{ env.HTML_REPORT_URL_PATH }}
           git commit -m "workflow: add HTML report for run-id ${{ github.run_id }} (attempt:  ${{ github.run_attempt }})"
 
@@ -157,7 +157,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ github.event.pull_request.number }}
           header: golang-test
-          message: | 
+          message: |
             ${{ env.comment }}
 
             ## Cov HTML ${{ github.run_id }}: ${{ github.run_attempt }}
