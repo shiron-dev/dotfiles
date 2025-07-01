@@ -59,18 +59,22 @@ func init() {
 
 // getDefaultYAMLPath returns the default path for YAML configuration files
 func getDefaultYAMLPath(filename string) string {
+	// デフォルトのYAMLパス
+	defaultPath := filepath.Join(os.Getenv("HOME"), "projects/github.com/shiron-dev/dotfiles/data/brew/packages.yaml")
+	if filename == "" || filename == "packages-grouped.yml" || filename == "packages.yml" || filename == "packages.yaml" {
+		return defaultPath
+	}
+
 	// Get current working directory
 	cwd, err := os.Getwd()
 	if err != nil {
 		return filepath.Join(".", "data", "brew", filename)
 	}
-	
 	// Look for data directory relative to current location
 	dataPath := filepath.Join(cwd, "../../data/brew", filename)
 	if utils.FileExists(dataPath) {
 		return dataPath
 	}
-	
 	// Fall back to relative path
 	return filepath.Join("data", "brew", filename)
-} 
+}

@@ -66,6 +66,10 @@ func CheckPrerequisites() error {
 
 // GetDefaultYAMLPath returns the default path for YAML configuration files
 func GetDefaultYAMLPath(filename string) string {
+	defaultPath := filepath.Join(os.Getenv("HOME"), "projects/github.com/shiron-dev/dotfiles/data/brew/packages.yaml")
+	if filename == "" || filename == "packages-grouped.yml" || filename == "packages.yml" || filename == "packages.yaml" {
+		return defaultPath
+	}
 	dir, _ := os.Getwd()
 	return filepath.Join(dir, "../../data/brew", filename)
 }
@@ -116,24 +120,24 @@ func HasIntersection(slice1, slice2 []string) bool {
 // AutoDetectGroup attempts to determine the appropriate group for a package
 func AutoDetectGroup(packageName, packageType string) string {
 	name := strings.ToLower(packageName)
-	
+
 	switch {
-	case strings.Contains(name, "git") || strings.Contains(name, "node") || 
-		 strings.Contains(name, "python") || strings.Contains(name, "go") || 
-		 strings.Contains(name, "rust") || strings.Contains(name, "java") || 
-		 strings.Contains(name, "docker") || strings.Contains(name, "terraform") || 
-		 strings.Contains(name, "ansible"):
+	case strings.Contains(name, "git") || strings.Contains(name, "node") ||
+		strings.Contains(name, "python") || strings.Contains(name, "go") ||
+		strings.Contains(name, "rust") || strings.Contains(name, "java") ||
+		strings.Contains(name, "docker") || strings.Contains(name, "terraform") ||
+		strings.Contains(name, "ansible"):
 		return "development"
-	case name == "htop" || name == "tree" || name == "watch" || 
-		 name == "stats" || name == "battery" || name == "raycast" || 
-		 strings.Contains(name, "1password"):
+	case name == "htop" || name == "tree" || name == "watch" ||
+		name == "stats" || name == "battery" || name == "raycast" ||
+		strings.Contains(name, "1password"):
 		return "system"
-	case strings.Contains(name, "figma") || name == "obs" || name == "vlc" || 
-		 name == "audacity" || name == "gimp" || name == "inkscape":
+	case strings.Contains(name, "figma") || name == "obs" || name == "vlc" ||
+		name == "audacity" || name == "gimp" || name == "inkscape":
 		return "creative"
-	case name == "notion" || name == "slack" || name == "zoom" || 
-		 strings.Contains(name, "chrome") || strings.Contains(name, "firefox") || 
-		 name == "arc" || name == "brave":
+	case name == "notion" || name == "slack" || name == "zoom" ||
+		strings.Contains(name, "chrome") || strings.Contains(name, "firefox") ||
+		name == "arc" || name == "brave":
 		return "productivity"
 	case name == "mas" || name == "brew" || name == "yq" || name == "jq":
 		return "core"
@@ -213,7 +217,7 @@ func EnsureDir(filePath string) error {
 	if dir == "." || dir == "/" {
 		return nil
 	}
-	
+
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return fmt.Errorf("failed to create directory %s: %w", dir, err)
@@ -230,7 +234,7 @@ func CreateBackup(filePath string) error {
 	}
 
 	backupPath := filePath + ".backup"
-	
+
 	input, err := os.ReadFile(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to read file for backup: %w", err)
@@ -243,4 +247,4 @@ func CreateBackup(filePath string) error {
 
 	PrintStatus(Green, fmt.Sprintf("Backup created: %s", backupPath))
 	return nil
-} 
+}
