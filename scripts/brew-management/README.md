@@ -25,7 +25,49 @@ Homebrewパッケージ管理のための統合ツールセット。YAML設定�
 ./brew-manager.sh --help
 ```
 
+## Schema Validation
+
+すべてのYAML設定ファイルはJSON Schemaによる検証をサポートしています：
+
+- **packages-grouped.yml**: `schemas/packages-grouped.schema.json`を使用
+- **packages.yml**: `schemas/packages-simple.schema.json`を使用
+
+スキーマの機能：
+- 構文検証
+- 型チェック
+- 必須フィールド検証
+- 名前・タグのパターン検証
+- 対応エディターでの自動補完
+
+### スキーマファイル
+
+- `data/brew/schemas/packages-grouped.schema.json`: グループ機能付き設定用スキーマ
+- `data/brew/schemas/packages-simple.schema.json`: シンプル設定用スキーマ
+
 ## コマンド一覧
+
+### validate
+YAML設定ファイルをJSON Schemaで検証
+
+```bash
+# すべてのYAMLファイルを検証
+./brew-manager.sh validate
+
+# 特定のファイルを検証
+./brew-manager.sh validate packages.yml
+
+# 詳細出力で検証
+./brew-manager.sh validate --verbose --all
+
+# 特定のスキーマを指定
+./brew-manager.sh validate --schema packages-grouped.schema.json packages-grouped.yml
+```
+
+**オプション:**
+- `-h, --help`: ヘルプ表示
+- `-v, --verbose`: 詳細なエラーメッセージを表示
+- `-a, --all`: データディレクトリ内のすべてのYAMLファイルを検証
+- `--schema SCHEMA`: 特定のスキーマファイルを使用
 
 ### install
 グループ・タグ機能付きYAML設定からパッケージをインストール

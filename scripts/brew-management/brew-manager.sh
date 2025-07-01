@@ -36,6 +36,7 @@ Commands:
     sync                Sync installed packages to YAML configuration (with groups/tags)
     sync-simple         Sync installed packages to simple YAML configuration
     convert             Convert Brewfile to YAML format
+    validate            Validate YAML configuration files against their schemas
     list-groups         List available groups in grouped YAML
     list-tags           List available tags in grouped YAML
     list-profiles       List available profiles in grouped YAML
@@ -84,6 +85,9 @@ execute_subcommand() {
             ;;
         convert)
             exec "$SCRIPT_DIR/convert-brewfile-to-yaml.sh" "$@"
+            ;;
+        validate)
+            exec "$SCRIPT_DIR/validate-yaml.sh" "$@"
             ;;
         list-groups)
             exec "$SCRIPT_DIR/install-brew-grouped.sh" --list-groups "$@"
