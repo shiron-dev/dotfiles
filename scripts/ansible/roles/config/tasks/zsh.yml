@@ -1,4 +1,3 @@
----
 - name: Check zsh files in ~/
   ansible.builtin.stat:
     path: "{{ item | replace(vars.config_dir + '/zsh/', '~/') }}"

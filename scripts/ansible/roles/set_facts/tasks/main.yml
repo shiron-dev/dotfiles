@@ -1,4 +1,3 @@
----
 - name: Get home dir
   ansible.builtin.command:
     cmd: echo ~
@@ -17,3 +16,13 @@
 - name: Set config dir
   ansible.builtin.set_fact:
     config_dir: "{{ vars.dotfiles_dir }}/config"
+
+- name: Set backup dir
+  ansible.builtin.set_fact:
+    backup_dir: "{{ vars.dotfiles_dir }}/backup"
+
+- name: Make backup dir
+  ansible.builtin.file:
+    path: "{{ vars.backup_dir }}"
+    state: directory
+    mode: "0755"

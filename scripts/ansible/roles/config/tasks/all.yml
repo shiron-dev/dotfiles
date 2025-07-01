@@ -17,31 +17,37 @@
   ansible.builtin.set_fact:
     config_paths: "{{ config_files.files | map(attribute='path') | map('replace', vars.config_dir + '/', '') | list }}"
 
-- name: Transform matched paths
+- name: Get config items (.config and .local/share patterns)
   ansible.builtin.set_fact:
     config_items: "{{ config_paths | select('match', '.*(' + replace_list | join('|') + ')') | list }}"
 
-- name: Transform paths using patterns
+- name: Transform config paths using patterns
   ansible.builtin.set_fact:
     config_items: "{{ config_items | map('regex_replace', '^([^/]+)/' + item | regex_escape + '/(.*)$', item + '/\\1/\\2') | list }}"
   loop: "{{ replace_list }}"
 
-- name: Remove unwanted paths
+- name: Remove unwanted config paths
   ansible.builtin.set_fact:
     config_items: "{{ config_items | reject('match', '.*(' + dir_symlinks | join('|') + ')') | list }}"
 
 - name: Check config_items files
   ansible.builtin.stat:
-    path: "{{ item }}"
+    path: "~/{{ item }}"
   with_items: "{{ vars.config_items }}"
   register: check_config_items
+
+- name: Backup config_items files
+  ansible.builtin.copy:
+    src: "{{ item.stat.path }}"
+    dest: "{{ vars.backup_dir }}/{{ item.stat.path }}"
+    mode: "0644"
+  with_items: "{{ check_config_items.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
 
 - name: Remove config_items files
   ansible.builtin.file:
     path: "{{ item.stat.path }}"
     state: absent
-  when: item.stat.exists and not item.stat.islnk
-  with_items: "{{ check_config_items.results }}"
+  with_items: "{{ check_config_items.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
 
 - name: Mkdir config paths
   ansible.builtin.file:
@@ -56,3 +62,33 @@
     dest: "~/{{ item }}"
     state: link
   with_items: "{{ vars.config_items }}"
+
+- name: Get direct home files from config directories
+  ansible.builtin.set_fact:
+    direct_home_files: "{{ config_paths | select('match', '^[^/]+/[^/]+$') | reject('match', '.*(' + replace_list | join('|') + ')') | list }}"
+
+- name: Check direct home files
+  ansible.builtin.stat:
+    path: "~/{{ item | regex_replace('^[^/]+/', '') }}"
+  with_items: "{{ vars.direct_home_files }}"
+  register: check_direct_home_files
+
+- name: Backup direct home files
+  ansible.builtin.copy:
+    src: "{{ item.stat.path }}"
+    dest: "{{ vars.backup_dir }}/{{ item.stat.path }}"
+    mode: "0644"
+  with_items: "{{ check_direct_home_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+
+- name: Remove direct home files
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  with_items: "{{ check_direct_home_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+
+- name: Make direct home symlinks
+  ansible.builtin.file:
+    src: "{{ vars.config_dir }}/{{ item }}"
+    dest: "~/{{ item | regex_replace('^[^/]+/', '') }}"
+    state: link
+  with_items: "{{ vars.direct_home_files }}"
