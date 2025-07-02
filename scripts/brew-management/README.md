@@ -8,6 +8,7 @@ A command-line tool for managing Homebrew packages with support for groups, tags
 - **Install**: Install packages from YAML configuration with filtering
 - **Convert**: Convert Brewfile to YAML format
 - **Validate**: Validate YAML configuration files
+- **Prune**: Remove packages not defined in YAML configuration
 - **Generate**: Generate JSON schema from Go structs
 
 ## Schema Generation
@@ -101,6 +102,27 @@ Validate YAML configuration files:
 
 # Verbose validation
 ./brew-manager validate packages.yaml --verbose
+```
+
+### Prune
+
+Remove packages not defined in YAML configuration:
+
+```bash
+# Show what would be removed (dry run)
+./brew-manager prune --dry-run
+
+# Remove packages not in YAML
+./brew-manager prune
+
+# Skip certain package types
+./brew-manager prune --skip-brews --skip-casks
+
+# Remove all without confirmation
+./brew-manager prune --confirm-all
+
+# Verbose output
+./brew-manager prune --verbose
 ```
 
 ## Configuration Structure
