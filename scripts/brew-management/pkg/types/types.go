@@ -69,4 +69,15 @@ type ValidateOptions struct {
 	Verbose    bool
 	All        bool
 	SchemaFile string
+}
+
+// PruneOptions represents prune configuration
+type PruneOptions struct {
+	DryRun     bool
+	Verbose    bool
+	SkipTaps   bool
+	SkipBrews  bool
+	SkipCasks  bool
+	SkipMas    bool
+	ConfirmAll bool
 } 

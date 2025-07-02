@@ -26,11 +26,13 @@ This tool provides a unified interface for all brew management operations includ
 - Synchronizing installed packages to YAML configuration
 - Converting Brewfile to YAML format
 - Validating YAML configuration files
+- Removing packages not defined in YAML configuration (prune)
 
 Examples:
   brew-manager install --groups core,development
   brew-manager install --profile developer
   brew-manager sync --auto-detect
+  brew-manager prune --dry-run
   brew-manager validate`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// Check prerequisites for most commands
