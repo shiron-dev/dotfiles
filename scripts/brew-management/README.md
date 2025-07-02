@@ -94,13 +94,13 @@ Validate YAML configuration files:
 
 ```bash
 # Validate single file
-./brew-manager validate packages-grouped.yml
+./brew-manager validate packages.yaml
 
 # Validate all YAML files in directory
 ./brew-manager validate --all /path/to/data
 
 # Verbose validation
-./brew-manager validate packages-grouped.yml --verbose
+./brew-manager validate packages.yaml --verbose
 ```
 
 ## Configuration Structure

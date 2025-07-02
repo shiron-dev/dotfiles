@@ -31,7 +31,7 @@ Examples:
   brew-manager sync --auto-detect --sort               # Auto-detect groups/tags and sort`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get YAML file path
-		yamlFile := getDefaultYAMLPath("packages-grouped.yml")
+		yamlFile := getDefaultYAMLPath("packages.yaml")
 		if len(args) > 0 {
 			yamlFile = args[0]
 		}

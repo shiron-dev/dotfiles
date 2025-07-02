@@ -20,8 +20,8 @@ var convertCmd = &cobra.Command{
 	Long: `Convert a Brewfile to YAML format.
 
 Examples:
-  brew-manager convert Brewfile packages-grouped.yml      # Convert to grouped YAML format
-  brew-manager convert --grouped Brewfile packages-grouped.yml  # Convert to grouped YAML format`,
+  brew-manager convert Brewfile packages.yaml      # Convert to grouped YAML format
+  brew-manager convert --grouped Brewfile packages.yaml  # Convert to grouped YAML format`,
 	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		brewfilePath := args[0]

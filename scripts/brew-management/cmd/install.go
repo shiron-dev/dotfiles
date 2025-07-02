@@ -40,7 +40,7 @@ Examples:
   brew-manager install --groups development --brews-only # Install only brew packages from development group`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get YAML file path
-		yamlFile := getDefaultYAMLPath("packages-grouped.yml")
+		yamlFile := getDefaultYAMLPath("packages.yaml")
 		if len(args) > 0 {
 			yamlFile = args[0]
 		}

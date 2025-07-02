@@ -37,8 +37,7 @@ Examples:
 
 		if all {
 			// Validate all YAML files in data directory
-			dataDir := getDefaultYAMLPath("")
-			dataDir = filepath.Dir(dataDir) // Remove filename to get directory
+			dataDir := filepath.Dir(getDefaultYAMLPath("packages.yaml"))
 			
 			if err := validate.ValidateAllYAMLFiles(dataDir, options); err != nil {
 				utils.PrintStatus(utils.Red, fmt.Sprintf("Validation failed: %v", err))
@@ -51,7 +50,7 @@ Examples:
 				yamlFile = args[0]
 			} else {
 				// Default to grouped config file
-				yamlFile = getDefaultYAMLPath("packages-grouped.yml")
+				yamlFile = getDefaultYAMLPath("packages.yaml")
 			}
 
 			if err := validate.ValidateYAMLFile(yamlFile, options); err != nil {

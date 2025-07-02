@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/PackageGrouped",
+  "$defs": {
+    "Group": {
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "title": "Description",
+          "description": "Human-readable description of the group"
+        },
+        "priority": {
+          "type": "integer",
+          "maximum": 99,
+          "minimum": 1,
+          "title": "Priority",
+          "description": "Installation priority (lower numbers install first)"
+        },
+        "packages": {
+          "items": {
+            "$ref": "#/$defs/Package"
+          },
+          "type": "array",
+          "title": "Packages",
+          "description": "Packages in this group"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "description",
+        "priority",
+        "packages"
+      ]
+    },
+    "Package": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "title": "Package Name",
+          "description": "Package name"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "tap",
+            "brew",
+            "cask",
+            "mas"
+          ],
+          "title": "Package Type",
+          "description": "Package type"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "title": "Tags",
+          "description": "Tags for categorization and filtering"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "title": "Description",
+          "description": "Optional description of the package"
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "App Store ID",
+          "description": "Mac App Store ID (required for mas type)"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "type"
+      ]
+    },
+    "PackageGrouped": {
+      "properties": {
+        "groups": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Group"
+          },
+          "type": "object",
+          "title": "Package Groups",
+          "description": "Package groups definition"
+        },
+        "profiles": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Profile"
+          },
+          "type": "object",
+          "title": "Installation Profiles",
+          "description": "Installation profiles - predefined combinations"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "groups"
+      ]
+    },
+    "Profile": {
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "title": "Description",
+          "description": "Human-readable description of the profile"
+        },
+        "groups": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "title": "Groups",
+          "description": "Groups to include in this profile"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "title": "Tags",
+          "description": "Tags to include in this profile"
+        },
+        "exclude_tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "title": "Exclude Tags",
+          "description": "Tags to exclude from this profile"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "description"
+      ]
+    }
+  }
+}
