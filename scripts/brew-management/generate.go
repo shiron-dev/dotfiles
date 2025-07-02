@@ -1,3 +1,3 @@
-//go:generate go run . generate schema --verbose
+//go:generate go run ../generate.go
 
 package main

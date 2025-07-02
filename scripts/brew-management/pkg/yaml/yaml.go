@@ -109,7 +109,7 @@ func SaveGroupedConfig(config *types.PackageGrouped, filePath string) error {
 	}
 
 	// Add yaml-language-server comment
-	content := "# yaml-language-server: $schema=~/github.com/shiron-dev/dotfiles/scripts/brew-management/packages.schema.json\n\n"
+	content := "# yaml-language-server: $schema=~/projects/github.com/shiron-dev/dotfiles/scripts/brew-management/packages.schema.json\n\n"
 	content += string(data)
 
 	if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
