@@ -147,117 +147,106 @@ func convertToGroupedFormat(data *BrewfileData, verbose bool) *types.PackageGrou
 		Profiles: make(map[string]types.Profile),
 	}
 
-	// Create groups with packages auto-assigned
-	groups := map[string]*types.Group{
-		"core": {
-			Description: "Essential development tools",
-			Priority:    1,
-			Packages:    []types.Package{},
-		},
-		"development": {
-			Description: "Development tools and environments",
-			Priority:    2,
-			Packages:    []types.Package{},
-		},
-		"productivity": {
-			Description: "Productivity and office applications",
-			Priority:    3,
-			Packages:    []types.Package{},
-		},
-		"creative": {
-			Description: "Creative and multimedia tools",
-			Priority:    4,
-			Packages:    []types.Package{},
-		},
-		"system": {
-			Description: "System utilities and tools",
-			Priority:    5,
-			Packages:    []types.Package{},
-		},
-		"optional": {
-			Description: "Optional and uncategorized tools",
-			Priority:    10,
-			Packages:    []types.Package{},
-		},
+	// Initialize groups with the new Packages structure
+	initializedGroups := make(map[string]types.Group)
+	groupDefinitions := map[string]struct {
+		description string
+		priority    int
+	}{
+		"core":         {"Essential development tools", 1},
+		"development":  {"Development tools and environments", 2},
+		"productivity": {"Productivity and office applications", 3},
+		"creative":     {"Creative and multimedia tools", 4},
+		"system":       {"System utilities and tools", 5},
+		"optional":     {"Optional and uncategorized tools", 10},
+	}
+
+	for name, def := range groupDefinitions {
+		initializedGroups[name] = types.Group{
+			Description: def.description,
+			Priority:    def.priority,
+			Packages:    make(map[string][]types.PackageInfo), // Initialize the map
+		}
 	}
 
 	// Add taps
-	for _, tap := range data.Taps {
-		group := utils.AutoDetectGroup(tap, "tap")
-		tags := utils.AutoDetectTags(tap, "tap")
+	for _, tapName := range data.Taps {
+		groupName := utils.AutoDetectGroup(tapName, "tap")
+		tags := utils.AutoDetectTags(tapName, "tap")
 		
-		pkg := types.Package{
-			Name: tap,
-			Type: "tap",
+		pkgInfo := types.PackageInfo{
+			Name: tapName,
 			Tags: tags,
 		}
 		
-		groups[group].Packages = append(groups[group].Packages, pkg)
+		group := initializedGroups[groupName] // Get the group
+		group.Packages["tap"] = append(group.Packages["tap"], pkgInfo) // Append to the 'tap' type slice
+		initializedGroups[groupName] = group // Update the map with the modified group
 		
 		if verbose {
-			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Added tap '%s' to group '%s' with tags: %v", tap, group, tags))
+			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Added tap '%s' to group '%s' with tags: %v", tapName, groupName, tags))
 		}
 	}
 
 	// Add brews
-	for _, brew := range data.Brews {
-		group := utils.AutoDetectGroup(brew, "brew")
-		tags := utils.AutoDetectTags(brew, "brew")
+	for _, brewName := range data.Brews {
+		groupName := utils.AutoDetectGroup(brewName, "brew")
+		tags := utils.AutoDetectTags(brewName, "brew")
 		
-		pkg := types.Package{
-			Name: brew,
-			Type: "brew",
+		pkgInfo := types.PackageInfo{
+			Name: brewName,
 			Tags: tags,
 		}
 		
-		groups[group].Packages = append(groups[group].Packages, pkg)
+		group := initializedGroups[groupName]
+		group.Packages["brew"] = append(group.Packages["brew"], pkgInfo)
+		initializedGroups[groupName] = group
 		
 		if verbose {
-			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Added brew '%s' to group '%s' with tags: %v", brew, group, tags))
+			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Added brew '%s' to group '%s' with tags: %v", brewName, groupName, tags))
 		}
 	}
 
 	// Add casks
-	for _, cask := range data.Casks {
-		group := utils.AutoDetectGroup(cask, "cask")
-		tags := utils.AutoDetectTags(cask, "cask")
+	for _, caskName := range data.Casks {
+		groupName := utils.AutoDetectGroup(caskName, "cask")
+		tags := utils.AutoDetectTags(caskName, "cask")
 		
-		pkg := types.Package{
-			Name: cask,
-			Type: "cask",
+		pkgInfo := types.PackageInfo{
+			Name: caskName,
 			Tags: tags,
 		}
 		
-		groups[group].Packages = append(groups[group].Packages, pkg)
+		group := initializedGroups[groupName]
+		group.Packages["cask"] = append(group.Packages["cask"], pkgInfo)
+		initializedGroups[groupName] = group
 		
 		if verbose {
-			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Added cask '%s' to group '%s' with tags: %v", cask, group, tags))
+			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Added cask '%s' to group '%s' with tags: %v", caskName, groupName, tags))
 		}
 	}
 
 	// Add mas apps
 	for _, app := range data.MasApps {
-		group := utils.AutoDetectGroup(app.Name, "mas")
+		groupName := utils.AutoDetectGroup(app.Name, "mas")
 		tags := utils.AutoDetectTags(app.Name, "mas")
 		
-		pkg := types.Package{
+		pkgInfo := types.PackageInfo{
 			Name: app.Name,
-			Type: "mas",
 			Tags: tags,
 			ID:   app.ID,
 		}
 		
-		groups[group].Packages = append(groups[group].Packages, pkg)
+		group := initializedGroups[groupName]
+		group.Packages["mas"] = append(group.Packages["mas"], pkgInfo)
+		initializedGroups[groupName] = group
 		
 		if verbose {
-			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Added mas app '%s' to group '%s' with tags: %v", app.Name, group, tags))
+			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Added mas app '%s' to group '%s' with tags: %v", app.Name, groupName, tags))
 		}
 	}
 
-	// Convert to config format
-	for name, group := range groups {
-		config.Groups[name] = *group
-	}
+	config.Groups = initializedGroups // Assign the fully populated groups to the config
 
 	// Add default profiles
 	config.Profiles = map[string]types.Profile{

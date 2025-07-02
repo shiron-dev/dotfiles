@@ -248,3 +248,19 @@ func CreateBackup(filePath string) error {
 	PrintStatus(Green, fmt.Sprintf("Backup created: %s", backupPath))
 	return nil
 }
+
+// UniqueStrings returns a new slice with unique strings from the input slice
+func UniqueStrings(input []string) []string {
+	if input == nil {
+		return nil
+	}
+	seen := make(map[string]bool)
+	result := []string{}
+	for _, val := range input {
+		if _, ok := seen[val]; !ok {
+			seen[val] = true
+			result = append(result, val)
+		}
+	}
+	return result
+}

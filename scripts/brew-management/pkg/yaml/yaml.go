@@ -90,13 +90,24 @@ func SaveGroupedConfig(config *types.PackageGrouped, filePath string) error {
 	}
 	var sortedGroups []groupEntry
 	for name, group := range config.Groups {
+		// Sort packages within each group by type and then by name
+		for pkgType, pkgInfos := range group.Packages {
+			sort.Slice(pkgInfos, func(i, j int) bool {
+				return pkgInfos[i].Name < pkgInfos[j].Name
+			})
+			group.Packages[pkgType] = pkgInfos
+		}
+		// Sort package types (keys of the map)
+		// This part is tricky as map keys are not ordered in Go serialization directly.
+		// For consistent YAML output, we might need a custom Marshal or a structure that preserves order.
+		// However, yaml.v3 generally tries to sort map keys alphabetically by default.
 		sortedGroups = append(sortedGroups, groupEntry{name, group})
 	}
 	sort.Slice(sortedGroups, func(i, j int) bool {
 		return sortedGroups[i].group.Priority < sortedGroups[j].group.Priority
 	})
 
-	// Recreate the groups map in sorted order
+	// Recreate the groups map in sorted order for top-level groups
 	orderedGroups := make(map[string]types.Group)
 	for _, entry := range sortedGroups {
 		orderedGroups[entry.name] = entry.group
@@ -109,7 +120,8 @@ func SaveGroupedConfig(config *types.PackageGrouped, filePath string) error {
 	}
 
 	// Add yaml-language-server comment
-	content := "# yaml-language-server: $schema=~/projects/github.com/shiron-dev/dotfiles/scripts/brew-management/packages.schema.json\n\n"
+	// TODO: Update the schema path if it's hosted or standardized
+	content := "# yaml-language-server: $schema=~/github.com/shiron-dev/dotfiles/scripts/brew-management/packages.schema.json\n\n"
 	content += string(data)
 
 	if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
@@ -120,25 +132,27 @@ func SaveGroupedConfig(config *types.PackageGrouped, filePath string) error {
 }
 
 // GetFilteredPackages returns packages filtered by groups, tags, and exclusions
-func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOptions) []types.Package {
-	var allPackages []types.Package
+func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOptions) []types.FilteredPackage {
+	var allPackages []types.FilteredPackage
 
 	// Apply profile first if specified
 	if options.Profile != "" {
 		profile, exists := config.Profiles[options.Profile]
 		if exists {
-			options.Groups = append(options.Groups, profile.Groups...)
-			options.Tags = append(options.Tags, profile.Tags...)
+			// Deduplicate groups and tags
+			options.Groups = utils.UniqueStrings(append(options.Groups, profile.Groups...))
+			options.Tags = utils.UniqueStrings(append(options.Tags, profile.Tags...))
+			// TODO: Handle profile.ExcludeTags
 		}
 	}
 
-	// Collect packages from specified groups or all groups
 	groupsToProcess := options.Groups
 	if len(groupsToProcess) == 0 {
 		for groupName := range config.Groups {
 			groupsToProcess = append(groupsToProcess, groupName)
 		}
 	}
+	groupsToProcess = utils.UniqueStrings(groupsToProcess) // Ensure unique group processing
 
 	for _, groupName := range groupsToProcess {
 		group, exists := config.Groups[groupName]
@@ -146,15 +160,29 @@ func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOpt
 			continue
 		}
 
-		for _, pkg := range group.Packages {
-			// Apply tag filters
-			if len(options.Tags) > 0 && !utils.HasIntersection(pkg.Tags, options.Tags) {
-				continue
-			}
+		for pkgType, pkgInfos := range group.Packages {
+			for _, pkgInfo := range pkgInfos {
+				// Apply tag filters
+				if len(options.Tags) > 0 && !utils.HasIntersection(pkgInfo.Tags, options.Tags) {
+					continue
+				}
+				// TODO: Apply options.ExcludeTags if implemented
 
-			allPackages = append(allPackages, pkg)
+				allPackages = append(allPackages, types.FilteredPackage{
+					PackageInfo: pkgInfo,
+					Type:        pkgType,
+				})
+			}
 		}
 	}
+
+	// Sort final list for consistent processing order, by Type then by Name
+	sort.Slice(allPackages, func(i, j int) bool {
+		if allPackages[i].Type != allPackages[j].Type {
+			return allPackages[i].Type < allPackages[j].Type
+		}
+		return allPackages[i].Name < allPackages[j].Name
+	})
 
 	return allPackages
 }

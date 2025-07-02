@@ -18,12 +18,32 @@
           "description": "Installation priority (lower numbers install first)"
         },
         "packages": {
-          "items": {
-            "$ref": "#/$defs/Package"
-          },
-          "type": "array",
+          "type": "object",
           "title": "Packages",
-          "description": "Packages in this group"
+          "description": "Packages in this group, categorized by type",
+          "properties": {
+            "tap": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/PackageInfo" },
+              "description": "Tap packages"
+            },
+            "brew": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/PackageInfo" },
+              "description": "Brew formula packages"
+            },
+            "cask": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/PackageInfo" },
+              "description": "Cask packages"
+            },
+            "mas": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/PackageInfo" },
+              "description": "Mac App Store packages"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false,
@@ -34,7 +54,7 @@
         "packages"
       ]
     },
-    "Package": {
+    "PackageInfo": {
       "properties": {
         "name": {
           "type": "string",
@@ -42,22 +62,12 @@
           "title": "Package Name",
           "description": "Package name"
         },
-        "type": {
-          "type": "string",
-          "enum": [
-            "tap",
-            "brew",
-            "cask",
-            "mas"
-          ],
-          "title": "Package Type",
-          "description": "Package type"
-        },
         "tags": {
           "items": {
             "type": "string"
           },
           "type": "array",
+          "uniqueItems": true,
           "title": "Tags",
           "description": "Tags for categorization and filtering"
         },
@@ -77,8 +87,7 @@
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "name",
-        "type"
+        "name"
       ]
     },
     "PackageGrouped": {
@@ -119,6 +128,7 @@
             "type": "string"
           },
           "type": "array",
+          "uniqueItems": true,
           "title": "Groups",
           "description": "Groups to include in this profile"
         },
@@ -127,6 +137,7 @@
             "type": "string"
           },
           "type": "array",
+          "uniqueItems": true,
           "title": "Tags",
           "description": "Tags to include in this profile"
         },
@@ -135,6 +146,7 @@
             "type": "string"
           },
           "type": "array",
+          "uniqueItems": true,
           "title": "Exclude Tags",
           "description": "Tags to exclude from this profile"
         }

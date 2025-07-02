@@ -94,11 +94,18 @@ func findMissingPackages(config *types.PackageGrouped, installedPackagesMap map[
 	var missing []MissingPackage
 
 	// Get all packages from config
-	configPackages := make(map[string]bool)
+	configPackages := make(map[string]bool) // Stores "type:name" or "mas:id"
 	for _, group := range config.Groups {
-		for _, pkg := range group.Packages {
-			key := fmt.Sprintf("%s:%s", pkg.Type, pkg.Name)
-			configPackages[key] = true
+		for pkgType, pkgInfos := range group.Packages {
+			for _, pkgInfo := range pkgInfos {
+				var key string
+				if pkgType == "mas" {
+					key = fmt.Sprintf("mas:%d", pkgInfo.ID)
+				} else {
+					key = fmt.Sprintf("%s:%s", pkgType, pkgInfo.Name)
+				}
+				configPackages[key] = true
+			}
 		}
 	}
 
@@ -128,19 +135,8 @@ func findMissingPackages(config *types.PackageGrouped, installedPackagesMap map[
 
 	// Check mas apps
 	for _, app := range installedMasApps {
-		found := false
-		for _, group := range config.Groups {
-			for _, pkg := range group.Packages {
-				if pkg.Type == "mas" && pkg.ID == app.ID {
-					found = true
-					break
-				}
-			}
-			if found {
-				break
-			}
-		}
-		if !found {
+		key := fmt.Sprintf("mas:%d", app.ID)
+		if !configPackages[key] {
 			missing = append(missing, MissingPackage{Name: app.Name, Type: "mas", ID: app.ID})
 		}
 	}
@@ -155,8 +151,20 @@ func showMissingPackages(packages []MissingPackage) {
 		packagesByType[pkg.Type] = append(packagesByType[pkg.Type], pkg)
 	}
 
-	for pkgType, pkgs := range packagesByType {
+	// Sort package types for consistent output order
+	sortedTypes := make([]string, 0, len(packagesByType))
+	for pkgType := range packagesByType {
+		sortedTypes = append(sortedTypes, pkgType)
+	}
+	sort.Strings(sortedTypes)
+
+	for _, pkgType := range sortedTypes {
+		pkgs := packagesByType[pkgType]
 		utils.PrintStatus(utils.Cyan, fmt.Sprintf("%s packages:", strings.Title(pkgType)))
+		// Sort packages within each type by name for consistent output
+		sort.Slice(pkgs, func(i, j int) bool {
+			return pkgs[i].Name < pkgs[j].Name
+		})
 		for _, pkg := range pkgs {
 			if pkg.Type == "mas" {
 				fmt.Printf("  - %s (ID: %d)\n", pkg.Name, pkg.ID)
@@ -174,21 +182,37 @@ func addMissingPackagesToGrouped(config *types.PackageGrouped, missing []Missing
 		defaultGroup = "uncategorized"
 	}
 
-	// Ensure default group exists
+	// Ensure default group exists and has Packages map initialized
 	if _, exists := config.Groups[defaultGroup]; !exists {
 		config.Groups[defaultGroup] = types.Group{
 			Description: "Uncategorized packages",
 			Priority:    10,
-			Packages:    []types.Package{},
+			Packages:    make(map[string][]types.PackageInfo),
+		}
+	} else {
+		// Ensure Packages map is initialized even if group exists
+		grp := config.Groups[defaultGroup]
+		if grp.Packages == nil {
+			grp.Packages = make(map[string][]types.PackageInfo)
+			config.Groups[defaultGroup] = grp
 		}
 	}
 
+
 	for _, pkg := range missing {
 		targetGroup := defaultGroup
-		tags := []string{}
+		tags := options.DefaultTags // Use default tags from options
 
 		if options.Interactive {
-			response, err := promptForPackageAssignment(pkg, targetGroup, tags)
+			// Auto-detect group and tags for suggestion if AutoDetect is true
+			suggestedGroup := targetGroup
+			suggestedTags := tags
+			if options.AutoDetect {
+				suggestedGroup = utils.AutoDetectGroup(pkg.Name, pkg.Type)
+				suggestedTags = utils.AutoDetectTags(pkg.Name, pkg.Type)
+			}
+
+			response, err := promptForPackageAssignment(pkg, suggestedGroup, suggestedTags)
 			if err != nil {
 				return fmt.Errorf("interactive prompt failed: %w", err)
 			}
@@ -196,30 +220,36 @@ func addMissingPackagesToGrouped(config *types.PackageGrouped, missing []Missing
 			tags = response.Tags
 		}
 
-		// Ensure target group exists
+		// Ensure target group exists and has Packages map initialized
 		if _, exists := config.Groups[targetGroup]; !exists {
 			config.Groups[targetGroup] = types.Group{
 				Description: fmt.Sprintf("Auto-created group for %s", targetGroup),
-				Priority:    5,
-				Packages:    []types.Package{},
+				Priority:    5, // Default priority for auto-created groups
+				Packages:    make(map[string][]types.PackageInfo),
+			}
+		} else {
+			grp := config.Groups[targetGroup]
+			if grp.Packages == nil {
+				grp.Packages = make(map[string][]types.PackageInfo)
+				config.Groups[targetGroup] = grp
 			}
 		}
 
-		// Create package
-		newPackage := types.Package{
+
+		// Create PackageInfo
+		newPackageInfo := types.PackageInfo{
 			Name: pkg.Name,
-			Type: pkg.Type,
 			Tags: tags,
 		}
 
 		if pkg.Type == "mas" {
-			newPackage.ID = pkg.ID
+			newPackageInfo.ID = pkg.ID
 		}
 
 		// Add to group
 		group := config.Groups[targetGroup]
-		group.Packages = append(group.Packages, newPackage)
-		config.Groups[targetGroup] = group
+		group.Packages[pkg.Type] = append(group.Packages[pkg.Type], newPackageInfo)
+		config.Groups[targetGroup] = group // Update the map with the modified group
 
 		utils.PrintStatus(utils.Green, fmt.Sprintf("Added %s '%s' to group '%s'", pkg.Type, pkg.Name, targetGroup))
 	}
@@ -256,6 +286,10 @@ func promptForPackageAssignment(pkg MissingPackage, suggestedGroup string, sugge
 	}
 
 	tags := utils.SplitCommaSeparated(tagsString)
+	if tagsString == "" { // Handle case where user enters empty string for no tags
+		tags = []string{}
+	}
+
 
 	return &PackageAssignment{
 		Group: group,
@@ -263,16 +297,16 @@ func promptForPackageAssignment(pkg MissingPackage, suggestedGroup string, sugge
 	}, nil
 }
 
-// sortGroupedPackages sorts packages within each group
+// sortGroupedPackages sorts packages within each group by type and then by name
 func sortGroupedPackages(config *types.PackageGrouped) {
 	for groupName, group := range config.Groups {
-		sort.Slice(group.Packages, func(i, j int) bool {
-			// Sort by type first, then by name
-			if group.Packages[i].Type != group.Packages[j].Type {
-				return group.Packages[i].Type < group.Packages[j].Type
-			}
-			return group.Packages[i].Name < group.Packages[j].Name
-		})
+		for pkgType, pkgInfos := range group.Packages {
+			sort.Slice(pkgInfos, func(i, j int) bool {
+				return pkgInfos[i].Name < pkgInfos[j].Name
+			})
+			group.Packages[pkgType] = pkgInfos // Update the slice in the map
+		}
+		// Note: Map keys (package types) are not sorted here, but yaml.v3 usually sorts them.
 		config.Groups[groupName] = group
 	}
-} 
+}

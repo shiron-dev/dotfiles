@@ -133,20 +133,24 @@ func getAllPackagesFromConfig(config *types.PackageGrouped) map[string]map[strin
 		"tap":  make(map[string]bool),
 		"brew": make(map[string]bool),
 		"cask": make(map[string]bool),
-		"mas":  make(map[string]bool),
+		"mas":  make(map[string]bool), // MAS uses ID as string key
 	}
 
 	for _, group := range config.Groups {
-		for _, pkg := range group.Packages {
-			switch pkg.Type {
-			case "tap":
-				result["tap"][pkg.Name] = true
-			case "brew":
-				result["brew"][pkg.Name] = true
-			case "cask":
-				result["cask"][pkg.Name] = true
-			case "mas":
-				result["mas"][fmt.Sprintf("%d", pkg.ID)] = true
+		for pkgType, pkgInfos := range group.Packages { // Iterate over package types (brew, cask, etc.)
+			for _, pkgInfo := range pkgInfos { // Iterate over packages of that type
+				switch pkgType {
+				case "tap":
+					result["tap"][pkgInfo.Name] = true
+				case "brew":
+					result["brew"][pkgInfo.Name] = true
+				case "cask":
+					result["cask"][pkgInfo.Name] = true
+				case "mas":
+					if pkgInfo.ID != 0 { // Ensure ID is present for MAS apps
+						result["mas"][fmt.Sprintf("%d", pkgInfo.ID)] = true
+					}
+				}
 			}
 		}
 	}
