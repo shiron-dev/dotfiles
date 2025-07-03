@@ -75,17 +75,18 @@ Examples:
 		}
 
 		// Get filtered packages
-		packages := yamlPkg.GetFilteredPackages(config, options)
+		filteredPackages := yamlPkg.GetFilteredPackages(config, options)
 
-		if len(packages) == 0 {
+		if len(filteredPackages) == 0 {
 			utils.PrintStatus(utils.Yellow, "No packages found matching the specified criteria.")
 			return
 		}
 
-		utils.PrintStatus(utils.Blue, fmt.Sprintf("Found %d packages to install", len(packages)))
+		utils.PrintStatus(utils.Blue, fmt.Sprintf("Found %d packages to install", len(filteredPackages)))
 
 		// Install packages
-		if err := brew.InstallPackages(packages, options); err != nil {
+		// Note: brew.InstallPackages will need to be adapted to handle []types.FilteredPackage
+		if err := brew.InstallPackages(filteredPackages, options); err != nil {
 			utils.PrintStatus(utils.Red, fmt.Sprintf("Installation failed: %v", err))
 			return
 		}
@@ -109,10 +110,10 @@ func handleListCommands(yamlFile string) error {
 			priority int
 			desc     string
 		}
-		var groups []groupInfo
+		var groupsToSort []groupInfo // Renamed to avoid conflict
 		
 		for name, group := range config.Groups {
-			groups = append(groups, groupInfo{
+			groupsToSort = append(groupsToSort, groupInfo{ // Use renamed variable
 				name:     name,
 				priority: group.Priority,
 				desc:     group.Description,
@@ -120,11 +121,11 @@ func handleListCommands(yamlFile string) error {
 		}
 		
 		// Sort by priority
-		sort.Slice(groups, func(i, j int) bool {
-			return groups[i].priority < groups[j].priority
+		sort.Slice(groupsToSort, func(i, j int) bool { // Use renamed variable
+			return groupsToSort[i].priority < groupsToSort[j].priority // Use renamed variable
 		})
 		
-		for _, group := range groups {
+		for _, group := range groupsToSort { // Use renamed variable
 			fmt.Printf("  %s: %s (priority: %d)\n", group.name, group.desc, group.priority)
 		}
 	}
@@ -134,9 +135,11 @@ func handleListCommands(yamlFile string) error {
 		tagSet := make(map[string]bool)
 		
 		for _, group := range config.Groups {
-			for _, pkg := range group.Packages {
-				for _, tag := range pkg.Tags {
-					tagSet[tag] = true
+			for _, pkgInfos := range group.Packages { // Iterate through map values (slices of PackageInfo)
+				for _, pkgInfo := range pkgInfos { // Iterate through PackageInfo slices
+					for _, tag := range pkgInfo.Tags { // Access Tags from PackageInfo
+						tagSet[tag] = true
+					}
 				}
 			}
 		}

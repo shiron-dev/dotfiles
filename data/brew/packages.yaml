@@ -5,658 +5,339 @@ groups:
         description: Uncategorized packages
         priority: 10
         packages:
-            - name: atlassian/acli
-              type: tap
-            - name: buildpacks/tap
-              type: tap
-            - name: hashicorp/tap
-              type: tap
-            - name: homebrew/core
-              type: tap
-            - name: shiron-dev/tap
-              type: tap
-            - name: voicevox/voicevox
-              type: tap
-            - name: abseil
-              type: brew
-            - name: act
-              type: brew
-            - name: actionlint
-              type: brew
-            - name: ansible
-              type: brew
-            - name: ansible-lint
-              type: brew
-            - name: aom
-              type: brew
-            - name: apktool
-              type: brew
-            - name: arduino-cli
-              type: brew
-            - name: aribb24
-              type: brew
-            - name: arp-scan
-              type: brew
-            - name: atlas
-              type: brew
-            - name: awscli
-              type: brew
-            - name: azure-cli
-              type: brew
-            - name: bat
-              type: brew
-            - name: boost
-              type: brew
-            - name: brotli
-              type: brew
-            - name: buf
-              type: brew
-            - name: ca-certificates
-              type: brew
-            - name: cairo
-              type: brew
-            - name: certifi
-              type: brew
-            - name: cffi
-              type: brew
-            - name: cjson
-              type: brew
-            - name: cloud-sql-proxy
-              type: brew
-            - name: cloudflared
-              type: brew
-            - name: consul-template
-              type: brew
-            - name: coreutils
-              type: brew
-            - name: cryptography
-              type: brew
-            - name: curl
-              type: brew
-            - name: dav1d
-              type: brew
-            - name: delve
-              type: brew
-            - name: docker-buildx
-              type: brew
-            - name: exiftool
-              type: brew
-            - name: fd
-              type: brew
-            - name: ffmpeg
-              type: brew
-            - name: flac
-              type: brew
-            - name: fontconfig
-              type: brew
-            - name: freetype
-              type: brew
-            - name: frei0r
-              type: brew
-            - name: fribidi
-              type: brew
-            - name: fzf
-              type: brew
-            - name: gawk
-              type: brew
-            - name: gcc
-              type: brew
-            - name: gd
-              type: brew
-            - name: gdk-pixbuf
-              type: brew
-            - name: gettext
-              type: brew
-            - name: gh
-              type: brew
-            - name: ghq
-              type: brew
-            - name: giflib
-              type: brew
-            - name: git
-              type: brew
-            - name: git-lfs
-              type: brew
-            - name: glib
-              type: brew
-            - name: gmp
-              type: brew
-            - name: gnu-sed
-              type: brew
-            - name: gnupg
-              type: brew
-            - name: gnutls
-              type: brew
-            - name: go
-              type: brew
-            - name: go-task
-              type: brew
-            - name: gofumpt
-              type: brew
-            - name: golangci-lint
-              type: brew
-            - name: goreleaser
-              type: brew
-            - name: gpgme
-              type: brew
-            - name: graphite2
-              type: brew
-            - name: graphviz
-              type: brew
-            - name: grep
-              type: brew
-            - name: grpcurl
-              type: brew
-            - name: gts
-              type: brew
-            - name: hadolint
-              type: brew
-            - name: harfbuzz
-              type: brew
-            - name: highway
-              type: brew
-            - name: htop
-              type: brew
-            - name: icu4c@77
-              type: brew
-            - name: imath
-              type: brew
-            - name: infracost
-              type: brew
-            - name: iproute2mac
-              type: brew
-            - name: isl
-              type: brew
-            - name: jasper
-              type: brew
-            - name: jpeg-turbo
-              type: brew
-            - name: jpeg-xl
-              type: brew
-            - name: jq
-              type: brew
-            - name: json-c
-              type: brew
-            - name: just
-              type: brew
-            - name: krb5
-              type: brew
-            - name: ktlint
-              type: brew
-            - name: lame
-              type: brew
-            - name: lazydocker
-              type: brew
-            - name: lazygit
-              type: brew
-            - name: leptonica
-              type: brew
-            - name: libarchive
-              type: brew
-            - name: libass
-              type: brew
-            - name: libassuan
-              type: brew
-            - name: libavif
-              type: brew
-            - name: libb2
-              type: brew
-            - name: libbluray
-              type: brew
-            - name: libcbor
-              type: brew
-            - name: libdeflate
-              type: brew
-            - name: libevent
-              type: brew
-            - name: libfido2
-              type: brew
-            - name: libgcrypt
-              type: brew
-            - name: libgit2
-              type: brew
-            - name: libgpg-error
-              type: brew
-            - name: libidn2
-              type: brew
-            - name: libksba
-              type: brew
-            - name: liblinear
-              type: brew
-            - name: libmicrohttpd
-              type: brew
-            - name: libmpc
-              type: brew
-            - name: libnghttp2
-              type: brew
-            - name: libogg
-              type: brew
-            - name: libomp
-              type: brew
-            - name: libpcap
-              type: brew
-            - name: libpng
-              type: brew
-            - name: libpq
-              type: brew
-            - name: librist
-              type: brew
-            - name: librsvg
-              type: brew
-            - name: libsamplerate
-              type: brew
-            - name: libsndfile
-              type: brew
-            - name: libsodium
-              type: brew
-            - name: libsoxr
-              type: brew
-            - name: libssh
-              type: brew
-            - name: libssh2
-              type: brew
-            - name: libtasn1
-              type: brew
-            - name: libtiff
-              type: brew
-            - name: libtool
-              type: brew
-            - name: libunibreak
-              type: brew
-            - name: libunistring
-              type: brew
-            - name: libusb
-              type: brew
-            - name: libuv
-              type: brew
-            - name: libvidstab
-              type: brew
-            - name: libvmaf
-              type: brew
-            - name: libvorbis
-              type: brew
-            - name: libvpx
-              type: brew
-            - name: libwebsockets
-              type: brew
-            - name: libx11
-              type: brew
-            - name: libxau
-              type: brew
-            - name: libxcb
-              type: brew
-            - name: libxdmcp
-              type: brew
-            - name: libxext
-              type: brew
-            - name: libxrender
-              type: brew
-            - name: libyaml
-              type: brew
-            - name: little-cms2
-              type: brew
-            - name: llvm
-              type: brew
-            - name: lua
-              type: brew
-            - name: lz4
-              type: brew
-            - name: lzo
-              type: brew
-            - name: m4
-              type: brew
-            - name: mas
-              type: brew
-            - name: mbedtls
-              type: brew
-            - name: mise
-              type: brew
-            - name: mpdecimal
-              type: brew
-            - name: mpfr
-              type: brew
-            - name: mpg123
-              type: brew
-            - name: mysql-client
-              type: brew
-            - name: mysql-client@8.0
-              type: brew
-            - name: nano
-              type: brew
-            - name: navi
-              type: brew
-            - name: ncurses
-              type: brew
-            - name: netcat
-              type: brew
-            - name: netpbm
-              type: brew
-            - name: nettle
-              type: brew
-            - name: nmap
-              type: brew
-            - name: npth
-              type: brew
-            - name: nspr
-              type: brew
-            - name: nss
-              type: brew
-            - name: oniguruma
-              type: brew
-            - name: opencore-amr
-              type: brew
-            - name: openexr
-              type: brew
-            - name: openjdk
-              type: brew
-            - name: openjpeg
-              type: brew
-            - name: openssl@3
-              type: brew
-            - name: opus
-              type: brew
-            - name: p11-kit
-              type: brew
-            - name: pack
-              type: brew
-            - name: pango
-              type: brew
-            - name: parallel
-              type: brew
-            - name: pcre2
-              type: brew
-            - name: pinentry
-              type: brew
-            - name: pinentry-mac
-              type: brew
-            - name: pipx
-              type: brew
-            - name: pixman
-              type: brew
-            - name: pkgconf
-              type: brew
-            - name: poppler
-              type: brew
-            - name: portaudio
-              type: brew
-            - name: protobuf
-              type: brew
-            - name: pycparser
-              type: brew
-            - name: python-certifi
-              type: brew
-            - name: python@3.12
-              type: brew
-            - name: python@3.13
-              type: brew
-            - name: qpdf
-              type: brew
-            - name: rav1e
-              type: brew
-            - name: readline
-              type: brew
-            - name: rename
-              type: brew
-            - name: rtmpdump
-              type: brew
-            - name: rubberband
-              type: brew
-            - name: rust
-              type: brew
-            - name: sdl2
-              type: brew
-            - name: sheldon
-              type: brew
-            - name: shellcheck
-              type: brew
-            - name: snappy
-              type: brew
-            - name: speedtest-cli
-              type: brew
-            - name: speex
-              type: brew
-            - name: sqlfluff
-              type: brew
-            - name: sqlite
-              type: brew
-            - name: srt
-              type: brew
-            - name: svt-av1
-              type: brew
-            - name: ta-lib
-              type: brew
-            - name: terraform
-              type: brew
-            - name: terraform-ls
-              type: brew
-            - name: tesseract
-              type: brew
-            - name: tflint
-              type: brew
-            - name: theora
-              type: brew
-            - name: tree
-              type: brew
-            - name: ttyd
-              type: brew
-            - name: unbound
-              type: brew
-            - name: usage
-              type: brew
-            - name: volta
-              type: brew
-            - name: watch
-              type: brew
-            - name: webp
-              type: brew
-            - name: wget
-              type: brew
-            - name: x264
-              type: brew
-            - name: x265
-              type: brew
-            - name: xc
-              type: brew
-            - name: xorgproto
-              type: brew
-            - name: xvid
-              type: brew
-            - name: xz
-              type: brew
-            - name: yamlfmt
-              type: brew
-            - name: yamllint
-              type: brew
-            - name: yazi
-              type: brew
-            - name: yq
-              type: brew
-            - name: yt-dlp
-              type: brew
-            - name: z3
-              type: brew
-            - name: zeromq
-              type: brew
-            - name: zimg
-              type: brew
-            - name: zlib
-              type: brew
-            - name: zoxide
-              type: brew
-            - name: zstd
-              type: brew
-            - name: 1password
-              type: cask
-            - name: adobe-acrobat-reader
-              type: cask
-            - name: aivis-speech
-              type: cask
-            - name: arc
-              type: cask
-            - name: arduino-ide
-              type: cask
-            - name: audacity
-              type: cask
-            - name: battery
-              type: cask
-            - name: betterdisplay
-              type: cask
-            - name: brave-browser
-              type: cask
-            - name: claude
-              type: cask
-            - name: cloudflare-warp
-              type: cask
-            - name: commander-one
-              type: cask
-            - name: cursor
-              type: cask
-            - name: discord
-              type: cask
-            - name: dmm-game-player
-              type: cask
-            - name: docker
-              type: cask
-            - name: docker-desktop
-              type: cask
-            - name: figma
-              type: cask
-            - name: figma-agent
-              type: cask
-            - name: finicky
-              type: cask
-            - name: firefox@developer-edition
-              type: cask
-            - name: flutter
-              type: cask
-            - name: font-roboto-mono-nerd-font
-              type: cask
-            - name: fujitsu-scansnap-home
-              type: cask
-            - name: gimp
-              type: cask
-            - name: gitify
-              type: cask
-            - name: google-chrome
-              type: cask
-            - name: google-cloud-sdk
-              type: cask
-            - name: inkscape
-              type: cask
-            - name: iterm2
-              type: cask
-            - name: itsycal
-              type: cask
-            - name: jetbrains-toolbox
-              type: cask
-            - name: jordanbaird-ice
-              type: cask
-            - name: keycastr
-              type: cask
-            - name: kicad
-              type: cask
-            - name: ltspice
-              type: cask
-            - name: macs-fan-control
-              type: cask
-            - name: master-pdf-editor
-              type: cask
-            - name: microsoft-auto-update
-              type: cask
-            - name: microsoft-edge
-              type: cask
-            - name: microsoft-excel
-              type: cask
-            - name: microsoft-powerpoint
-              type: cask
-            - name: microsoft-word
-              type: cask
-            - name: mysqlworkbench
-              type: cask
-            - name: notion
-              type: cask
-            - name: obs
-              type: cask
-            - name: onyx
-              type: cask
-            - name: openinterminal
-              type: cask
-            - name: orbstack
-              type: cask
-            - name: pgadmin4
-              type: cask
-            - name: postman
-              type: cask
-            - name: raycast
-              type: cask
-            - name: rwts-pdfwriter
-              type: cask
-            - name: session-manager-plugin
-              type: cask
-            - name: slack
-              type: cask
-            - name: spotify
-              type: cask
-            - name: stats
-              type: cask
-            - name: steam
-              type: cask
-            - name: tailscale
-              type: cask
-            - name: tailscale-app
-              type: cask
-            - name: termius
-              type: cask
-            - name: timemachinestatus
-              type: cask
-            - name: tor-browser
-              type: cask
-            - name: unity-hub
-              type: cask
-            - name: utm
-              type: cask
-            - name: vb-cable
-              type: cask
-            - name: visual-studio-code
-              type: cask
-            - name: visual-studio-code@insiders
-              type: cask
-            - name: vlc
-              type: cask
-            - name: voicevox
-              type: cask
-            - name: wakatime
-              type: cask
-            - name: webtorrent
-              type: cask
-            - name: wireshark
-              type: cask
-            - name: wireshark-app
-              type: cask
-            - name: zoom
-              type: cask
-            - name: AmorphousDiskMark  (4.0.1)
-              type: mas
-              id: 1168254295
-            - name: Amphetamine        (5.3.2)
-              type: mas
-              id: 937984704
-            - name: Cloud Battery      (4.43)
-              type: mas
-              id: 1481005137
-            - name: DaVinci Resolve    (20.0.1)
-              type: mas
-              id: 571213070
-            - name: Goodnotes          (6.6.49)
-              type: mas
-              id: 1444383602
-            - name: LINE               (9.9.0)
-              type: mas
-              id: 539883307
-            - name: MeetingBar         (4.11.6)
-              type: mas
-              id: 1532419400
-            - name: Xcode              (16.4)
-              type: mas
-              id: 497799835
+            tap:
+                - name: atlassian/acli
+                - name: buildpacks/tap
+                - name: hashicorp/tap
+                - name: homebrew/core
+                - name: shiron-dev/tap
+                - name: voicevox/voicevox
+            brew:
+                - name: abseil
+                - name: act
+                - name: actionlint
+                - name: ansible
+                - name: ansible-lint
+                - name: aom
+                - name: apktool
+                - name: arduino-cli
+                - name: aribb24
+                - name: arp-scan
+                - name: atlas
+                - name: awscli
+                - name: azure-cli
+                - name: bat
+                - name: boost
+                - name: brotli
+                - name: buf
+                - name: ca-certificates
+                - name: cairo
+                - name: certifi
+                - name: cffi
+                - name: cjson
+                - name: cloud-sql-proxy
+                - name: cloudflared
+                - name: consul-template
+                - name: coreutils
+                - name: cryptography
+                - name: curl
+                - name: dav1d
+                - name: delve
+                - name: docker-buildx
+                - name: exiftool
+                - name: fd
+                - name: ffmpeg
+                - name: flac
+                - name: fontconfig
+                - name: freetype
+                - name: frei0r
+                - name: fribidi
+                - name: fzf
+                - name: gawk
+                - name: gcc
+                - name: gd
+                - name: gdk-pixbuf
+                - name: gettext
+                - name: gh
+                - name: ghq
+                - name: giflib
+                - name: git
+                - name: git-lfs
+                - name: glib
+                - name: gmp
+                - name: gnu-sed
+                - name: gnupg
+                - name: gnutls
+                - name: go
+                - name: go-task
+                - name: gofumpt
+                - name: golangci-lint
+                - name: goreleaser
+                - name: gpgme
+                - name: graphite2
+                - name: graphviz
+                - name: grep
+                - name: grpcurl
+                - name: gts
+                - name: hadolint
+                - name: harfbuzz
+                - name: highway
+                - name: htop
+                - name: icu4c@77
+                - name: imath
+                - name: infracost
+                - name: iproute2mac
+                - name: isl
+                - name: jasper
+                - name: jpeg-turbo
+                - name: jpeg-xl
+                - name: jq
+                - name: json-c
+                - name: just
+                - name: krb5
+                - name: ktlint
+                - name: lame
+                - name: lazydocker
+                - name: lazygit
+                - name: leptonica
+                - name: libarchive
+                - name: libass
+                - name: libassuan
+                - name: libavif
+                - name: libb2
+                - name: libbluray
+                - name: libcbor
+                - name: libdeflate
+                - name: libevent
+                - name: libfido2
+                - name: libgcrypt
+                - name: libgit2
+                - name: libgpg-error
+                - name: libidn2
+                - name: libksba
+                - name: liblinear
+                - name: libmicrohttpd
+                - name: libmpc
+                - name: libnghttp2
+                - name: libogg
+                - name: libomp
+                - name: libpcap
+                - name: libpng
+                - name: libpq
+                - name: librist
+                - name: librsvg
+                - name: libsamplerate
+                - name: libsndfile
+                - name: libsodium
+                - name: libsoxr
+                - name: libssh
+                - name: libssh2
+                - name: libtasn1
+                - name: libtiff
+                - name: libtool
+                - name: libunibreak
+                - name: libunistring
+                - name: libusb
+                - name: libuv
+                - name: libvidstab
+                - name: libvmaf
+                - name: libvorbis
+                - name: libvpx
+                - name: libwebsockets
+                - name: libx11
+                - name: libxau
+                - name: libxcb
+                - name: libxdmcp
+                - name: libxext
+                - name: libxrender
+                - name: libyaml
+                - name: little-cms2
+                - name: llvm
+                - name: lua
+                - name: lz4
+                - name: lzo
+                - name: m4
+                - name: mas
+                - name: mbedtls
+                - name: mise
+                - name: mpdecimal
+                - name: mpfr
+                - name: mpg123
+                - name: mysql-client
+                - name: mysql-client@8.0
+                - name: nano
+                - name: navi
+                - name: ncurses
+                - name: netcat
+                - name: netpbm
+                - name: nettle
+                - name: nmap
+                - name: npth
+                - name: nspr
+                - name: nss
+                - name: oniguruma
+                - name: opencore-amr
+                - name: openexr
+                - name: openjdk
+                - name: openjpeg
+                - name: openssl@3
+                - name: opus
+                - name: p11-kit
+                - name: pack
+                - name: pango
+                - name: parallel
+                - name: pcre2
+                - name: pinentry
+                - name: pinentry-mac
+                - name: pipx
+                - name: pixman
+                - name: pkgconf
+                - name: poppler
+                - name: portaudio
+                - name: protobuf
+                - name: pycparser
+                - name: python-certifi
+                - name: python@3.12
+                - name: python@3.13
+                - name: qpdf
+                - name: rav1e
+                - name: readline
+                - name: rename
+                - name: rtmpdump
+                - name: rubberband
+                - name: rust
+                - name: sdl2
+                - name: sheldon
+                - name: shellcheck
+                - name: snappy
+                - name: speedtest-cli
+                - name: speex
+                - name: sqlfluff
+                - name: sqlite
+                - name: srt
+                - name: svt-av1
+                - name: ta-lib
+                - name: terraform
+                - name: terraform-ls
+                - name: tesseract
+                - name: tflint
+                - name: theora
+                - name: tree
+                - name: ttyd
+                - name: unbound
+                - name: usage
+                - name: volta
+                - name: watch
+                - name: webp
+                - name: wget
+                - name: x264
+                - name: x265
+                - name: xc
+                - name: xorgproto
+                - name: xvid
+                - name: xz
+                - name: yamlfmt
+                - name: yamllint
+                - name: yazi
+                - name: yq
+                - name: yt-dlp
+                - name: z3
+                - name: zeromq
+                - name: zimg
+                - name: zlib
+                - name: zoxide
+                - name: zstd
+            cask:
+                - name: 1password
+                - name: adobe-acrobat-reader
+                - name: aivis-speech
+                - name: arc
+                - name: arduino-ide
+                - name: audacity
+                - name: battery
+                - name: betterdisplay
+                - name: brave-browser
+                - name: claude
+                - name: cloudflare-warp
+                - name: commander-one
+                - name: cursor
+                - name: discord
+                - name: dmm-game-player
+                - name: docker
+                - name: docker-desktop
+                - name: figma
+                - name: figma-agent
+                - name: finicky
+                - name: firefox@developer-edition
+                - name: flutter
+                - name: font-roboto-mono-nerd-font
+                - name: fujitsu-scansnap-home
+                - name: gimp
+                - name: gitify
+                - name: google-chrome
+                - name: google-cloud-sdk
+                - name: inkscape
+                - name: iterm2
+                - name: itsycal
+                - name: jetbrains-toolbox
+                - name: jordanbaird-ice
+                - name: keycastr
+                - name: kicad
+                - name: ltspice
+                - name: macs-fan-control
+                - name: master-pdf-editor
+                - name: microsoft-auto-update
+                - name: microsoft-edge
+                - name: microsoft-excel
+                - name: microsoft-powerpoint
+                - name: microsoft-word
+                - name: mysqlworkbench
+                - name: notion
+                - name: obs
+                - name: onyx
+                - name: openinterminal
+                - name: orbstack
+                - name: pgadmin4
+                - name: postman
+                - name: raycast
+                - name: rwts-pdfwriter
+                - name: session-manager-plugin
+                - name: slack
+                - name: spotify
+                - name: stats
+                - name: steam
+                - name: tailscale
+                - name: tailscale-app
+                - name: termius
+                - name: timemachinestatus
+                - name: tor-browser
+                - name: unity-hub
+                - name: utm
+                - name: vb-cable
+                - name: visual-studio-code
+                - name: visual-studio-code@insiders
+                - name: vlc
+                - name: voicevox
+                - name: wakatime
+                - name: webtorrent
+                - name: wireshark
+                - name: wireshark-app
+                - name: zoom
+            mas:
+                - name: AmorphousDiskMark  (4.0.1)
+                  id: 1168254295
+                - name: Amphetamine        (5.3.2)
+                  id: 937984704
+                - name: Cloud Battery      (4.43)
+                  id: 1481005137
+                - name: DaVinci Resolve    (20.0.1)
+                  id: 571213070
+                - name: Goodnotes          (6.6.49)
+                  id: 1444383602
+                - name: LINE               (9.9.0)
+                  id: 539883307
+                - name: MeetingBar         (4.11.6)
+                  id: 1532419400
+                - name: Xcode              (16.4)
+                  id: 497799835
 profiles: {}

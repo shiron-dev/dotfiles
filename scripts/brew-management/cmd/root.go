@@ -35,8 +35,9 @@ Examples:
   brew-manager prune --dry-run
   brew-manager validate`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// Check prerequisites for most commands
-		if cmd.Name() != "help" && cmd.Name() != "completion" {
+		// Check prerequisites for most commands, skip for validate, help, and completion
+		commandName := cmd.Name()
+		if commandName != "validate" && commandName != "help" && commandName != "completion" {
 			if err := utils.CheckPrerequisites(); err != nil {
 				utils.PrintStatus(utils.Red, fmt.Sprintf("Error: %v", err))
 				os.Exit(1)

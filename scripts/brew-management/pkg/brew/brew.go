@@ -10,23 +10,23 @@ import (
 )
 
 // InstallPackages installs packages based on configuration and options
-func InstallPackages(packages []types.Package, options *types.InstallOptions) error {
+func InstallPackages(filteredPackages []types.FilteredPackage, options *types.InstallOptions) error {
 	if err := utils.CheckPrerequisites(); err != nil {
 		return err
 	}
 
 	// Group packages by type
-	packagesByType := make(map[string][]types.Package)
-	for _, pkg := range packages {
-		packagesByType[pkg.Type] = append(packagesByType[pkg.Type], pkg)
+	packagesByType := make(map[string][]types.PackageInfo)
+	for _, filteredPkg := range filteredPackages {
+		packagesByType[filteredPkg.Type] = append(packagesByType[filteredPkg.Type], filteredPkg.PackageInfo)
 	}
 
 	// Install in order: taps, brews, casks, mas
 	order := []string{"tap", "brew", "cask", "mas"}
 
 	for _, pkgType := range order {
-		packages := packagesByType[pkgType]
-		if len(packages) == 0 {
+		pkgInfos := packagesByType[pkgType]
+		if len(pkgInfos) == 0 {
 			continue
 		}
 
@@ -35,7 +35,7 @@ func InstallPackages(packages []types.Package, options *types.InstallOptions) er
 			continue
 		}
 
-		if err := installPackagesByType(pkgType, packages, options); err != nil {
+		if err := installPackagesByType(pkgType, pkgInfos, options); err != nil {
 			return fmt.Errorf("failed to install %s packages: %w", pkgType, err)
 		}
 	}
@@ -59,41 +59,46 @@ func shouldSkipType(pkgType string, options *types.InstallOptions) bool {
 }
 
 // installPackagesByType installs packages of a specific type
-func installPackagesByType(pkgType string, packages []types.Package, options *types.InstallOptions) error {
+func installPackagesByType(pkgType string, pkgInfos []types.PackageInfo, options *types.InstallOptions) error {
 	utils.PrintStatus(utils.Blue, fmt.Sprintf("Installing %s packages...", pkgType))
 
-	for _, pkg := range packages {
+	for _, pkgInfo := range pkgInfos {
 		if options.Verbose {
-			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Processing %s: %s", pkgType, pkg.Name))
+			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Processing %s: %s", pkgType, pkgInfo.Name))
 		}
 
 		if options.DryRun {
-			utils.PrintStatus(utils.Yellow, fmt.Sprintf("[DRY RUN] Would install %s: %s", pkgType, pkg.Name))
+			utils.PrintStatus(utils.Yellow, fmt.Sprintf("[DRY RUN] Would install %s: %s", pkgType, pkgInfo.Name))
 			continue
 		}
 
-		if err := installSinglePackage(pkgType, pkg, options.Verbose); err != nil {
-			utils.PrintStatus(utils.Red, fmt.Sprintf("Failed to install %s: %s - %v", pkgType, pkg.Name, err))
+		if err := installSinglePackage(pkgType, pkgInfo, options.Verbose); err != nil {
+			utils.PrintStatus(utils.Red, fmt.Sprintf("Failed to install %s: %s - %v", pkgType, pkgInfo.Name, err))
+			// Decide if we should continue or stop on error. For now, continue.
 			continue
 		}
 
-		utils.PrintStatus(utils.Green, fmt.Sprintf("Installed %s: %s", pkgType, pkg.Name))
+		utils.PrintStatus(utils.Green, fmt.Sprintf("Installed %s: %s", pkgType, pkgInfo.Name))
 	}
 
 	return nil
 }
 
 // installSinglePackage installs a single package
-func installSinglePackage(pkgType string, pkg types.Package, verbose bool) error {
+func installSinglePackage(pkgType string, pkgInfo types.PackageInfo, verbose bool) error {
 	switch pkgType {
 	case "tap":
-		return installTap(pkg.Name, verbose)
+		return installTap(pkgInfo.Name, verbose)
 	case "brew":
-		return installBrew(pkg.Name, verbose)
+		return installBrew(pkgInfo.Name, verbose)
 	case "cask":
-		return installCask(pkg.Name, verbose)
+		return installCask(pkgInfo.Name, verbose)
 	case "mas":
-		return installMas(pkg.Name, pkg.ID, verbose)
+		// 'mas' type requires ID. Ensure it's present.
+		if pkgInfo.ID == 0 {
+			return fmt.Errorf("missing ID for mas package: %s", pkgInfo.Name)
+		}
+		return installMas(pkgInfo.Name, pkgInfo.ID, verbose)
 	default:
 		return fmt.Errorf("unknown package type: %s", pkgType)
 	}

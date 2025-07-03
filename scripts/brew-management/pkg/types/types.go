@@ -8,15 +8,14 @@ type PackageGrouped struct {
 
 // Group represents a package group with description and priority
 type Group struct {
-	Description string    `yaml:"description" json:"description" jsonschema:"title=Description,description=Human-readable description of the group,required,minLength=1"`
-	Priority    int       `yaml:"priority" json:"priority" jsonschema:"title=Priority,description=Installation priority (lower numbers install first),required,minimum=1,maximum=99"`
-	Packages    []Package `yaml:"packages" json:"packages" jsonschema:"title=Packages,description=Packages in this group,required"`
+	Description string                       `yaml:"description" json:"description" jsonschema:"title=Description,description=Human-readable description of the group,required,minLength=1"`
+	Priority    int                          `yaml:"priority" json:"priority" jsonschema:"title=Priority,description=Installation priority (lower numbers install first),required,minimum=1,maximum=99"`
+	Packages    map[string][]PackageInfo `yaml:"packages" json:"packages" jsonschema:"title=Packages,description=Packages in this group,required"`
 }
 
-// Package represents a single package with type and metadata
-type Package struct {
+// PackageInfo represents a single package with metadata, where the type is determined by the map key in Group.Packages
+type PackageInfo struct {
 	Name        string   `yaml:"name" json:"name" jsonschema:"title=Package Name,description=Package name,required,minLength=1"`
-	Type        string   `yaml:"type" json:"type" jsonschema:"title=Package Type,description=Package type,required,enum=tap,enum=brew,enum=cask,enum=mas"`
 	Tags        []string `yaml:"tags,omitempty" json:"tags,omitempty" jsonschema:"title=Tags,description=Tags for categorization and filtering,uniqueItems"`
 	Description string   `yaml:"description,omitempty" json:"description,omitempty" jsonschema:"title=Description,description=Optional description of the package,minLength=1"`
 	ID          int64    `yaml:"id,omitempty" json:"id,omitempty" jsonschema:"title=App Store ID,description=Mac App Store ID (required for mas type),minimum=1"` // For mas apps
@@ -30,7 +29,11 @@ type Profile struct {
 	ExcludeTags  []string `yaml:"exclude_tags,omitempty" json:"exclude_tags,omitempty" jsonschema:"title=Exclude Tags,description=Tags to exclude from this profile,uniqueItems"`
 }
 
-
+// FilteredPackage represents a package with its type, used for filtering results
+type FilteredPackage struct {
+	PackageInfo
+	Type string
+}
 
 // MasApp represents a Mac App Store application
 type MasApp struct {

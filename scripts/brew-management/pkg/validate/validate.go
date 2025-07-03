@@ -57,14 +57,16 @@ func ValidateYAMLFile(filePath string, options *types.ValidateOptions) error {
 	switch {
 	case strings.Contains(filename, "grouped"):
 		validationErrors = validateGroupedYAML(cleanContent, options.Verbose)
-	case strings.Contains(filename, "packages"):
-		validationErrors = append(validationErrors, "Simple YAML format is no longer supported")
+	// case strings.Contains(filename, "packages"): // This specific case might be too broad
+	//	validationErrors = append(validationErrors, "Simple YAML format is no longer supported")
 	default:
 		// Try to detect format by content
-		if strings.Contains(cleanContent, "groups:") {
+		if strings.Contains(cleanContent, "groups:") { // "groups:"があれば grouped として扱う
 			validationErrors = validateGroupedYAML(cleanContent, options.Verbose)
-		} else {
-			validationErrors = append(validationErrors, "Simple YAML format is no longer supported")
+		} else if strings.Contains(filename, "packages") { // "groups:" がなく、ファイル名に "packages" が含まれる場合
+			validationErrors = append(validationErrors, "Simple YAML format (without 'groups:' structure) is no longer supported")
+		} else { // それ以外（groupedでもなく、packagesでもないファイル名で、groups: もない場合）
+			validationErrors = append(validationErrors, fmt.Sprintf("Unknown YAML format for file: %s", filename))
 		}
 	}
 
@@ -97,7 +99,8 @@ func validateGroupedYAML(content string, verbose bool) []string {
 
 	// Check required fields
 	if len(config.Groups) == 0 {
-		errors = append(errors, "Missing groups section")
+		// Allow empty groups for a valid file, but might be a warning if desired.
+		// errors = append(errors, "Missing groups section")
 	}
 
 	// Validate groups
@@ -108,17 +111,28 @@ func validateGroupedYAML(content string, verbose bool) []string {
 		if group.Priority == 0 {
 			errors = append(errors, fmt.Sprintf("Missing or zero priority in group: %s", groupName))
 		}
+		if group.Packages == nil { // Check if Packages map itself is nil
+			errors = append(errors, fmt.Sprintf("Missing packages map in group: %s", groupName))
+			continue // Skip further package validation for this group
+		}
 
 		// Validate packages in group
-		for i, pkg := range group.Packages {
-			if pkg.Name == "" {
-				errors = append(errors, fmt.Sprintf("Missing name in group %s, package %d", groupName, i))
+		for pkgType, pkgInfos := range group.Packages {
+			if pkgType == "" { // Should not happen if map key is used, but good check
+				errors = append(errors, fmt.Sprintf("Empty package type key in group %s", groupName))
+				continue
 			}
-			if pkg.Type == "" {
-				errors = append(errors, fmt.Sprintf("Missing type in group %s, package %s", groupName, pkg.Name))
+			if !isValidPackageType(pkgType) { // Validate pkgType against known types
+				errors = append(errors, fmt.Sprintf("Invalid package type '%s' in group %s", pkgType, groupName))
 			}
-			if pkg.Type == "mas" && pkg.ID == 0 {
-				errors = append(errors, fmt.Sprintf("Missing ID for mas app in group %s, package %s", groupName, pkg.Name))
+			for i, pkgInfo := range pkgInfos {
+				if pkgInfo.Name == "" {
+					errors = append(errors, fmt.Sprintf("Missing name in group %s, type %s, package index %d", groupName, pkgType, i))
+				}
+				// Type is now the key, so no need to check pkgInfo.Type
+				if pkgType == "mas" && pkgInfo.ID == 0 {
+					errors = append(errors, fmt.Sprintf("Missing ID for mas app in group %s, package %s", groupName, pkgInfo.Name))
+				}
 			}
 		}
 	}
@@ -133,7 +147,15 @@ func validateGroupedYAML(content string, verbose bool) []string {
 	return errors
 }
 
-
+// isValidPackageType checks if the given type string is a valid package type.
+func isValidPackageType(pkgType string) bool {
+	switch pkgType {
+	case "tap", "brew", "cask", "mas":
+		return true
+	default:
+		return false
+	}
+}
 
 // ValidateAllYAMLFiles validates all YAML files in the data directory
 func ValidateAllYAMLFiles(dataDir string, options *types.ValidateOptions) error {
