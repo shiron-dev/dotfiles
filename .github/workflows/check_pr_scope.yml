@@ -7,6 +7,8 @@ on:
 jobs:
   check_scope:
     runs-on: ubuntu-latest
+    outputs: # Define outputs for the job
+      outcome: ${{ steps.check_scope_step.outcome }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -25,6 +27,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Check PR scope
+        id: check_scope_step # Add id to this step
         run: |
           pr_title="${{ steps.pr_title.outputs.title }}"
           changed_files="${{ steps.changed_files.outputs.files }}"
@@ -40,7 +43,10 @@ jobs:
           pr_scopes=($(for scope in "${pr_scopes[@]}"; do echo "$scope" | xargs; done))
 
           if [ ${#pr_scopes[@]} -eq 0 ] && [[ "$pr_scopes_str" != "*" ]]; then
-            echo "::error::PR title does not contain a valid scope."
+            error_message="PR title does not contain a valid scope. Please use the format 'type(scope): message' or 'type(*): message'."
+            echo "::error::$error_message"
+            comment_body="**Scope Check Failed!** 🚨\n\n${error_message}\n\nExample: \`feat(my-scope): add new feature\` or \`fix(*): resolve an issue\`."
+            echo "comment_body=$comment_body" >> $GITHUB_ENV
             exit 1
           fi
           echo "PR Scopes: ${pr_scopes[@]}"
@@ -107,7 +113,38 @@ jobs:
 
           if [ ${#missing_scopes[@]} -gt 0 ]; then
             echo "::error::PR title scopes do not cover all changed files. Missing scopes for: ${missing_scopes[@]}"
+            # Prepare message for PR comment
+            comment_body="**Scope Check Failed!** 🚨\n\nPR title scopes do not cover all changed files.\n\n"
+            comment_body+="Missing required scopes in PR title: \`${missing_scopes[@]}\`\n\n"
+            comment_body+="Please update your PR title to include these scopes. For example: \`type(${pr_scopes_str:+${pr_scopes_str},}${missing_scopes[@]}): your message\` or \`type(*): your message\` if a wildcard is appropriate.\n\n"
+            comment_body+="<details><summary>Details</summary>\n"
+            comment_body+="PR Title Scopes: \`${pr_scopes[@]}\`\n"
+            comment_body+="Required Scopes from changed files: \`${required_scopes[@]}\`\n"
+            comment_body+="Changed Files:\n"
+            comment_body+="\`\`\`\n${changed_files}\n\`\`\`\n"
+            comment_body+="</details>"
+
+            echo "comment_body=$comment_body" >> $GITHUB_ENV
             exit 1
           else
             echo "PR title scopes are valid."
           fi
+  comment_on_pr:
+    if: failure() && needs.check_scope.outputs.outcome == 'failure'
+    needs: check_scope
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment on PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const body = `${process.env.comment_body}`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
