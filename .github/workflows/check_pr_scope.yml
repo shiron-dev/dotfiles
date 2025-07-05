@@ -1,0 +1,113 @@
+name: Check PR Scope
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  check_scope:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Get PR title
+        id: pr_title
+        run: echo "title=$(jq -r .pull_request.title \"$GITHUB_EVENT_PATH\")" >> $GITHUB_OUTPUT
+
+      - name: Get changed files
+        id: changed_files
+        run: |
+          files=$(git diff --name-only origin/${{ github.base_ref }}...origin/${{ github.head_ref }})
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Check PR scope
+        run: |
+          pr_title="${{ steps.pr_title.outputs.title }}"
+          changed_files="${{ steps.changed_files.outputs.files }}"
+
+          echo "PR Title: $pr_title"
+          echo "Changed Files:"
+          echo "$changed_files"
+
+          # Extract scope from PR title (e.g., "fix(scope1,scope2): ...")
+          pr_scopes_str=$(echo "$pr_title" | grep -oP '^\w+\(\K[^\)]+' || echo "")
+          IFS=',' read -r -a pr_scopes <<< "$pr_scopes_str"
+          # Trim whitespace from scopes
+          pr_scopes=($(for scope in "${pr_scopes[@]}"; do echo "$scope" | xargs; done))
+
+          if [ ${#pr_scopes[@]} -eq 0 ] && [[ "$pr_scopes_str" != "*" ]]; then
+            echo "::error::PR title does not contain a valid scope."
+            exit 1
+          fi
+          echo "PR Scopes: ${pr_scopes[@]}"
+
+          # Load scope rules
+          if [ ! -f "scope-rules.json" ]; then
+            echo "::error::scope-rules.json not found."
+            exit 1
+          fi
+          rules=$(cat scope-rules.json | jq -r '.rules')
+
+          required_scopes=()
+          while IFS= read -r file; do
+            matched_scope=""
+            for i in $(seq 0 $(($(echo "$rules" | jq length) - 1))); do
+              pattern=$(echo "$rules" | jq -r ".[$i].pattern")
+              scope_template=$(echo "$rules" | jq -r ".[$i].scope")
+
+              if [[ "$file" =~ $pattern ]]; then
+                # Handle scope template with capture groups (e.g., $1)
+                if [[ "$scope_template" == "\$1" ]]; then
+                  # BASH_REMATCH[0] is the full match, BASH_REMATCH[1] is the first capture group
+                  matched_scope="${BASH_REMATCH[1]}"
+                else
+                  matched_scope="$scope_template"
+                fi
+                break
+              fi
+            done
+
+            if [ -n "$matched_scope" ]; then
+              # Add to required_scopes if not already present
+              if [[ ! " ${required_scopes[@]} " =~ " ${matched_scope} " ]]; then
+                required_scopes+=("$matched_scope")
+              fi
+            else
+              # If no rule matches, consider it an error or a default scope based on requirements
+              # For now, let's assume if a file doesn't match any rule, it's an issue.
+              # Or, define a default scope in scope-rules.json like { "pattern": ".*", "scope": "default" }
+              echo "::warning::No matching scope rule for file: $file"
+            fi
+          done <<< "$changed_files"
+
+          echo "Required Scopes based on changed files: ${required_scopes[@]}"
+
+          if [[ " ${pr_scopes[@]} " =~ " * " ]]; then
+            echo "Wildcard scope '*' in PR title allows all changes."
+            exit 0
+          fi
+
+          missing_scopes=()
+          for req_scope in "${required_scopes[@]}"; do
+            is_covered=false
+            for pr_scope in "${pr_scopes[@]}"; do
+              if [ "$req_scope" == "$pr_scope" ]; then
+                is_covered=true
+                break
+              fi
+            done
+            if [ "$is_covered" == false ]; then
+              missing_scopes+=("$req_scope")
+            fi
+          done
+
+          if [ ${#missing_scopes[@]} -gt 0 ]; then
+            echo "::error::PR title scopes do not cover all changed files. Missing scopes for: ${missing_scopes[@]}"
+            exit 1
+          else
+            echo "PR title scopes are valid."
+          fi
