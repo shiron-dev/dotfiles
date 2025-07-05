@@ -6,6 +6,20 @@
     - "{{ vars.config_dir }}/vscode/Application Support/snippets/*"
   register: vscode_files
 
+- name: Make backup parent directories for vscode files
+  ansible.builtin.file:
+    path: "{{ vars.backup_dir }}/{{ item.stat.path | dirname }}"
+    state: directory
+    mode: "0755"
+  with_items: "{{ vscode_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+
+- name: Backup vscode files in ~/Library/Application Support/Code/User
+  ansible.builtin.copy:
+    src: "{{ item.stat.path }}"
+    dest: "{{ vars.backup_dir }}/{{ item.stat.path }}"
+    mode: "0644"
+  with_items: "{{ vscode_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+
 - name: Remove vscode files in ~/Library/Application Support/Code/User
   ansible.builtin.file:
     path: "{{ item.stat.path }}"

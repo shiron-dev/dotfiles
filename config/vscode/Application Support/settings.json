@@ -41,7 +41,9 @@
   "editor.accessibilitySupport": "off",
   "editor.bracketPairColorization.enabled": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "explicit",
+    "source.addMissingImports": "explicit",
+    // "source.organizeImports": "explicit"
   },
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
@@ -60,9 +62,9 @@
   "git.autofetch": true,
   "git.enableSmartCommit": true,
   "github.copilot.enable": {
-    "*": true,
-    "markdown": true,
+    "*": false,
     "plaintext": true,
+    "markdown": true,
     "scminput": false,
     "typescript": true,
     "yaml": true
@@ -73,11 +75,22 @@
   "gitlens.hovers.currentLine.over": "line",
   "go.lintFlags": [
     "--config=${workspaceFolder}/.golangci.yaml",
-    "--fast"
+    "--path-mode=abs",
+    "--fast-only"
+    // "--fast"
   ],
+  "go.formatTool": "custom",
   "go.lintTool": "golangci-lint",
+  "go.alternateTools": {
+    "customFormatter": "golangci-lint"
+  },
+  "go.formatFlags": [
+    "fmt",
+    "--stdin"
+  ],
   "gopls": {
-    "ui.diagnostic.staticcheck": true
+    // "ui.diagnostic.staticcheck": true,
+    // "ui.navigation.importShortcut": "Definition"
   },
   "hediet.vscode-drawio.resizeImages": null,
   "hediet.vscode-drawio.theme": "atlas",
@@ -148,7 +161,6 @@
   "workbench.editorAssociations": {
     "*.ipynb": "jupyter.notebook.ipynb"
   },
-  "workbench.iconTheme": "vscode-icons",
   "workbench.settings.applyToAllProfiles": [
     "workbench.editor.languageDetection"
   ],
@@ -223,5 +235,18 @@
     "options": [
       "-I=~/.cache/buf/v1/module/data/buf.build"
     ]
-  }
+  },
+  "cursor.cpp.disabledLanguages": [
+    "scminput"
+  ],
+  "search.exclude": {
+    "/gen/": true
+  },
+  "cursor.composer.shouldChimeAfterChatFinishes": true,
+  "cursor.composer.collapsePaneInputBoxPills": true,
+  "markdown-preview-enhanced.printBackground": true,
+  "workbench.iconTheme": "vscode-icons",
+  "update.releaseTrack": "prerelease",
+  "diffEditor.hideUnchangedRegions.enabled": true,
+  "docker.extension.enableComposeLanguageServer": false
 }

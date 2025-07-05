@@ -12,5 +12,6 @@
   with_items:
     - "Code"
     - "Code - Insiders"
+    - "Cursor"
   loop_control:
     loop_var: vscode_dir_name
