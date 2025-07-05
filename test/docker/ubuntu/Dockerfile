@@ -26,6 +26,12 @@ RUN apt-get update && \
     golang-go && \
     rm -rf /var/lib/apt/lists/*
 
+# Install gh CLI
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gh && \
+    rm -rf /var/lib/apt/lists/*
+
 # Define the target directory for dotfiles, matching Ansible's default expectation
 ENV DOTFILES_DIR /root/projects/github.com/shiron-dev/dotfiles
 
