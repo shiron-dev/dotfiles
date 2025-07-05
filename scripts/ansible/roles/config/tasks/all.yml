@@ -36,6 +36,13 @@
   with_items: "{{ vars.config_items }}"
   register: check_config_items
 
+- name: Make backup parent directories for config_items files
+  ansible.builtin.file:
+    path: "{{ vars.backup_dir }}/{{ item.stat.path | dirname }}"
+    state: directory
+    mode: "0755"
+  with_items: "{{ check_config_items.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+
 - name: Backup config_items files
   ansible.builtin.copy:
     src: "{{ item.stat.path }}"
@@ -72,6 +79,13 @@
     path: "~/{{ item | regex_replace('^[^/]+/', '') }}"
   with_items: "{{ vars.direct_home_files }}"
   register: check_direct_home_files
+
+- name: Make backup parent directories for direct home files
+  ansible.builtin.file:
+    path: "{{ vars.backup_dir }}/{{ item.stat.path | dirname }}"
+    state: directory
+    mode: "0755"
+  with_items: "{{ check_direct_home_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
 
 - name: Backup direct home files
   ansible.builtin.copy:

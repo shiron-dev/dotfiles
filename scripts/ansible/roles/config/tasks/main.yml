@@ -1,9 +1,6 @@
 - name: Set all config
   ansible.builtin.import_tasks: all.yml
 
-- name: Set zsh
-  ansible.builtin.import_tasks: zsh.yml
-
 - name: Set iTerm2
   ansible.builtin.import_tasks: iterm2.yml
 
@@ -15,8 +12,6 @@
   with_items:
     - "Code"
     - "Code - Insiders"
+    - "Cursor"
   loop_control:
     loop_var: vscode_dir_name
-
-- name: Set root
-  ansible.builtin.import_tasks: root.yml
