@@ -1,0 +1,24 @@
+{
+  "rules": [
+    {
+      "pattern": "^config/(.+)/.*",
+      "scope": "$1"
+    },
+    {
+      "pattern": "^scripts/(.+)/.*",
+      "scope": "$1"
+    },
+    {
+      "pattern": "^data/(.+)/.*",
+      "scope": "$1"
+    },
+    {
+      "pattern": "^\\.github/.*",
+      "scope": "github"
+    },
+    {
+      "pattern": ".*",
+      "scope": "dotfiles"
+    }
+  ]
+}
