@@ -3,6 +3,7 @@
 
 - name: Set iTerm2
   ansible.builtin.import_tasks: iterm2.yml
+  when: ansible_facts['os_family'] == "Darwin"
 
 # - name: Set yazi
 #   ansible.builtin.import_tasks: yazi.yml
