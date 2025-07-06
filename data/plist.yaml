@@ -1,0 +1,4 @@
+applications:
+  - name: iTerm2
+    path: iterm2/.config/
+    domain: com.googlecode.iterm2.plist
