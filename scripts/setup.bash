@@ -61,5 +61,7 @@ cat <<EOM
 brew-management install
 cd $REPO_PATH/scripts/ansible
 ansible-playbook -i hosts.yml site.yml
+$REPO_PATH/scripts/login_manager.bash check
+$REPO_PATH/scripts/login_manager.bash import
 
 EOM
