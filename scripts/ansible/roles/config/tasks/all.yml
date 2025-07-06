@@ -106,3 +106,44 @@
     dest: "~/{{ item | regex_replace('^[^/]+/', '') }}"
     state: link
   with_items: "{{ vars.direct_home_files }}"
+
+- name: Get home files from config directories
+  ansible.builtin.set_fact:
+    home_files: "{{ config_paths | select('match', '^[^/]+/home/.*') | list }}"
+
+- name: Transform home file paths to target paths
+  ansible.builtin.set_fact:
+    home_file_targets: "{{ home_files | map('regex_replace', '^([^/]+)/home/(.*)$', '\\2') | list }}"
+
+- name: Check home files
+  ansible.builtin.stat:
+    path: "~/{{ item }}"
+  with_items: "{{ home_file_targets }}"
+  register: check_home_files
+
+- name: Make backup parent directories for home files
+  ansible.builtin.file:
+    path: "{{ vars.backup_dir }}/{{ item.stat.path | dirname }}"
+    state: directory
+    mode: "0755"
+  with_items: "{{ check_home_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+
+- name: Backup home files
+  ansible.builtin.copy:
+    src: "{{ item.stat.path }}"
+    dest: "{{ vars.backup_dir }}/{{ item.stat.path }}"
+    mode: "0644"
+  with_items: "{{ check_home_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+
+- name: Remove home files
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  with_items: "{{ check_home_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+
+- name: Make home file symlinks
+  ansible.builtin.file:
+    src: "{{ vars.config_dir }}/{{ item.0 }}"
+    dest: "~/{{ item.1 }}"
+    state: link
+  loop: "{{ home_files | zip(home_file_targets) | list }}"
