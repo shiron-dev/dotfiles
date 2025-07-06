@@ -1,119 +1,131 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# --- 事前チェックと初期設定 ---
 script_dir=$(cd "$(dirname "$0")" && pwd)
-yaml_file="${script_dir}/../data/plist.yaml"
-base_out_dir=$(cd "${script_dir}/../config" && pwd)
+base_yaml_file="${script_dir}/../data/plist.yaml"
+config_dir="${script_dir}/../config"
+key_config_dir="${script_dir}/../data/plist"
 
+# 依存関係 yq のチェック
 yq_bin="yq"
 if ! command -v "$yq_bin" &>/dev/null; then
   echo "❌ エラー: yq が必要ですが、インストールされていません。" >&2
   exit 1
 fi
 
+# サブコマンドのチェック
 if [ $# -eq 0 ]; then
   echo "❌ エラー: サブコマンド (export, import, check のいずれか) を指定してください。" >&2
   echo "使用法: $0 {export|import [-y]|check}" >&2
   exit 1
 fi
 subcommand="$1"
-shift
+shift # サブコマンドを引数リストから削除
 
-get_plist_hash() {
-  local file_path="$1"
-  if [ -f "$file_path" ]; then
-    (plutil -convert xml1 -o - "$file_path" 2>/dev/null | md5) || true
+# --- ヘルパー関数 ---
+
+# 指定されたドメインの管理対象となるキーのリストを取得する
+# @param $1: ドメイン名 (例: com.apple.dock)
+# @param $2: サニタイズされたドメイン名 (例: com.apple.dock)
+# @return: 管理対象となるキーのリスト(スペース区切り)
+get_filtered_keys() {
+  local domain="$1"
+  local sanitized_domain="$2"
+  local key_yaml_file="${key_config_dir}/${sanitized_domain}.yaml"
+
+  # 現在のシステムに設定されている全キーリストを取得 (堅牢な方法)
+  local all_keys
+  all_keys=$(defaults export "$domain" - | plutil -p - | grep '=>' | sed -E 's/^[[:space:]]*"([^"]+)"[[:space:]]*=>.+$/\1/' || echo "")
+
+  if [ ! -f "$key_yaml_file" ]; then
+    # キー設定ファイルがなければ、すべてのキーを対象とする
+    echo "$all_keys"
+    return
+  fi
+
+  local include_all
+  include_all=$($yq_bin eval '.include_all // false' "$key_yaml_file")
+  
+  if [ "$include_all" = "true" ]; then
+    local excluded_keys
+    excluded_keys=$($yq_bin eval '.exclude[]?' "$key_yaml_file")
+    
+    # all_keysからexcluded_keysを除外する
+    echo "$all_keys" | grep -vFf <(echo "$excluded_keys" | tr ' ' '\n') | tr '\n' ' '
   else
-    echo ""
+    # includeが指定されている場合 (今回は include_all: true のユースケースを優先)
+    # local included_keys=$($yq_bin eval '.include[]?' "$key_yaml_file")
+    # echo "$included_keys"
+    echo "" # include_all: false の場合はキーを返さない
   fi
 }
 
+
+# --- サブコマンドの実装 ---
+
+# 設定を .txt ファイルにエクスポートする
 do_export() {
   echo "🚀 設定のエクスポート処理を開始します..."
-  echo "📂 出力先のベースディレクトリ: $base_out_dir"
+  echo "📂 出力先のベースディレクトリ: $config_dir"
   echo ""
-
-  successful_domains=()
 
   while IFS=$'\t' read -r name path domain; do
     local sanitized_domain=${domain//\//-}
-
     echo "--- 処理開始: $name ($domain) ---"
 
-    local final_out_dir="${base_out_dir}/${path}"
+    local final_out_dir="${config_dir}/${path}"
     mkdir -p "$final_out_dir"
-
-    local plist_out_file
-    if [[ "${sanitized_domain}" == *.plist ]]; then
-      plist_out_file="${sanitized_domain}"
-    else
-      plist_out_file="${sanitized_domain}.plist"
-    fi
     
-    local final_plist_path="${final_out_dir}/${plist_out_file}"
-    local txt_out_file="${sanitized_domain}.txt"
-    local final_txt_path="${final_out_dir}/${txt_out_file}"
-
-    local display_plist_path
-    display_plist_path=$(echo "$final_plist_path" | sed -e "s,^${base_out_dir}/,," -e "s,//,/,g")
+    local final_txt_path="${final_out_dir}/${sanitized_domain}.txt"
     local display_txt_path
-    display_txt_path=$(echo "$final_txt_path" | sed -e "s,^${base_out_dir}/,," -e "s,//,/,g")
+    display_txt_path=$(echo "$final_txt_path" | sed -e "s,^${config_dir}/,," -e "s,//,/,g")
 
-    echo "  [1/2] .plist をエクスポート中..."
-    echo "        -> ${display_plist_path}"
-    
-    local temp_plist_path
-    temp_plist_path=$(mktemp 2>/dev/null || mktemp -t 'plist-temp')
-    if [ -z "$temp_plist_path" ]; then
-        echo "        ⚠️  一時ファイルの作成に失敗しました。" >&2
-        continue
-    fi
-
-    if defaults export "$domain" "$temp_plist_path"; then
-      local hash_before=$(get_plist_hash "$final_plist_path")
-      local hash_after=$(get_plist_hash "$temp_plist_path")
-
-      if [ "$hash_before" != "$hash_after" ]; then
-        echo "        ✅ 更新を検知しました。ファイルを保存します。"
-        mv "$temp_plist_path" "$final_plist_path"
-        successful_domains+=("$domain")
-      else
-        echo "        ℹ️  内容は変更ありませんでした。"
-        rm "$temp_plist_path"
-      fi
-    else
-      echo "        ⚠️  .plistのエクスポートに失敗しました (ドメイン '${domain}' が存在しない可能性があります)。" >&2
-      rm "$temp_plist_path"
-    fi
-
-    echo "  [2/2] .txt を生成中..."
+    echo "  [1/1] .txt を生成中 (キーフィルタ適用)..."
     echo "        -> ${display_txt_path}"
-    if defaults read "$domain" > "$final_txt_path"; then
-      echo "        ✅ .txt ファイルの生成が完了しました。"
-    else
-      echo "        ⚠️  .txt ファイルの生成に失敗しました。" >&2
-      rm -f "$final_txt_path"
-    fi
 
+    # 管理対象のキーリストを取得
+    local filtered_keys
+    filtered_keys=$(get_filtered_keys "$domain" "$sanitized_domain")
+
+    if [ -z "$filtered_keys" ]; then
+      echo "        ℹ️  管理対象のキーがないため、ファイルを空にします。"
+      # ファイルを空にする
+      >"$final_txt_path"
+      echo "--- 処理完了: $name ---"
+      echo ""
+      continue
+    fi
+    
+    # 一時ファイルにエクスポート
+    local temp_txt_path
+    temp_txt_path=$(mktemp 2>/dev/null || mktemp -t 'export-temp')
+    
+    for key in $filtered_keys; do
+      # readの出力は不安定なことがあるため、plist形式でexportしたものを変換して値を取得
+      local value
+      value=$(defaults export "$domain" - | plutil -extract "$key" xml1 - -o - | sed -e '1d;$d' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+      echo "\"$key\" = $value;" >> "$temp_txt_path"
+    done
+    
+    # 既存ファイルと比較して更新があれば置き換え
+    if ! diff -q "$final_txt_path" "$temp_txt_path" >/dev/null 2>&1; then
+      echo "        ✅ 更新を検知しました。ファイルを保存します。"
+      mv "$temp_txt_path" "$final_txt_path"
+    else
+      echo "        ℹ️  内容は変更ありませんでした。"
+      rm "$temp_txt_path"
+    fi
+    
     echo "--- 処理完了: $name ---"
     echo ""
-  done < <(yq eval '.applications[] | [.name, .path, .domain] | @tsv' "$yaml_file")
+  done < <(yq eval '.applications[] | [.name, .path, .domain] | @tsv' "$base_yaml_file")
 
   echo "🎉 すべてのエクスポート処理が完了しました。"
-  echo ""
-
-  if [ ${#successful_domains[@]} -gt 0 ]; then
-    echo "---"
-    echo "✅ 正常に更新されたplistドメイン一覧:"
-    for d in "${successful_domains[@]}"; do
-      echo "  - $d"
-    done
-  else
-    echo "---"
-    echo "ℹ️ 今回の実行で内容が更新されたplistはありませんでした。"
-  fi
 }
 
+
+# .txt ファイルから設定をインポートする
 do_import() {
   local force_import=false
   if [[ "${1:-}" == "-y" ]]; then
@@ -124,11 +136,11 @@ do_import() {
     echo "🔄 インポート前に現在の設定との差分を確認します..."
     echo ""
     local changes_found
-    changes_found=$(do_check --quiet) # quietモードで差分の有無だけ確認
+    changes_found=$(do_check --quiet)
     
     if [ "$changes_found" -eq 1 ]; then
         echo "---"
-        do_check # ユーザーに差分を詳しく表示
+        do_check
         echo "---"
         
         read -p "☝️ 設定に差分が見つかりました。インポートを実行しますか？ (y/N): " -r
@@ -147,41 +159,64 @@ do_import() {
   if $force_import; then
       echo "ℹ️  -y オプションが指定されたため、確認をスキップして実行します。"
   fi
-  echo "📂 設定ファイルのベースディレクトリ: $base_out_dir"
+  echo "📂 設定ファイルのベースディレクトリ: $config_dir"
   echo ""
 
   while IFS=$'\t' read -r name path domain; do
     local sanitized_domain=${domain//\//-}
-    
     echo "--- 処理開始: $name ($domain) ---"
 
-    local final_out_dir="${base_out_dir}/${path}"
-    local plist_in_file
-    if [[ "${sanitized_domain}" == *.plist ]]; then
-      plist_in_file="${sanitized_domain}"
-    else
-      plist_in_file="${sanitized_domain}.plist"
+    local txt_file_path="${config_dir}/${path}/${sanitized_domain}.txt"
+    if [ ! -f "$txt_file_path" ]; then
+      echo "      ⚠️  スキップ: .txtファイルが見つかりません (${txt_file_path})。"
+      continue
     fi
 
-    local final_plist_path="${final_out_dir}/${plist_in_file}"
+    # 管理対象のキーリストを取得
+    mapfile -t manageable_keys < <(get_filtered_keys "$domain" "$sanitized_domain" | tr ' ' '\n')
 
-    if [ -f "$final_plist_path" ]; then
-      echo "      ${final_plist_path} からインポートしています..."
-      if defaults import "$domain" "$final_plist_path"; then
-        echo "      ✅ '$domain' の設定を正常にインポートしました。"
-      else
-        echo "      ❌ '$domain' の設定のインポート中にエラーが発生しました。" >&2
+    # .txtファイルを一行ずつ読み込む
+    while IFS= read -r line || [[ -n "$line" ]]; do
+      # 空行はスキップ
+      if [[ -z "$line" ]]; then continue; fi
+
+      # "key" = value; の形式からキーと値をパース
+      local key
+      key=$(echo "$line" | sed -n 's/^[[:space:]]*"\([^"]*\)".*/\1/p')
+      local value
+      value=$(echo "$line" | sed -n 's/.*= \(.*\);/\1/p')
+
+      if [ -z "$key" ] || [ -z "$value" ]; then
+        echo "      ⚠️  不正な行をスキップ: $line"
+        continue
       fi
-    else
-      echo "      ⚠️  スキップ: plistファイルが見つかりません (${final_plist_path})。"
-    fi
+
+      # 管理対象のキーかチェック
+      local should_write=false
+      for mkey in "${manageable_keys[@]}"; do
+        if [[ "$mkey" == "$key" ]]; then
+          should_write=true
+          break
+        fi
+      done
+
+      if $should_write; then
+        echo "      書き込み中: $key"
+        # ⚠️ 型情報が失われる可能性があります
+        defaults write "$domain" "$key" "$value"
+      fi
+
+    done < "$txt_file_path"
+
+    echo "--- 処理完了: $name ---"
     echo ""
-  done < <(yq eval '.applications[] | [.name, .path, .domain] | @tsv' "$yaml_file")
+  done < <(yq eval '.applications[] | [.name, .path, .domain] | @tsv' "$base_yaml_file")
 
   echo "🎉 すべてのインポート処理が完了しました。"
   echo "ℹ️  注意: 設定を反映させるには、一部のアプリケーションの再起動が必要な場合があります。"
 }
 
+# 現在の設定と保存されたファイルとの差分をチェックする
 do_check() {
   local quiet_mode=false
   if [[ "${1:-}" == "--quiet" ]]; then
@@ -190,7 +225,7 @@ do_check() {
 
   if ! $quiet_mode; then
     echo "🚀 設定の差分チェック処理を開始します..."
-    echo "📂 設定ファイルのベースディレクトリ: $base_out_dir"
+    echo "📂 設定ファイルのベースディレクトリ: $config_dir"
     echo ""
   fi
 
@@ -200,11 +235,10 @@ do_check() {
     local sanitized_domain=${domain//\//-}
 
     if ! $quiet_mode; then
-        echo "--- チェック中: $name ($domain) ---"
+      echo "--- チェック中: $name ($domain) ---"
     fi
 
-    local txt_file_path="${base_out_dir}/${path}/${sanitized_domain}.txt"
-    
+    local txt_file_path="${config_dir}/${path}/${sanitized_domain}.txt"
     if [ ! -f "$txt_file_path" ]; then
       if ! $quiet_mode; then
         echo "  ⚠️  スキップ: 保存された.txtファイルが見つかりません (${txt_file_path})。"
@@ -213,17 +247,20 @@ do_check() {
       continue
     fi
 
+    # 現在の設定から一時ファイルを作成
     local temp_txt_path
     temp_txt_path=$(mktemp 2>/dev/null || mktemp -t 'check-temp')
-    if ! defaults read "$domain" > "$temp_txt_path" 2>/dev/null; then
-      if ! $quiet_mode; then
-        echo "  ℹ️  このドメインの現在の設定が見つかりません。差分なしと見なします。"
-        rm "$temp_txt_path"
-        echo ""
-      fi
-      continue
+    local filtered_keys
+    filtered_keys=$(get_filtered_keys "$domain" "$sanitized_domain")
+
+    if [ -n "$filtered_keys" ]; then
+       for key in $filtered_keys; do
+          local value
+          value=$(defaults export "$domain" - | plutil -extract "$key" xml1 - -o - | sed -e '1d;$d' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          echo "\"$key\" = $value;" >> "$temp_txt_path"
+       done
     fi
-    
+
     if ! diff -q "$txt_file_path" "$temp_txt_path" >/dev/null; then
         changes_found=1
         if ! $quiet_mode; then
@@ -241,7 +278,7 @@ do_check() {
     if ! $quiet_mode; then
         echo ""
     fi
-  done < <(yq eval '.applications[] | [.name, .path, .domain] | @tsv' "$yaml_file")
+  done < <(yq eval '.applications[] | [.name, .path, .domain] | @tsv' "$base_yaml_file")
   
   if $quiet_mode; then
     echo $changes_found
@@ -255,6 +292,9 @@ do_check() {
     echo "⚠️  差分が見つかりました。'./script.sh export' を実行して、保存されている設定を更新してください。"
   fi
 }
+
+
+# --- メインロジック ---
 
 case "$subcommand" in
   export)
