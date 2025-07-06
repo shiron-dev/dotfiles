@@ -36,20 +36,22 @@ do_export() {
   successful_domains=()
 
   while IFS=$'\t' read -r name path domain; do
+    local sanitized_domain=${domain//\//-}
+
     echo "--- 処理開始: $name ($domain) ---"
 
     local final_out_dir="${base_out_dir}/${path}"
     mkdir -p "$final_out_dir"
 
     local plist_out_file
-    if [[ "${domain}" == *.plist ]]; then
-      plist_out_file="${domain}"
+    if [[ "${sanitized_domain}" == *.plist ]]; then
+      plist_out_file="${sanitized_domain}"
     else
-      plist_out_file="${domain}.plist"
+      plist_out_file="${sanitized_domain}.plist"
     fi
     
     local final_plist_path="${final_out_dir}/${plist_out_file}"
-    local txt_out_file="${domain}.txt"
+    local txt_out_file="${sanitized_domain}.txt"
     local final_txt_path="${final_out_dir}/${txt_out_file}"
 
     local display_plist_path
@@ -68,10 +70,8 @@ do_export() {
     fi
 
     if defaults export "$domain" "$temp_plist_path"; then
-      local hash_before
-      hash_before=$(get_plist_hash "$final_plist_path")
-      local hash_after
-      hash_after=$(get_plist_hash "$temp_plist_path")
+      local hash_before=$(get_plist_hash "$final_plist_path")
+      local hash_after=$(get_plist_hash "$temp_plist_path")
 
       if [ "$hash_before" != "$hash_after" ]; then
         echo "        ✅ 更新を検知しました。ファイルを保存します。"
@@ -82,7 +82,7 @@ do_export() {
         rm "$temp_plist_path"
       fi
     else
-      echo "        ⚠️  .plistのエクスポートに失敗しました (ドメインが存在しない可能性があります)。" >&2
+      echo "        ⚠️  .plistのエクスポートに失敗しました (ドメイン '${domain}' が存在しない可能性があります)。" >&2
       rm "$temp_plist_path"
     fi
 
@@ -151,14 +151,16 @@ do_import() {
   echo ""
 
   while IFS=$'\t' read -r name path domain; do
+    local sanitized_domain=${domain//\//-}
+    
     echo "--- 処理開始: $name ($domain) ---"
 
     local final_out_dir="${base_out_dir}/${path}"
     local plist_in_file
-    if [[ "${domain}" == *.plist ]]; then
-      plist_in_file="${domain}"
+    if [[ "${sanitized_domain}" == *.plist ]]; then
+      plist_in_file="${sanitized_domain}"
     else
-      plist_in_file="${domain}.plist"
+      plist_in_file="${sanitized_domain}.plist"
     fi
 
     local final_plist_path="${final_out_dir}/${plist_in_file}"
@@ -195,11 +197,13 @@ do_check() {
   local changes_found=0
 
   while IFS=$'\t' read -r name path domain; do
+    local sanitized_domain=${domain//\//-}
+
     if ! $quiet_mode; then
         echo "--- チェック中: $name ($domain) ---"
     fi
 
-    local txt_file_path="${base_out_dir}/${path}/${domain}.txt"
+    local txt_file_path="${base_out_dir}/${path}/${sanitized_domain}.txt"
     
     if [ ! -f "$txt_file_path" ]; then
       if ! $quiet_mode; then
