@@ -5,7 +5,6 @@ script_dir=$(cd "$(dirname "$0")" && pwd)
 data_dir="${script_dir}/../data"
 yaml_file="${data_dir}/login.yaml"
 
-
 _get_current_items_as_yaml() {
   local osascript_cmd='
     tell application "System Events"
@@ -18,11 +17,15 @@ _get_current_items_as_yaml() {
       return output
     end tell'
 
-  while IFS=$'\t' read -r path_val hidden_val; do
-    if [[ -n "$path_val" ]]; then
-      printf -- "- path: %s\n  hidden: %s\n" "$path_val" "$hidden_val"
-    fi
-  done < <(osascript -e "$osascript_cmd" 2>/dev/null)
+  if ! osascript -e "$osascript_cmd" 2> /dev/null \
+                                                | while IFS=$'\t' read -r path_val hidden_val; do
+      if [[ -n "$path_val" ]]; then
+        printf -- "- path: %s\n  hidden: %s\n" "$path_val" "$hidden_val"
+      fi
+    done; then
+    echo "🚨 Error: osascript failed to get login items." >&2
+    return 1
+  fi
 }
 
 export_login_items() {
@@ -39,17 +42,19 @@ check_login_items() {
     exit 1
   fi
 
-  local temp_yaml
-  temp_yaml=$(mktemp)
-  _get_current_items_as_yaml > "$temp_yaml"
+  ( 
+    local temp_yaml
+    temp_yaml=$(mktemp)
+    trap 'rm -f "$temp_yaml"' EXIT
+    _get_current_items_as_yaml > "$temp_yaml"
 
-  echo "---"
-  echo "■ Difference (login.yaml <-> current state):"
-  diff -u "$yaml_file" "$temp_yaml" || true
-  echo "---"
+    echo "---"
+    echo "■ Difference (login.yaml <-> current state):"
+    diff -u "$yaml_file" "$temp_yaml" || true
+    echo "---"
 
-  rm "$temp_yaml"
-  echo "✅ Check complete."
+    echo "✅ Check complete."
+  )
 }
 
 import_login_items() {
@@ -60,19 +65,25 @@ import_login_items() {
   fi
 
   echo "  - Clearing all current login items..."
-  osascript -e 'tell application "System Events" to delete every login item'
+  if ! osascript -e 'tell application "System Events" to delete every login item'; then
+    echo "🚨 Error: Failed to clear login items." >&2
+    exit 1
+  fi
 
   echo "  - Adding items defined in YAML file..."
   local path=""
   local hidden=""
-  while IFS= read -r line || [[ -n "$line" ]]; do
-    if [[ "$line" == *"- path: "* ]]; then
+  while IFS='' read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" == "- path: "* ]]; then
       path="${line#*- path: }"
-    elif [[ "$line" == *"hidden: "* ]]; then
+    elif [[ "$line" == "hidden: "* ]]; then
       hidden="${line#*hidden: }"
       if [[ -n "$path" && -n "$hidden" ]]; then
         echo "    - Adding: $path (hidden: $hidden)"
-        osascript -e "tell application \"System Events\" to make new login item at end with properties {path:\"$path\", hidden:$hidden}"
+        if ! osascript -e "tell application \"System Events\" to make new login item at end with properties {path:\"$path\", hidden:$hidden}"; then
+          echo "🚨 Error: Failed to add login item: $path" >&2
+          exit 1
+        fi
         path=""
         hidden=""
       fi
