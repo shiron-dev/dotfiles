@@ -1,43 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# --- 事前チェックと初期設定 ---
 script_dir=$(cd "$(dirname "$0")" && pwd)
 yaml_file="${script_dir}/../data/plist.yaml"
 base_out_dir=$(cd "${script_dir}/../config" && pwd)
 
-# 依存関係 yq のチェック
 yq_bin="yq"
 if ! command -v "$yq_bin" &>/dev/null; then
   echo "❌ エラー: yq が必要ですが、インストールされていません。" >&2
   exit 1
 fi
 
-# サブコマンドのチェック
 if [ $# -eq 0 ]; then
   echo "❌ エラー: サブコマンド (export, import, check のいずれか) を指定してください。" >&2
-  echo "使用法: $0 {export|import|check}" >&2
+  echo "使用法: $0 {export|import [-y]|check}" >&2
   exit 1
 fi
 subcommand="$1"
+shift
 
-# --- ヘルパー関数 ---
-
-# plistファイルのMD5ハッシュ値を計算する
-# @param $1: plistファイルのパス
 get_plist_hash() {
   local file_path="$1"
   if [ -f "$file_path" ]; then
-    # plutil でXML形式に変換し、ハッシュ値の一貫性を保つ
     (plutil -convert xml1 -o - "$file_path" 2>/dev/null | md5) || true
   else
     echo ""
   fi
 }
 
-# --- サブコマンドの実装 ---
-
-# macOSのdefaultsから設定を .plist と .txt ファイルにエクスポートする
 do_export() {
   echo "🚀 設定のエクスポート処理を開始します..."
   echo "📂 出力先のベースディレクトリ: $base_out_dir"
@@ -51,26 +41,22 @@ do_export() {
     local final_out_dir="${base_out_dir}/${path}"
     mkdir -p "$final_out_dir"
 
-    # --- 修正箇所 ---
     local plist_out_file
     if [[ "${domain}" == *.plist ]]; then
       plist_out_file="${domain}"
     else
       plist_out_file="${domain}.plist"
     fi
-    # --- 修正ここまで ---
     
     local final_plist_path="${final_out_dir}/${plist_out_file}"
     local txt_out_file="${domain}.txt"
     local final_txt_path="${final_out_dir}/${txt_out_file}"
 
-    # 表示用に相対パスを生成
     local display_plist_path
     display_plist_path=$(echo "$final_plist_path" | sed -e "s,^${base_out_dir}/,," -e "s,//,/,g")
     local display_txt_path
     display_txt_path=$(echo "$final_txt_path" | sed -e "s,^${base_out_dir}/,," -e "s,//,/,g")
 
-    # [1/2] .plist をエクスポート
     echo "  [1/2] .plist をエクスポート中..."
     echo "        -> ${display_plist_path}"
     
@@ -100,7 +86,6 @@ do_export() {
       rm "$temp_plist_path"
     fi
 
-    # [2/2] .txt を生成
     echo "  [2/2] .txt を生成中..."
     echo "        -> ${display_txt_path}"
     if defaults read "$domain" > "$final_txt_path"; then
@@ -129,9 +114,39 @@ do_export() {
   fi
 }
 
-# .plist ファイルからmacOSのdefaultsに設定をインポートする
 do_import() {
+  local force_import=false
+  if [[ "${1:-}" == "-y" ]]; then
+    force_import=true
+  fi
+  
+  if ! $force_import; then
+    echo "🔄 インポート前に現在の設定との差分を確認します..."
+    echo ""
+    local changes_found
+    changes_found=$(do_check --quiet) # quietモードで差分の有無だけ確認
+    
+    if [ "$changes_found" -eq 1 ]; then
+        echo "---"
+        do_check # ユーザーに差分を詳しく表示
+        echo "---"
+        
+        read -p "☝️ 設定に差分が見つかりました。インポートを実行しますか？ (y/N): " -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "🚫 インポートをキャンセルしました。"
+            exit 0
+        fi
+    else
+        echo "✅ 差分はありません。インポート処理は不要です。"
+        exit 0
+    fi
+  fi
+
   echo "🚀 設定のインポート処理を開始します..."
+  if $force_import; then
+      echo "ℹ️  -y オプションが指定されたため、確認をスキップして実行します。"
+  fi
   echo "📂 設定ファイルのベースディレクトリ: $base_out_dir"
   echo ""
 
@@ -139,15 +154,12 @@ do_import() {
     echo "--- 処理開始: $name ($domain) ---"
 
     local final_out_dir="${base_out_dir}/${path}"
-
-    # --- 修正箇所 ---
     local plist_in_file
     if [[ "${domain}" == *.plist ]]; then
       plist_in_file="${domain}"
     else
       plist_in_file="${domain}.plist"
     fi
-    # --- 修正ここまで ---
 
     local final_plist_path="${final_out_dir}/${plist_in_file}"
 
@@ -168,49 +180,70 @@ do_import() {
   echo "ℹ️  注意: 設定を反映させるには、一部のアプリケーションの再起動が必要な場合があります。"
 }
 
-# 現在の設定と保存された .txt ファイルとの差分をチェックする
 do_check() {
-  echo "🚀 設定の差分チェック処理を開始します..."
-  echo "📂 設定ファイルのベースディレクトリ: $base_out_dir"
-  echo ""
+  local quiet_mode=false
+  if [[ "${1:-}" == "--quiet" ]]; then
+    quiet_mode=true
+  fi
+
+  if ! $quiet_mode; then
+    echo "🚀 設定の差分チェック処理を開始します..."
+    echo "📂 設定ファイルのベースディレクトリ: $base_out_dir"
+    echo ""
+  fi
 
   local changes_found=0
 
   while IFS=$'\t' read -r name path domain; do
-    echo "--- チェック中: $name ($domain) ---"
+    if ! $quiet_mode; then
+        echo "--- チェック中: $name ($domain) ---"
+    fi
 
     local txt_file_path="${base_out_dir}/${path}/${domain}.txt"
     
     if [ ! -f "$txt_file_path" ]; then
-      echo "  ⚠️  スキップ: 保存された.txtファイルが見つかりません (${txt_file_path})。"
-      echo ""
+      if ! $quiet_mode; then
+        echo "  ⚠️  スキップ: 保存された.txtファイルが見つかりません (${txt_file_path})。"
+        echo ""
+      fi
       continue
     fi
 
-    # 比較のために現在設定を一時ファイルに書き出す
     local temp_txt_path
     temp_txt_path=$(mktemp 2>/dev/null || mktemp -t 'check-temp')
     if ! defaults read "$domain" > "$temp_txt_path" 2>/dev/null; then
-      echo "  ℹ️  このドメインの現在の設定が見つかりません。差分なしと見なします。"
-      rm "$temp_txt_path"
-      echo ""
+      if ! $quiet_mode; then
+        echo "  ℹ️  このドメインの現在の設定が見つかりません。差分なしと見なします。"
+        rm "$temp_txt_path"
+        echo ""
+      fi
       continue
     fi
-
-    echo "  現在の設定と ${txt_file_path} を比較しています..."
-    # diffコマンドで差分を表示 (-u: unified形式, --color=always: 常に色付け)
-    if diff --color=always -u "$txt_file_path" "$temp_txt_path"; then
-      echo "  ✅ 差分はありませんでした。"
+    
+    if ! diff -q "$txt_file_path" "$temp_txt_path" >/dev/null; then
+        changes_found=1
+        if ! $quiet_mode; then
+            echo "  現在の設定と ${txt_file_path} を比較しています..."
+            diff --color=always -u "$txt_file_path" "$temp_txt_path" || true
+            echo "  👆 '$domain' に差分が見つかりました。"
+        fi
     else
-      changes_found=1
-      # diffが差分を出力するので、ここでは補足メッセージのみ表示
-      echo "  👆 '$domain' に差分が見つかりました。"
+        if ! $quiet_mode; then
+            echo "  ✅ 差分はありませんでした。"
+        fi
     fi
     
     rm "$temp_txt_path"
-    echo ""
+    if ! $quiet_mode; then
+        echo ""
+    fi
   done < <(yq eval '.applications[] | [.name, .path, .domain] | @tsv' "$yaml_file")
   
+  if $quiet_mode; then
+    echo $changes_found
+    return
+  fi
+
   echo "🎉 すべてのチェック処理が完了しました。"
   if [ $changes_found -eq 0 ]; then
     echo "✅ 現在の設定と保存されている設定の間に差分はありませんでした。"
@@ -219,21 +252,19 @@ do_check() {
   fi
 }
 
-# --- メインロジック ---
-
 case "$subcommand" in
   export)
     do_export
     ;;
   import)
-    do_import
+    do_import "$@"
     ;;
   check)
     do_check
     ;;
   *)
     echo "❌ エラー: 無効なサブコマンド '$subcommand' です。" >&2
-    echo "使用法: $0 {export|import|check}" >&2
+    echo "使用法: $0 {export|import [-y]|check}" >&2
     exit 1
     ;;
 esac
