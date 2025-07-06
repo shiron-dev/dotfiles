@@ -29,12 +29,27 @@ jobs:
       - name: Check PR scope
         id: check_scope_step # Add id to this step
         run: |
-          pr_title="${{ steps.pr_title.outputs.title }}"
+          pr_title_raw="${{ steps.pr_title.outputs.title }}"
+          # Sanitize pr_title_raw by removing CR/LF characters that might come from jq output
+          pr_title=$(echo "$pr_title_raw" | tr -d '\r\n')
           changed_files="${{ steps.changed_files.outputs.files }}"
 
-          echo "PR Title: $pr_title"
+          echo "PR Title: $pr_title" # This should now correctly show the title or be empty
           echo "Changed Files:"
           echo "$changed_files"
+
+          if [ -z "$pr_title" ]; then
+            error_message="PR title is empty. Please provide a title in the format 'type(scope): message'."
+            echo "::error::$error_message"
+            comment_body="**Scope Check Failed!** 🚨\n\n${error_message}\n\nExample: \`feat(my-scope): add new feature\`."
+            cat <<EOF_COMMENT > comment_file.txt
+            $comment_body
+            EOF_COMMENT
+            echo "comment_body<<EOF_CMT" >> $GITHUB_ENV
+            cat comment_file.txt >> $GITHUB_ENV
+            echo "EOF_CMT" >> $GITHUB_ENV
+            exit 1
+          fi
 
           # Extract scope from PR title (e.g., "fix(scope1,scope2): ...")
           pr_scopes_str=$(echo "$pr_title" | grep -oP '^\w+\(\K[^\)]+' || echo "")
@@ -45,8 +60,13 @@ jobs:
           if [ ${#pr_scopes[@]} -eq 0 ] && [[ "$pr_scopes_str" != "*" ]]; then
             error_message="PR title does not contain a valid scope. Please use the format 'type(scope): message' or 'type(*): message'."
             echo "::error::$error_message"
-            comment_body="**Scope Check Failed!** 🚨\n\n${error_message}\n\nExample: \`feat(my-scope): add new feature\` or \`fix(*): resolve an issue\`."
-            echo "comment_body=$comment_body" >> $GITHUB_ENV
+            comment_body="**Scope Check Failed!** 🚨\n\n${error_message}\n\nTitle received: \`$pr_title\`\n\nExample: \`feat(my-scope): add new feature\` or \`fix(*): resolve an issue\`."
+            cat <<EOF_COMMENT > comment_file.txt
+            $comment_body
+            EOF_COMMENT
+            echo "comment_body<<EOF_CMT" >> $GITHUB_ENV
+            cat comment_file.txt >> $GITHUB_ENV
+            echo "EOF_CMT" >> $GITHUB_ENV
             exit 1
           fi
           echo "PR Scopes: ${pr_scopes[@]}"
@@ -115,16 +135,44 @@ jobs:
             echo "::error::PR title scopes do not cover all changed files. Missing scopes for: ${missing_scopes[@]}"
             # Prepare message for PR comment
             comment_body="**Scope Check Failed!** 🚨\n\nPR title scopes do not cover all changed files.\n\n"
-            comment_body+="Missing required scopes in PR title: \`${missing_scopes[@]}\`\n\n"
-            comment_body+="Please update your PR title to include these scopes. For example: \`type(${pr_scopes_str:+${pr_scopes_str},}${missing_scopes[@]}): your message\` or \`type(*): your message\` if a wildcard is appropriate.\n\n"
+            if [ ${#missing_scopes[@]} -gt 0 ]; then
+              comment_body+="Missing required scopes in PR title: \`${missing_scopes[*]}\`\n\n" # Use [*] for space separated, or loop for comma separated
+
+              suggestion_scopes=""
+              if [ -n "$pr_scopes_str" ] && [[ "$pr_scopes_str" != "*" ]]; then
+                suggestion_scopes="${pr_scopes_str}"
+              fi
+
+              # Build comma-separated list for suggestion_scopes
+              for missing_scope in "${missing_scopes[@]}"; do
+                if [ -n "$suggestion_scopes" ]; then
+                  suggestion_scopes+=","
+                fi
+                suggestion_scopes+="$missing_scope"
+              done
+
+              comment_body+="Please update your PR title to include these scopes. For example: \`type($suggestion_scopes): your message\` or \`type(*): your message\` if a wildcard is appropriate.\n\n"
+            fi
             comment_body+="<details><summary>Details</summary>\n"
-            comment_body+="PR Title Scopes: \`${pr_scopes[@]}\`\n"
+            # Ensure pr_scopes are displayed correctly, even if empty or just wildcard
+            pr_scopes_display="${pr_scopes[*]}"
+            if [ -z "$pr_scopes_display" ] && [ "$pr_scopes_str" == "*" ]; then
+              pr_scopes_display="*"
+            elif [ -z "$pr_scopes_display" ]; then
+              pr_scopes_display="(none)"
+            fi
+            comment_body+="PR Title Scopes: \`${pr_scopes_display}\`\n"
             comment_body+="Required Scopes from changed files: \`${required_scopes[@]}\`\n"
             comment_body+="Changed Files:\n"
             comment_body+="\`\`\`\n${changed_files}\n\`\`\`\n"
             comment_body+="</details>"
 
-            echo "comment_body=$comment_body" >> $GITHUB_ENV
+            cat <<EOF_COMMENT > comment_file.txt
+            $comment_body
+            EOF_COMMENT
+            echo "comment_body<<EOF_CMT" >> $GITHUB_ENV
+            cat comment_file.txt >> $GITHUB_ENV
+            echo "EOF_CMT" >> $GITHUB_ENV
             exit 1
           else
             echo "PR title scopes are valid."
