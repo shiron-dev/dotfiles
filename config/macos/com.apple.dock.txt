@@ -1,0 +1,249 @@
+{
+    autohide = 1;
+    "expose-group-apps" = 1;
+    largesize = 128;
+    "last-analytics-stamp" =     (
+        "773213571.55242"
+    );
+    lastShowIndicatorTime = "773483080.598792";
+    launchanim = 1;
+    loc = "ja_JP:JP";
+    "minimize-to-application" = 0;
+    "mod-count" = 9840;
+    "persistent-apps" =     (
+                {
+            GUID = 1640661670;
+            "tile-data" =             {
+                book = {length = 584, bytes = 0x626f6f6b 48020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.apple.launchpad.launcher";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///System/Applications/Launchpad.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Launchpad;
+                "file-mod-date" = 3814491587;
+                "file-type" = 169;
+                "is-beta" = 0;
+                "parent-mod-date" = 3814491587;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 3462484798;
+            "tile-data" =             {
+                book = {length = 556, bytes = 0x626f6f6b 2c020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.googlecode.iterm2";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///Applications/iTerm.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = iTerm;
+                "file-mod-date" = 60747553130139;
+                "file-type" = 41;
+                "is-beta" = 0;
+                "parent-mod-date" = 94922608928456;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 141215770;
+            "tile-data" =             {
+                book = {length = 564, bytes = 0x626f6f6b 34020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.google.Chrome";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///Applications/Google%20Chrome.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = "Google Chrome";
+                "file-mod-date" = 198912342650676;
+                "file-type" = 41;
+                "is-beta" = 0;
+                "parent-mod-date" = 53798298527935;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 141215771;
+            "tile-data" =             {
+                book = {length = 556, bytes = 0x626f6f6b 2c020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.hnc.Discord";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///Applications/Discord.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Discord;
+                "file-mod-date" = 3834094186;
+                "file-type" = 41;
+                "is-beta" = 0;
+                "parent-mod-date" = 214309817564789;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 141215772;
+            "tile-data" =             {
+                book = {length = 556, bytes = 0x626f6f6b 2c020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.tinyspeck.slackmacgap";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///Applications/Slack.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Slack;
+                "file-mod-date" = 16174385014980;
+                "file-type" = 41;
+                "is-beta" = 0;
+                "parent-mod-date" = 63393256687156;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 2185259791;
+            "tile-data" =             {
+                book = {length = 580, bytes = 0x626f6f6b 44020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.apple.Notes";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///System/Applications/Notes.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = "\\U30e1\\U30e2";
+                "file-mod-date" = 3829181962;
+                "file-type" = 41;
+                "is-beta" = 0;
+                "parent-mod-date" = 3829181962;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 3462484888;
+            "tile-data" =             {
+                book = {length = 632, bytes = 0x626f6f6b 78020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.apple.ActivityMonitor";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///System/Applications/Utilities/Activity%20Monitor.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = "\\U30a2\\U30af\\U30c6\\U30a3\\U30d3\\U30c6\\U30a3\\U30e2\\U30cb\\U30bf";
+                "file-mod-date" = 3827279769;
+                "file-type" = 41;
+                "is-beta" = 0;
+                "parent-mod-date" = 3827279769;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 3975212839;
+            "tile-data" =             {
+                book = {length = 588, bytes = 0x626f6f6b 4c020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.apple.ScreenContinuity";
+                "dock-extra" = 1;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///System/Applications/iPhone%20Mirroring.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = "iPhone\\U30df\\U30e9\\U30fc\\U30ea\\U30f3\\U30b0";
+                "file-mod-date" = 3829181962;
+                "file-type" = 41;
+                "is-beta" = 0;
+                "parent-mod-date" = 3829181962;
+            };
+            "tile-type" = "file-tile";
+        }
+    );
+    "persistent-others" =     (
+                {
+            GUID = 1640661687;
+            "tile-data" =             {
+                arrangement = 2;
+                book = {length = 656, bytes = 0x626f6f6b 90020000 00000410 30000000 ... 04000000 00000000 };
+                displayas = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///Users/shiron/Downloads/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = "\\U30c0\\U30a6\\U30f3\\U30ed\\U30fc\\U30c9";
+                "file-mod-date" = 264165778460443;
+                "file-type" = 2;
+                "is-beta" = 0;
+                "parent-mod-date" = 147999798008850;
+                preferreditemsize = "-1";
+                showas = 1;
+            };
+            "tile-type" = "directory-tile";
+        }
+    );
+    "recent-apps" =     (
+                {
+            GUID = 3139777692;
+            "tile-data" =             {
+                book = {length = 556, bytes = 0x626f6f6b 2c020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "notion.id";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///Applications/Notion.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Notion;
+                "file-mod-date" = 3833880886;
+                "file-type" = 1;
+                "is-beta" = 0;
+                "parent-mod-date" = 63393256687156;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 3139777693;
+            "tile-data" =             {
+                book = {length = 556, bytes = 0x626f6f6b 2c020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.spotify.client";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///Applications/Spotify.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Spotify;
+                "file-mod-date" = 65875746497075;
+                "file-type" = 1;
+                "is-beta" = 0;
+                "parent-mod-date" = 63393256687156;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 3139777716;
+            "tile-data" =             {
+                book = {length = 556, bytes = 0x626f6f6b 2c020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.todesktop.230313mzl4w4u92";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///Applications/Cursor.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Cursor;
+                "file-mod-date" = 2398345200;
+                "file-type" = 1;
+                "is-beta" = 0;
+                "parent-mod-date" = 214309817564789;
+            };
+            "tile-type" = "file-tile";
+        }
+    );
+    region = JP;
+    "show-process-indicators" = 1;
+    showAppExposeGestureEnabled = 1;
+    showMissionControlGestureEnabled = 1;
+    tilesize = 45;
+    "trash-full" = 1;
+    version = 1;
+    "wvous-br-corner" = 14;
+    "wvous-tl-corner" = 10;
+    "wvous-tl-modifier" = 0;
+    "wvous-tr-corner" = 5;
+    "wvous-tr-modifier" = 0;
+}
