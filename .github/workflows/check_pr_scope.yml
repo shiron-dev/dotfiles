@@ -1,0 +1,82 @@
+name: Check PR Scope
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  check_scope:
+    runs-on: ubuntu-latest
+    outputs:
+      outcome: ${{ steps.check_scope_step.outcome }}
+      pr_scopes: ${{ steps.check_scope_step.outputs.pr_scopes }}
+      files: ${{ steps.changed_files.outputs.files }}
+      required_scopes: ${{ steps.check_scope_step.outputs.required_scopes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Get PR title
+        id: pr_title
+        run: |
+          title=$(jq -r .pull_request.title "$GITHUB_EVENT_PATH")
+          echo "$title"
+          echo "title=$title" >> $GITHUB_OUTPUT
+
+      - name: Debug PR title output
+        run: |
+          echo "PR title from output: ${{ steps.pr_title.outputs.title }}"
+
+      - name: Get changed files
+        id: changed_files
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          files=$(git diff --name-only origin/"$BASE_REF"...origin/"$HEAD_REF")
+          {
+            echo "files<<EOF"
+            echo "$files"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Debug before Check PR scope
+        run: |
+          echo "PR title just before check: ${{ steps.pr_title.outputs.title }}"
+          echo "Changed files: ${{ steps.changed_files.outputs.files }}"
+
+      - name: Check PR scope
+        id: check_scope_step # Add id to this step
+        run: |
+          chmod +x scripts/check_pr_scope.sh
+          ./scripts/check_pr_scope.sh "${{ steps.pr_title.outputs.title }}" "${{ steps.changed_files.outputs.files }}"
+
+  comment_on_pr:
+    if: failure() && needs.check_scope.outputs.outcome == 'failure'
+    needs: check_scope
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Set comment body
+        id: set_comment_body
+        run: |
+          {
+            echo 'comment_body<<EOF'
+            echo "PRのスコープが正しくありません。\n現在のスコープ: ${{ needs.check_scope.outputs.pr_scopes }}\n検知したスコープ: ${{ needs.check_scope.outputs.required_scopes }}"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const body = `${{ steps.set_comment_body.outputs.comment_body }}`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
