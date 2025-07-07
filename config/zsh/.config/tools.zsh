@@ -107,5 +107,7 @@ alias docker-compose-rm="docker compose down --rmi all --volumes --remove-orphan
 alias lsusb="system_profiler SPUSBDataType"
 alias gic="git clean -Xdf"
 
+alias shfmt="shfmt -i 2 -ci -bn -sr -kp -w"
+
 # My functions
 source ~/.config/zsh/functions.zsh
