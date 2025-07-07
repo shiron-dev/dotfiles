@@ -3,27 +3,41 @@
 	excludesFile = /Users/shiron/.config/git/ignore
 	editor = cursor --wait
 	ignorecase = true
+
 [gpg]
-	program = /opt/homebrew/bin/gpg
+  format = ssh
+
+[gpg "ssh"]
+  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+
 [user]
 	name = shiron
 	email = shiron4710.dev@gmail.com
+  signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOyDLjUwgq/g9E/Z/6L4oqtv2zpsbv+/oxlFr/igxpRU
+
 [init]
 	defaultBranch = main
+
 [commit]
 	gpgsign = true
+
 [pull]
 	rebase = true
+
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
 [push]
 	autoSetupRemote = true
+
 [diff]
     tool = default-difftool
+		
 [difftool "default-difftool"]
     cmd = code --wait --diff $LOCAL $REMOTE
+		
 [ghq]
 	root = ~/projects
