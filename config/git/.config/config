@@ -1,6 +1,6 @@
 [core]
 	autocrlf = input
-	excludesFile = /Users/shiron/.config/git/ignore
+	excludesFile = ~/.config/git/ignore
 	editor = cursor --wait
 	ignorecase = true
 

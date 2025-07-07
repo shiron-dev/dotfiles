@@ -21,7 +21,7 @@ bindkey "^[[H" beginning-of-line
 bindkey "^[[F" end-of-line
 
 # pnpm
-export PNPM_HOME="/Users/shiron/Library/pnpm"
+export PNPM_HOME="~/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -48,10 +48,10 @@ alias python="python3"
 alias pip="pip3"
 
 # adb
-export PATH="$PATH:/Users/shiron/Library/Android/sdk/platform-tools"
+export PATH="$PATH:~/Library/Android/sdk/platform-tools"
 
 # Jetbrains Toolbox
-export PATH="$PATH:/Users/shiron/Library/Application Support/JetBrains/Toolbox/scripts"
+export PATH="$PATH:~/Library/Application Support/JetBrains/Toolbox/scripts"
 
 # Flutter
 export PATH="$PATH":"$HOME/.pub-cache/bin"
@@ -85,20 +85,20 @@ export ANDROID_HOME="/Users/$USER/Library/Android/sdk"
 export PATH="$PATH":"$ANDROID_HOME/tools":"$ANDROID_HOME/build-tools/35.0.0"
 
 # pipx
-export PATH="$PATH:/Users/shiron/.local/bin"
+export PATH="$PATH:~/.local/bin"
 
 # psql
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 
 # My tools
-export PATH="$PATH":"/Users/shiron/projects/tools/bin"
-export PATH="$PATH":"/Users/shiron/projects/github.com/shiron-dev/arcanum-hue/bin"
+export PATH="$PATH":"~/projects/tools/bin"
+export PATH="$PATH":"~/projects/github.com/shiron-dev/arcanum-hue/bin"
 
-if [ ! -f "/Users/shiron/projects/github.com/shiron-dev/dotfiles/scripts/dofy/dofy" ]; then
+if [ ! -f "~/projects/github.com/shiron-dev/dotfiles/scripts/dofy/dofy" ]; then
   echo "Building dofy..."
   (cd ~/projects/github.com/shiron-dev/dotfiles/scripts/dofy && go build -o dofy cmd/main.go)
 fi
-alias dofy="/Users/shiron/projects/github.com/shiron-dev/dotfiles/scripts/dofy/dofy"
+alias dofy="~/projects/github.com/shiron-dev/dotfiles/scripts/dofy/dofy"
 
 # My Aliases
 alias grep="ggrep"
