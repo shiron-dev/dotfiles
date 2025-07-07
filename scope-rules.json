@@ -1,15 +1,15 @@
 {
   "rules": [
     {
-      "pattern": "^config/(.+)/.*",
+      "pattern": "^config/([^/]+)/.*",
       "scope": "$1"
     },
     {
-      "pattern": "^scripts/(.+)/.*",
+      "pattern": "^scripts/([^/]+)/.*",
       "scope": "$1"
     },
     {
-      "pattern": "^data/(.+)/.*",
+      "pattern": "^data/([^/]+)/.*",
       "scope": "$1"
     },
     {
