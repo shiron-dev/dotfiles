@@ -87,7 +87,7 @@ if [ -n "${GITHUB_OUTPUT:-}" ]; then
   echo "pr_scopes=${pr_scopes[*]}" >> "$GITHUB_OUTPUT"
 fi
 
-if [[  ${pr_scopes[*]}  =~  \*  || ${pr_scopes[*]} =~ deps ]]; then
+if [[ ${pr_scopes[*]} =~ \* || ${pr_scopes[*]} =~ deps ]]; then
   echo "Wildcard scope '*' or 'deps' in PR title allows all changes."
   exit 0
 fi
@@ -153,4 +153,4 @@ if [ ${#missing_scopes[@]} -gt 0 ]; then
   exit 1
 else
   echo "PR title scopes are valid."
-fi 
+fi
