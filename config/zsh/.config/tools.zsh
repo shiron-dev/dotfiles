@@ -1,5 +1,5 @@
 # code to cursor
-alias code="cursor"
+# alias code="cursor"
 
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"

@@ -62,7 +62,7 @@
   "git.autofetch": true,
   "git.enableSmartCommit": true,
   "github.copilot.enable": {
-    "*": false,
+    "*": true,
     "plaintext": true,
     "markdown": true,
     "scminput": false,
