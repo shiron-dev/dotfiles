@@ -347,7 +347,7 @@
   {
     "key": "cmd+enter",
     "command": "workbench.action.toggleMaximizedPanel",
-    "when": "panelAlignment == 'center' || panelPosition != 'bottom' && panelPosition != 'top'"
+    "when": "terminalFocus && (panelAlignment == 'center' || panelPosition != 'bottom' && panelPosition != 'top')"
   },
   {
     "key": "shift+cmd+y",
