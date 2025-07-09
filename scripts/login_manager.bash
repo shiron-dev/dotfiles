@@ -23,8 +23,8 @@ _get_current_items_as_yaml() {
         path_val="${path_val%$'\r'}"
         hidden_val="${hidden_val%$'\r'}"
         printf -- "- path: %s\n  hidden: %s\n" "$path_val" "$hidden_val"
-      fi
-    done; then
+    fi
+  done; then
     echo "🚨 Error: osascript failed to get login items." >&2
     return 1
   fi
@@ -83,12 +83,12 @@ import_login_items() {
       path="${line#*- path: }"
       path="${path%"${path##*[![:space:]]}"}"
       path="${path%$'\r'}"
-    
+
     elif [[ "$line" == *"hidden: "* ]]; then
       hidden="${line#*hidden: }"
       hidden="${hidden#"${hidden%%[![:space:]]*}"}"
       hidden="${hidden%$'\r'}"
-      
+
       if [[ -n "$path" && -n "$hidden" ]]; then
         echo "    - Adding: $path (hidden: $hidden)"
         local path_escaped="${path//\"/\\\"}"
@@ -143,7 +143,6 @@ open_login_items() {
     echo "🚫 Operation cancelled."
   fi
 }
-
 
 # --- メイン処理 ---
 command="${1:-}"
