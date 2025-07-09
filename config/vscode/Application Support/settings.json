@@ -177,11 +177,11 @@
         "cmd": "yamlfmt ${file}",
         "autoShowOutputPanel": "error"
       },
-      {
-        "match": ".*\\.proto$",
-        "cmd": "buf format -w ${file}",
-        "autoShowOutputPanel": "error"
-      }
+      // {
+      //   "match": ".*\\.proto$",
+      //   "cmd": "buf format -w ${file}",
+      //   "autoShowOutputPanel": "error"
+      // }
     ]
   },
   "github.copilot.nextEditSuggestions.enabled": true,
@@ -248,5 +248,5 @@
   "workbench.iconTheme": "vscode-icons",
   "update.releaseTrack": "prerelease",
   "diffEditor.hideUnchangedRegions.enabled": true,
-  "docker.extension.enableComposeLanguageServer": false
+  "docker.extension.enableComposeLanguageServer": false,
 }
