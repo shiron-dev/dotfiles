@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/cweill/gotests v1.6.0
 	github.com/fatih/color v1.18.0
-	github.com/google/wire v0.6.0
+	github.com/google/wire v0.7.0
 	github.com/pkg/errors v0.9.1
 	go.uber.org/mock v0.6.0
 )
