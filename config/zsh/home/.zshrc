@@ -8,3 +8,5 @@ echo zsh startup time "$DIFF" ms
 if (which zprof > /dev/null 2>&1) ;then
   zprof
 fi
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"

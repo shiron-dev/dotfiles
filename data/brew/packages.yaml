@@ -330,8 +330,6 @@ groups:
           id: 1444383602
         - name: LINE               (9.9.0)
           id: 539883307
-        - name: MeetingBar         (4.11.6)
-          id: 1532419400
         - name: Xcode              (16.4)
           id: 497799835
       tap:

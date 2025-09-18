@@ -15,3 +15,6 @@
     - "Cursor"
   loop_control:
     loop_var: vscode_dir_name
+
+- name: Set vscode
+  ansible.builtin.include_tasks: jetbrains.yml

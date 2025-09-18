@@ -8,16 +8,16 @@ module.exports = {
       },
       browser: "Discord",
     },
-    {
-      match: finicky.matchHostnames([
-        "drive.google.com",
-        "docs.google.com",
-        "forms.gle"
-      ]),
-      browser: {
-        name: "Google Chrome",
-        profile: "Profile 1",
-      },
-    },
+    // {
+    //   match: finicky.matchHostnames([
+    //     "drive.google.com",
+    //     "docs.google.com",
+    //     "forms.gle"
+    //   ]),
+    //   browser: {
+    //     name: "Google Chrome",
+    //     profile: "Profile 1",
+    //   },
+    // },
   ],
 };

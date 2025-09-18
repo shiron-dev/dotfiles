@@ -67,8 +67,62 @@ func installPackagesByType(pkgType string, pkgInfos []types.PackageInfo, options
 			utils.PrintStatus(utils.Cyan, fmt.Sprintf("Processing %s: %s", pkgType, pkgInfo.Name))
 		}
 
+		// すでにインストール済みかどうかを判定
+		alreadyInstalled := false
+		switch pkgType {
+		case "tap":
+			if output, err := utils.RunCommand("brew", "tap"); err == nil {
+				installedTaps := strings.Fields(output)
+				for _, installed := range installedTaps {
+					if installed == pkgInfo.Name {
+						alreadyInstalled = true
+						break
+					}
+				}
+			}
+		case "brew":
+			if output, err := utils.RunCommand("brew", "list", "--formula"); err == nil {
+				installedBrews := strings.Fields(output)
+				for _, installed := range installedBrews {
+					if installed == pkgInfo.Name || strings.HasPrefix(pkgInfo.Name, installed+"/") {
+						alreadyInstalled = true
+						break
+					}
+				}
+			}
+		case "cask":
+			if output, err := utils.RunCommand("brew", "list", "--cask"); err == nil {
+				installedCasks := strings.Fields(output)
+				for _, installed := range installedCasks {
+					if installed == pkgInfo.Name {
+						alreadyInstalled = true
+						break
+					}
+				}
+			}
+		case "mas":
+			if output, err := utils.RunCommand("mas", "list"); err == nil {
+				lines := strings.Split(strings.TrimSpace(output), "\n")
+				for _, line := range lines {
+					if strings.HasPrefix(line, strconv.FormatInt(pkgInfo.ID, 10)) {
+						alreadyInstalled = true
+						break
+					}
+				}
+			}
+		}
+
 		if options.DryRun {
-			utils.PrintStatus(utils.Yellow, fmt.Sprintf("[DRY RUN] Would install %s: %s", pkgType, pkgInfo.Name))
+			if !alreadyInstalled {
+				utils.PrintStatus(utils.Yellow, fmt.Sprintf("[DRY RUN] Would install %s: %s", pkgType, pkgInfo.Name))
+			}
+			continue
+		}
+
+		if alreadyInstalled {
+			if options.Verbose {
+				utils.PrintStatus(utils.Yellow, fmt.Sprintf("%s already installed: %s", strings.Title(pkgType), pkgInfo.Name))
+			}
 			continue
 		}
 

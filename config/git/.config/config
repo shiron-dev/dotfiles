@@ -1,7 +1,7 @@
 [core]
 	autocrlf = input
-	excludesFile = ~/.config/git/ignore
-	editor = cursor --wait
+	excludesfile = /Users/s28628/.config/git/ignore
+	editor = code --wait
 	ignorecase = true
 
 [gpg]
@@ -20,6 +20,7 @@
 
 [commit]
 	gpgsign = true
+	template = /Users/s28628/.stCommitMsg
 
 [pull]
 	rebase = true
@@ -41,3 +42,11 @@
 		
 [ghq]
 	root = ~/projects
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[tag]
+	gpgSign = true
