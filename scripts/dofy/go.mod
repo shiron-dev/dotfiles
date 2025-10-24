@@ -3,7 +3,7 @@ module github.com/shiron-dev/dotfiles/scripts/dofy
 go 1.25.3
 
 require (
-	github.com/cweill/gotests v1.6.0
+	github.com/cweill/gotests v1.7.4
 	github.com/fatih/color v1.18.0
 	github.com/google/wire v0.7.0
 	github.com/pkg/errors v0.9.1
@@ -15,8 +15,8 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/mod v0.27.0 // indirect
-	golang.org/x/sync v0.16.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
-	golang.org/x/tools v0.36.0 // indirect
+	golang.org/x/mod v0.29.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/tools v0.38.0 // indirect
 )
