@@ -3,7 +3,7 @@ module github.com/shiron-dev/dotfiles/scripts/dofy
 go 1.25.3
 
 require (
-	github.com/cweill/gotests v1.7.4
+	github.com/cweill/gotests v1.8.0
 	github.com/fatih/color v1.18.0
 	github.com/google/wire v0.7.0
 	github.com/pkg/errors v0.9.1
