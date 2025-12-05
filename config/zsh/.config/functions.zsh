@@ -33,7 +33,7 @@ alias gc="ghq get"
 function _ghq-fzf() {
   local src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
-    BUFFER="code $(ghq root)/$src"
+    BUFFER="cursor $(ghq root)/$src"
     zle accept-line
   fi
   zle -R -c
@@ -248,7 +248,7 @@ autoload -Uz compinit ; compinit # なかったら追記
 
 function sekai-ssh() {
     ip=`aws ec2 describe-instances --output=text --filters "Name=tag:Name,Values=$1" --query "Reservations[].Instances[].PublicIpAddress"`
-    ssh s28628@$ip
+    ssh s28628@$ip 
 }
 
 _refresh-sekai-ssh-hosts() {
@@ -263,3 +263,18 @@ _refresh-sekai-ssh-hosts() {
 }
 
 compdef _sekai-ssh sekai-ssh
+
+# ########################
+# sekai ssm
+# ########################
+function sekai-ssm() {
+    # ssh `sekai-instance-id $1`
+    aws ssm start-session --target `sekai-instance-id $1`
+}
+
+function sekai-instance-id() {
+    echo `aws ec2 describe-instances --output=text --filters "Name=tag:Name,Values=$1" --query "Reservations[].Instances[].InstanceId"`
+}
+
+compdef _sekai-ssh sekai-ssm
+

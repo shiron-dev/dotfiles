@@ -1,10 +1,11 @@
 [tools]
-go = "1.24.4"
+go = "1.24.0"
 java = "corretto-11"
-node = "24.6.0"
+node = "24"
 pnpm = "latest"
 python = "3.13.3"
-terraform = "1.13.1"
+terraform = "latest"
+uv = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["go", "node"]

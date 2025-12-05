@@ -110,5 +110,15 @@ alias shfmt="shfmt -i 2 -ci -bn -sr -kp -w"
 export PATH="$PATH:$HOME/bin"
 export PATH="$PATH:$HOME/bin/scripts"
 
+mkdir -p $HOME/bin/scripts
+
+if [ ! -f "$HOME/bin/scripts/pnpx" ]; then
+  cat <<'EOF' > $HOME/bin/scripts/pnpx
+#!/bin/sh
+pnpm dlx "$@"
+EOF
+  chmod +x $HOME/bin/scripts/pnpx 
+fi
+
 # My functions
 source ~/.config/zsh/functions.zsh

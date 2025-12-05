@@ -1,7 +1,7 @@
 [core]
 	autocrlf = input
 	excludesfile = /Users/s28628/.config/git/ignore
-	editor = code --wait
+	editor = cursor --wait
 	ignorecase = true
 
 [gpg]
@@ -50,3 +50,5 @@
 	trustExitCode = true
 [tag]
 	gpgSign = true
+[url "git@github.com:"]
+	insteadOf = https://github.com/

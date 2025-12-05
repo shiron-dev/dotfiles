@@ -117,7 +117,8 @@
     "python.defaultInterpreterPath": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.10_3.10.240.0_x64__qbz5n2kfra8p0\\python3.10.exe",
     "remote.SSH.remotePlatform": {
         "arm": "linux",
-        "awsbot": "linux"
+        "awsbot": "linux",
+        "ubuntu@arm-srv.shiron.dev": "linux"
     },
     "terminal.external.osxExec": "iTerm.app",
     "terminal.integrated.allowedLinkSchemes": [
@@ -248,4 +249,21 @@
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-http-request-post-response.instructions.md": true,
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-http-request-pre-request.instructions.md": true
     },
+    "[dockercompose]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": true
+        },
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "remote.autoForwardPortsSource": "hybrid",
+    "githubPullRequests.fileListLayout": "flat",
+    "git.detectSubmodules": true,
 }

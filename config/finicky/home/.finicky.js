@@ -8,6 +8,13 @@ module.exports = {
       },
       browser: "Discord",
     },
+    {
+      match: ["*.isca.jp*"],
+      browser: {
+        name: "Google Chrome",
+        profile: "Profile 1",
+      },
+    }
     // {
     //   match: finicky.matchHostnames([
     //     "drive.google.com",
