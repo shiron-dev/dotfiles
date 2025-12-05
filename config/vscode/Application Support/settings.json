@@ -171,6 +171,11 @@
                 "match": ".*\\.(yml|yaml)$",
                 "cmd": "yamlfmt ${file}",
                 "autoShowOutputPanel": "error"
+            },
+            {
+                "match": ".*\\.proto$",
+                "cmd": "buf format -w ${file}",
+                "autoShowOutputPanel": "error"
             }
         ]
     },
