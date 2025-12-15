@@ -31,11 +31,13 @@
   loop: "{{ jetbrains_files.files }}"
   when: not item.islnk
 
+- name: Make jetbrains directory
   ansible.builtin.file:
     path: "~/Library/Application Support/JetBrains/ToolBox"
     state: directory
     mode: "0755"
 
+- name: Make jetbrains symlink
   ansible.builtin.file:
     src: "{{ item }}"
     dest: "{{ item | replace(vars.config_dir + '/jetbrains/Application Support/', '~/Library/Application Support/JetBrains/ToolBox/') }}"

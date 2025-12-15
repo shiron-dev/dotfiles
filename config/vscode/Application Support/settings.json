@@ -271,4 +271,5 @@
     "remote.autoForwardPortsSource": "hybrid",
     "githubPullRequests.fileListLayout": "flat",
     "git.detectSubmodules": true,
+    "git.blame.statusBarItem.enabled": true,
 }
