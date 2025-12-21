@@ -4,26 +4,26 @@
     cmd: echo ~
   check_mode: false
   changed_when: false
-  register: home_dir
+  register: set_facts_home_dir
 
 - name: Set home dir
   ansible.builtin.set_fact:
-    home_dir: "{{ home_dir.stdout }}"
+    set_facts_home_dir: "{{ set_facts_home_dir.stdout }}"
 
 - name: Set dotfiles dir
   ansible.builtin.set_fact:
-    dotfiles_dir: "{{ vars.home_dir }}/projects/github.com/shiron-dev/dotfiles"
+    set_facts_dotfiles_dir: "{{ vars.set_facts_home_dir }}/projects/github.com/shiron-dev/dotfiles"
 
 - name: Set config dir
   ansible.builtin.set_fact:
-    config_dir: "{{ vars.dotfiles_dir }}/config"
+    set_facts_config_dir: "{{ vars.set_facts_dotfiles_dir }}/config"
 
 - name: Set backup dir
   ansible.builtin.set_fact:
-    backup_dir: "{{ vars.dotfiles_dir }}/backup"
+    set_facts_backup_dir: "{{ vars.set_facts_dotfiles_dir }}/backup"
 
 - name: Make backup dir
   ansible.builtin.file:
-    path: "{{ vars.backup_dir }}"
+    path: "{{ vars.set_facts_backup_dir }}"
     state: directory
     mode: "0755"

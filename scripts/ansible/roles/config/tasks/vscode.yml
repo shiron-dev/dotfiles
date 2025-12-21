@@ -1,32 +1,32 @@
 ---
 - name: Check vscode files in ~/Library/Application Support/Code/User
   ansible.builtin.stat:
-    path: "{{ item | replace(vars.config_dir + '/vscode/Application Support/', '~/Library/Application Support/' + vars.vscode_dir_name + '/User/') }}"
+    path: "{{ item | replace(vars.set_facts_config_dir + '/vscode/Application Support/', '~/Library/Application Support/' + vars.vscode_dir_name + '/User/') }}"
   with_fileglob:
-    - "{{ vars.config_dir }}/vscode/Application Support/*"
-    - "{{ vars.config_dir }}/vscode/Application Support/snippets/*"
-  register: vscode_files
+    - "{{ vars.set_facts_config_dir }}/vscode/Application Support/*"
+    - "{{ vars.set_facts_config_dir }}/vscode/Application Support/snippets/*"
+  register: config_vscode_files
 
 - name: Make backup parent directories for vscode files
   ansible.builtin.file:
-    path: "{{ vars.backup_dir }}/{{ item.stat.path | dirname }}"
+    path: "{{ vars.set_facts_backup_dir }}/{{ item.stat.path | dirname }}"
     state: directory
     mode: "0755"
-  with_items: "{{ vscode_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+  with_items: "{{ config_vscode_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
 
 - name: Backup vscode files in ~/Library/Application Support/Code/User
   ansible.builtin.copy:
     src: "{{ item.stat.path }}"
-    dest: "{{ vars.backup_dir }}/{{ item.stat.path }}"
+    dest: "{{ vars.set_facts_backup_dir }}/{{ item.stat.path }}"
     mode: "0644"
-  with_items: "{{ vscode_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
+  with_items: "{{ config_vscode_files.results | selectattr('stat.exists') | selectattr('stat.islnk', 'equalto', false) | list }}"
 
 - name: Remove vscode files in ~/Library/Application Support/Code/User
   ansible.builtin.file:
     path: "{{ item.stat.path }}"
     state: absent
   when: item.stat.exists and not item.stat.islnk
-  with_items: "{{ vscode_files.results }}"
+  with_items: "{{ config_vscode_files.results }}"
 
 - name: Make directories for vscode
   ansible.builtin.file:
@@ -37,8 +37,8 @@
 - name: Make vscode symlink to ~/Library/Application Support/Code/User
   ansible.builtin.file:
     src: "{{ item }}"
-    dest: "{{ item | replace(vars.config_dir + '/vscode/Application Support/', '~/Library/Application Support/' + vars.vscode_dir_name + '/User/') }}"
+    dest: "{{ item | replace(vars.set_facts_config_dir + '/vscode/Application Support/', '~/Library/Application Support/' + vars.vscode_dir_name + '/User/') }}"
     state: link
   with_fileglob:
-    - "{{ vars.config_dir }}/vscode/Application Support/*"
-    - "{{ vars.config_dir }}/vscode/Application Support/snippets/*"
+    - "{{ vars.set_facts_config_dir }}/vscode/Application Support/*"
+    - "{{ vars.set_facts_config_dir }}/vscode/Application Support/snippets/*"

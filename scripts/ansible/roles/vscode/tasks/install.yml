@@ -6,6 +6,6 @@
 
 - name: Install vscode extensions
   ansible.builtin.command: "{{ code_command }} --install-extension {{ item }}"
-  with_lines: cat {{ vars.config_dir }}/vscode/data/extensions.txt
+  with_lines: cat {{ vars.set_facts_config_dir }}/vscode/data/extensions.txt
   changed_when: true
   when: item not in vscode_extensions.stdout_lines and item != ''
