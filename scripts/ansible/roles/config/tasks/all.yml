@@ -1,3 +1,4 @@
+---
 - name: Set dir_symlinks
   ansible.builtin.set_fact:
     replace_list:

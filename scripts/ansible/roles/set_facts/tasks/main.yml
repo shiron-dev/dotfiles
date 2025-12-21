@@ -1,3 +1,4 @@
+---
 - name: Get home dir
   ansible.builtin.command:
     cmd: echo ~

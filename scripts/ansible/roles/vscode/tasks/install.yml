@@ -1,3 +1,4 @@
+---
 - name: Dump vscode extensions
   ansible.builtin.command: "{{ code_command }} --list-extensions"
   register: vscode_extensions

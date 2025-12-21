@@ -1,3 +1,4 @@
+---
 - name: Set all config
   ansible.builtin.import_tasks: all.yml
 

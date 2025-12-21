@@ -1,3 +1,4 @@
+---
 - name: Check com.googlecode.iterm2.plist PrefsCustomFolder
   ansible.builtin.command:
     cmd: defaults read com.googlecode.iterm2.plist PrefsCustomFolder

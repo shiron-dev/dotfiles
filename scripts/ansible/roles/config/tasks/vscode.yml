@@ -1,3 +1,4 @@
+---
 - name: Check vscode files in ~/Library/Application Support/Code/User
   ansible.builtin.stat:
     path: "{{ item | replace(vars.config_dir + '/vscode/Application Support/', '~/Library/Application Support/' + vars.vscode_dir_name + '/User/') }}"

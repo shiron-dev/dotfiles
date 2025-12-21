@@ -1,3 +1,4 @@
+---
 - name: Localhost
   hosts: localhost
   connection: local
