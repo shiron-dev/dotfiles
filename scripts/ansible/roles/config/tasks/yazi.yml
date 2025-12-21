@@ -2,5 +2,5 @@
 - name: Install yazi plugins
   ansible.builtin.command:
     cmd: "ya pack -i"
-  changed_when: yazi_plugins.stdout in "switching"
-  register: yazi_plugins
+  changed_when: config_yazi_plugins.stdout in "switching"
+  register: config_yazi_plugins
