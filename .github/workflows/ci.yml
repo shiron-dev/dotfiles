@@ -17,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs:
-      - ci-req-check
       - yaml-lint
       - shell-lint
       - action-lint
@@ -25,13 +24,6 @@ jobs:
       - terraform-validate
       - sops-secrets-check
       - kics-check
-    steps:
-      - name: All status check
-        run: echo "All status check passed"
-
-  ci-req-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Check all-status-check
