@@ -1,0 +1,105 @@
+---
+name: pr-scope-rules
+description: PR scope validation rules for this project. Use this rule when creating commit messages and PR titles to ensure proper scope validation.
+---
+
+# PR Scope Rules
+
+このプロジェクトでは、PR タイトルにスコープを含める必要があります。GitHub Actions の `.github/workflows/check_pr_scope.yml` ワークフローが `scripts/check_pr_scope.sh` スクリプトを使用して自動的に検証します。
+
+## PR タイトルの形式
+
+PR タイトルは以下の形式に従ってください：
+
+```text
+type(scope1,scope2): message
+```
+
+**必須要素：**
+
+- `type`: コミットタイプ（`feat`, `fix`, `docs`, `refactor`, `test`, `chore` など）
+- `(scope1,scope2)`: カンマ区切りのスコープ（必須）
+- `:` + スペース: コロンとスペース
+- `message`: PR の説明
+
+## コミットタイプ（type）のガイド
+
+Conventional Commits に基づいたコミットタイプを使用してください。以下は一般的なタイプとその使用例です：
+
+### 主要なタイプ
+
+- **`feat`**: 新機能の追加
+  - 例: `feat(zsh): add new alias for git commands`
+  - 例: `feat(brew): add new package management tool`
+
+- **`fix`**: バグ修正
+  - 例: `fix(ansible): correct path configuration error`
+  - 例: `fix(github): resolve workflow syntax error`
+
+- **`docs`**: ドキュメントのみの変更
+  - 例: `docs(*): update README with setup instructions`
+  - 例: `docs(zsh): add comments to configuration file`
+
+- **`refactor`**: リファクタリング（機能追加もバグ修正もないコードの改善）
+  - 例: `refactor(scripts): reorganize command structure`
+  - 例: `refactor(brew): simplify package validation logic`
+
+- **`test`**: テストの追加・変更
+  - 例: `test(dofy): add unit tests for brew module`
+  - 例: `test(ansible): update integration test cases`
+
+- **`chore`**: ビルドプロセスやツールの変更（依存関係の更新、設定ファイルの変更など）
+  - 例: `chore(*): update dependencies`
+  - 例: `chore(github): update CI workflow configuration`
+
+### その他のタイプ
+
+- **`style`**: コードの動作に影響しない変更（フォーマット、空白の調整など）
+  - 例: `style(scripts): fix code formatting`
+
+- **`perf`**: パフォーマンス改善
+  - 例: `perf(brew): optimize package list generation`
+
+- **`ci`**: CI設定の変更
+  - 例: `ci(github): add new workflow for validation`
+
+### タイプの選択指針
+
+1. **新機能を追加する場合** → `feat`
+2. **バグを修正する場合** → `fix`
+3. **ドキュメントのみ変更する場合** → `docs`
+4. **コードを改善するが機能追加・修正ではない場合** → `refactor`
+5. **テスト関連の変更** → `test`
+6. **ツールや設定の変更** → `chore`
+
+### 特別なスコープ
+
+すべての変更を許可する場合は、以下のスコープを使用できます：
+
+```text
+type(*): message
+```
+
+このスコープを使用すると、変更されたファイルに関係なく、すべての変更が許可されます。
+
+## スコープの決定ルール
+
+`scope-rules.json` に定義されたルールに基づいて、変更されたファイルのパスから必要なスコープが自動的に決定されます：
+
+1. **`^config/([^/]+)/.*`** → スコープは `$1`（例: `config/zsh/...` → `zsh`）
+2. **`^scripts/([^/]+)/.*`** → スコープは `$1`（例: `scripts/ansible/...` → `ansible`）
+3. **`^data/([^/]+)/.*`** → スコープは `$1`（例: `data/brew/...` → `brew`）
+4. **`^\\.github/.*`** → スコープは `github`
+5. **`.*`** (その他のファイル) → スコープは `dotfiles`
+
+**重要：** ルールは上から順に評価され、最初にマッチしたルールが適用されます。
+
+## 複数スコープの指定
+
+複数のディレクトリにまたがって変更する場合は、カンマ区切りで複数のスコープを指定してください：
+
+```text
+feat(zsh,brew): update configurations
+```
+
+PR タイトルのスコープは、変更されたすべてのファイルに必要なスコープを**すべて**カバーしている必要があります。
