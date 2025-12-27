@@ -24,6 +24,7 @@ jobs:
       - ansible-lint
       - terraform-validate
       - sops-secrets-check
+      - kics-check
     steps:
       - name: All status check
         run: echo "All status check passed"
@@ -91,7 +92,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: "1.13.5"
       - name: Install tflint
@@ -118,3 +119,12 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Run sops secrets check
         run: make sops-ci
+
+  kics-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: checkmarx/kics-github-action@86775e425429260b2044a0611f3031e0a0f71b0b # v2.1.15
+        with:
+          path: .

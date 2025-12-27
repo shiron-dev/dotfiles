@@ -1,4 +1,4 @@
-.PHONY: sops-encrypt sops-decrypt sops-ci
+.PHONY: sops-encrypt sops-decrypt sops-ci kics
 
 sops-encrypt:
 	@echo "Encrypting with SOPS..."; \
@@ -76,3 +76,6 @@ sops-ci:
 		echo "One or more unencrypted secrets files are tracked by git. Please remove them from version control." >&2; \
 		exit 1; \
 	fi
+
+kics:
+	docker run -t -v $(PWD):/path checkmarx/kics:latest scan -p /path
