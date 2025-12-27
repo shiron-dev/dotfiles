@@ -17,6 +17,10 @@
       "scope": "github"
     },
     {
+      "pattern": "^terraform/.*",
+      "scope": "terraform"
+    },
+    {
       "pattern": ".*",
       "scope": "dotfiles"
     }
