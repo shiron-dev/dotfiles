@@ -22,6 +22,8 @@ jobs:
       - shell-lint
       - action-lint
       - ansible-lint
+      - terraform-validate
+      - sops-secrets-check
     steps:
       - name: All status check
         run: echo "All status check passed"
@@ -82,3 +84,37 @@ jobs:
         with:
           working_directory: "scripts/ansible"
           requirements_file: "requirements.yml"
+
+  terraform-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.13.5"
+      - name: Install tflint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+      - name: Terraform Format Check
+        working-directory: terraform
+        run: terraform fmt -check -recursive
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init -backend=false
+      - name: Terraform Validate
+        working-directory: terraform
+        run: terraform validate
+      - name: Run tflint
+        working-directory: terraform
+        run: tflint --init && tflint
+
+  sops-secrets-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - name: Run sops secrets check
+        run: make sops-ci
