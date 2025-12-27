@@ -110,11 +110,11 @@
 
 - name: Get home files from config directories
   ansible.builtin.set_fact:
-    config_home_files: "{{ config_paths | select('match', '^[^/]+/home/.*') | list }}"
+    config_home_files: "{{ config_paths | select('match', '^[^/]+/home/.*') | reject('match', '.*\\.sops$') | list }}"
 
 - name: Transform home file paths to target paths
   ansible.builtin.set_fact:
-    config_home_file_targets: "{{ config_home_files | map('regex_replace', '^([^/]+)/home/(.*)$', '\\2') | list }}"
+    config_home_file_targets: "{{ config_home_files | map('regex_replace', '^([^/]+)/home/(.*)$', '\\2') | map('regex_replace', 'secrets\\.', '') | list }}"
 
 - name: Check home files
   ansible.builtin.stat:
