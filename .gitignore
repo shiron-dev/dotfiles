@@ -1,2 +1,5 @@
 /backup/
 *.log
+
+*.secrets.*
+!*.secrets.*.sops
