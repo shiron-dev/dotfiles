@@ -24,13 +24,23 @@ jobs:
       - terraform-validate
       - sops-secrets-check
       - kics-check
+    if: ${{ always() }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Check all-status-check
         run: |
           diff \
             <(yq ".jobs | del(.all-status-check) | keys.[]" .github/workflows/ci.yml) \
             <(yq ".jobs.all-status-check.needs.[]" .github/workflows/ci.yml)
+      - name: Fail if any needed job failed
+        env:
+          JOBS: ${{ toJson(needs) }}
+        run: |
+          for result in $(jq -r '.[].result' <<<"$JOBS"); do
+            if [[ ! "$result" =~ ^(success|skipped)$ ]]; then
+              exit 1
+            fi
+          done
 
   yaml-lint:
     runs-on: ubuntu-latest
