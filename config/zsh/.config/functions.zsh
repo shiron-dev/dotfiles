@@ -53,6 +53,9 @@ alias pj='ghq-fzf'
 alias o.='open .'
 alias c.='code .'
 alias ci.='code-insiders .'
+alias cu.='cursor .'
+alias i.='idea .'
+alias g.='goland .'
 
 function cg() {
   cd "$(git rev-parse --show-toplevel)" || exit
