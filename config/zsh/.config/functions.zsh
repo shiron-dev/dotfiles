@@ -133,3 +133,9 @@ asn() {
 
 zle -N _navi_widget
 bindkey '^g' _navi_widget
+
+git-todo() {
+  local tool="${1:-code}"
+  shift
+  git log --author="$(git config user.name)" --name-only --pretty=format:"" | sort -u | xargs git grep -l "TODO" | xargs "$tool" "$@"
+}
