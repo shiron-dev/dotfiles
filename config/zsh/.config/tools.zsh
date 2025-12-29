@@ -54,11 +54,6 @@ alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
 # OrbStack
 source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
-# Golang
-export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
-export PATH=$PATH:$GOBIN
-
 # lazy
 alias lg='lazygit'
 alias ld='lazydocker'
