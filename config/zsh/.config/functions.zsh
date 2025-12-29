@@ -265,3 +265,38 @@ docker-f() {
   echo "Running: $cmd"
   eval "$cmd"
 }
+
+function git-trim-eof-newlines() {
+  local all_files=false
+  if [[ "$1" == "-a" || "$1" == "--all" ]]; then
+    all_files=true
+  fi
+
+  local files
+  if [[ "$all_files" == true ]]; then
+    files=(${(f)"$(git ls-files)"})
+  else
+    files=(${(f)"$(git diff --name-only && git diff --cached --name-only | sort -u)"})
+  fi
+
+  if [[ -z "$files" ]]; then
+    if [[ "$all_files" == true ]]; then
+      echo "No files managed by git found."
+    else
+      echo "No changed files found."
+    fi
+    return 0
+  fi
+
+  for file in $files; do
+    if [[ -f "$file" ]]; then
+      if file "$file" | grep -q "text"; then
+        perl -i -0777 -pe 's/\n+\z/\n/' "$file"
+        echo "Trimmed EOF: $file"
+      fi
+    fi
+  done
+
+  echo "Done."
+}
+alias cai='git-trim-eof-newlines'
