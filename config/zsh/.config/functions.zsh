@@ -139,3 +139,129 @@ git-todo() {
   shift
   git log --author="$(git config user.name)" --name-only --pretty=format:"" | sort -u | xargs git grep -l "TODO" | xargs "$tool" "$@"
 }
+
+docker-ssh() {
+  local target="${1:-$(
+    docker ps --format "{{.ID}}\t{{.Names}}\t{{.Image}}" | 
+    fzf --height 40% --reverse | 
+    awk '{print $1}'
+  )}"
+
+  [[ -z "$target" ]] && return
+
+  docker exec -it "$target" sh -c "
+    if command -v bash >/dev/null 2>&1; then
+      exec bash
+    elif command -v sh >/dev/null 2>&1; then
+      exec sh
+    else
+      echo 'Error: No shell found.' && exit 1
+    fi
+  "
+}
+
+docker-up() {
+  local image="${1:-$(
+    docker images --format "{{.Repository}}:{{.Tag}}\t{{.ID}}" |
+    fzf --height 40% --reverse --prompt="Select an image > " |
+    awk '{print $2}'
+  )}"
+  [[ -z "$image" ]] && return
+
+  docker run -it "$image" sh -c "
+    if command -v bash >/dev/null 2>&1; then exec bash;
+    elif command -v sh >/dev/null 2>&1; then exec sh;
+    else echo 'Error: No shell found.' && exit 1; fi
+  "
+
+  local running_containers=$(docker ps --filter "ancestor=$image" --format "{{.ID}}")
+  if [[ -n "$running_containers" ]]; then
+    echo -e "\033[31mNotice: Containers from $image are still running/exist:\033[0m"
+    echo "$running_containers" | xargs -I {} echo "  - {} (Use 'docker rm --force {}' to remove)"
+  fi
+}
+
+docker-stop() {
+  local ids=$(
+    docker ps --format "{{.ID}}\t{{.Names}}\t{{.Status}}" |
+    fzf -m --height 40% --reverse --prompt="STOP container(s) > " |
+    awk '{print $1}'
+  )
+
+  [[ -n "$ids" ]] && echo "$ids" | xargs docker stop
+}
+
+docker-rm() {
+  local ids=$(
+    docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}" |
+    fzf -m --height 40% --reverse --prompt="REMOVE container(s) > " |
+    awk '{print $1}'
+  )
+
+  [[ -n "$ids" ]] && echo "$ids" | xargs docker rm --force
+}
+
+docker-copy() {
+  local mode="container"
+  local docker_cmd="ps -a"
+  local format="{{.ID}}\t{{.Names}}\t{{.Image}}"
+  local prompt="Copy Container ID > "
+
+  if [[ "$1" == "-i" || "$1" == "--image" ]]; then
+    mode="image"
+    docker_cmd="images"
+    format="{{.ID}}\t{{.Repository}}:{{.Tag}}"
+    prompt="Copy Image ID > "
+  fi
+
+  local id=$(
+    docker $docker_cmd --format "$format" |
+    fzf --height 40% --reverse --prompt="$prompt" |
+    awk '{print $1}'
+  )
+
+  if [[ -n "$id" ]]; then
+    echo -n "$id" | pbcopy
+    echo "Copied ${mode} ID: $id"
+  fi
+}
+
+docker-logs() {
+  local follow=""
+  [[ "$1" == "-f" ]] && follow="-f"
+
+  local target=$(
+    docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}" |
+    fzf --height 40% --reverse --prompt="Select Container for logs ${follow} > " |
+    awk '{print $1}'
+  )
+
+  [[ -z "$target" ]] && return
+
+  docker logs $follow "$target"
+}
+
+docker-f() {
+  local choices=(
+    "docker-ssh      : Login to container"
+    "docker-up       : Start container from image"
+    "docker-logs     : View logs"
+    "docker-logs -f  : Stream logs"
+    "docker-stop     : Stop container"
+    "docker-rm       : Remove container"
+    "docker-copy     : Copy container ID"
+    "docker-copy -i  : Copy image ID"
+  )
+
+  local selected=$(
+    printf "%s\n" "${choices[@]}" | 
+    fzf --height 40% --reverse --prompt="Docker Utils > "
+  )
+
+  [[ -z "$selected" ]] && return
+
+  local cmd=$(echo "$selected" | cut -d ':' -f1 | xargs)
+  
+  echo "Running: $cmd"
+  eval "$cmd"
+}
