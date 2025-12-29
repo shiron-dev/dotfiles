@@ -274,9 +274,9 @@ function git-trim-eof-newlines() {
 
   local files
   if [[ "$all_files" == true ]]; then
-    files=(${(f)"$(git ls-files)"})
+    files=("${(@f)$(git ls-files)}")
   else
-    files=(${(f)"$(git diff --name-only && git diff --cached --name-only | sort -u)"})
+    files=("${(@f)$(git diff --name-only && git diff --cached --name-only | sort -u)}")
   fi
 
   if [[ -z "$files" ]]; then
