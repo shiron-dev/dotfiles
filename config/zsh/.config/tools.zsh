@@ -20,10 +20,6 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
-# volta
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
-
 # gnu
 export PATH="$PATH:/opt/homebrew/opt/gawk/libexec/gnubin"
 alias gcc="gcc-14"
