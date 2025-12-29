@@ -88,7 +88,7 @@ alias yazi='yazi-cd'
 alias ghb='gh browse'
 
 _navi_call() {
-  local result="$(navi "$@" </dev/tty)"
+  local result="$(navi "$@" < /dev/tty)"
   printf "%s" "$result"
 }
 
@@ -142,9 +142,9 @@ git-todo() {
 
 docker-ssh() {
   local target="${1:-$(
-    docker ps --format "{{.ID}}\t{{.Names}}\t{{.Image}}" | 
-    fzf --height 40% --reverse | 
-    awk '{print $1}'
+    docker ps --format "{{.ID}}\t{{.Names}}\t{{.Image}}" \
+                                                         | fzf --height 40% --reverse \
+                               | awk '{print $1}'
   )}"
 
   [[ -z "$target" ]] && return
@@ -162,9 +162,9 @@ docker-ssh() {
 
 docker-up() {
   local image="${1:-$(
-    docker images --format "{{.Repository}}:{{.Tag}}\t{{.ID}}" |
-    fzf --height 40% --reverse --prompt="Select an image > " |
-    awk '{print $2}'
+    docker images --format "{{.Repository}}:{{.Tag}}\t{{.ID}}" \
+                                                               | fzf --height 40% --reverse --prompt="Select an image > " \
+                                                             | awk '{print $2}'
   )}"
   [[ -z "$image" ]] && return
 
@@ -183,9 +183,9 @@ docker-up() {
 
 docker-stop() {
   local ids=$(
-    docker ps --format "{{.ID}}\t{{.Names}}\t{{.Status}}" |
-    fzf -m --height 40% --reverse --prompt="STOP container(s) > " |
-    awk '{print $1}'
+    docker ps --format "{{.ID}}\t{{.Names}}\t{{.Status}}" \
+                                                          | fzf -m --height 40% --reverse --prompt="STOP container(s) > " \
+                                                                  | awk '{print $1}'
   )
 
   [[ -n "$ids" ]] && echo "$ids" | xargs docker stop
@@ -193,9 +193,9 @@ docker-stop() {
 
 docker-rm() {
   local ids=$(
-    docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}" |
-    fzf -m --height 40% --reverse --prompt="REMOVE container(s) > " |
-    awk '{print $1}'
+    docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}" \
+                                                             | fzf -m --height 40% --reverse --prompt="REMOVE container(s) > " \
+                                                                    | awk '{print $1}'
   )
 
   [[ -n "$ids" ]] && echo "$ids" | xargs docker rm --force
@@ -215,9 +215,9 @@ docker-copy() {
   fi
 
   local id=$(
-    docker $docker_cmd --format "$format" |
-    fzf --height 40% --reverse --prompt="$prompt" |
-    awk '{print $1}'
+    docker $docker_cmd --format "$format" \
+                                          | fzf --height 40% --reverse --prompt="$prompt" \
+                                                  | awk '{print $1}'
   )
 
   if [[ -n "$id" ]]; then
@@ -231,9 +231,9 @@ docker-logs() {
   [[ "$1" == "-f" ]] && follow="-f"
 
   local target=$(
-    docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}" |
-    fzf --height 40% --reverse --prompt="Select Container for logs ${follow} > " |
-    awk '{print $1}'
+    docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}" \
+                                                             | fzf --height 40% --reverse --prompt="Select Container for logs ${follow} > " \
+                                                                                 | awk '{print $1}'
   )
 
   [[ -z "$target" ]] && return
@@ -254,14 +254,14 @@ docker-f() {
   )
 
   local selected=$(
-    printf "%s\n" "${choices[@]}" | 
-    fzf --height 40% --reverse --prompt="Docker Utils > "
+    printf "%s\n" "${choices[@]}" \
+                                  | fzf --height 40% --reverse --prompt="Docker Utils > "
   )
 
   [[ -z "$selected" ]] && return
 
   local cmd=$(echo "$selected" | cut -d ':' -f1 | xargs)
-  
+
   echo "Running: $cmd"
   eval "$cmd"
 }
@@ -272,14 +272,14 @@ function git-trim-eof-newlines() {
     all_files=true
   fi
 
-  local files
+  local output
   if [[ "$all_files" == true ]]; then
-    files=("${(@f)$(git ls-files)}")
+    output=$(git ls-files)
   else
-    files=("${(@f)$(git diff --name-only && git diff --cached --name-only | sort -u)}")
+    output=$(git diff --name-only && git diff --cached --name-only | sort -u)
   fi
 
-  if [[ -z "$files" ]]; then
+  if [[ -z "$output" ]]; then
     if [[ "$all_files" == true ]]; then
       echo "No files managed by git found."
     else
@@ -288,14 +288,15 @@ function git-trim-eof-newlines() {
     return 0
   fi
 
-  for file in $files; do
+  while IFS= read -r file; do
+    [[ -z "$file" ]] && continue
     if [[ -f "$file" ]]; then
       if file "$file" | grep -q "text"; then
         perl -i -0777 -pe 's/\n+\z/\n/' "$file"
         echo "Trimmed EOF: $file"
       fi
     fi
-  done
+  done <<< "$output"
 
   echo "Done."
 }
