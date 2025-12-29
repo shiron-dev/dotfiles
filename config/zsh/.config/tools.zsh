@@ -93,5 +93,10 @@ alias gic="git clean -Xdf"
 
 alias shfmt="shfmt -i 2 -ci -bn -sr -kp -w"
 
+# My Paths
+
+export PATH="$PATH:$HOME/bin"
+export PATH="$PATH:$HOME/bin/scripts"
+
 # My functions
 source ~/.config/zsh/functions.zsh
