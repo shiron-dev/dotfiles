@@ -52,7 +52,7 @@ export PATH="$PATH:/opt/homebrew/opt/mysql-client@8.0/bin"
 alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
 
 # OrbStack
-source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+source ~/.orbstack/shell/init.zsh 2> /dev/null || :
 
 # lazy
 alias lg='lazygit'

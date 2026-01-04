@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+# shellcheck shell=bash
 # My Functions
 
 _notify() {
@@ -15,8 +17,8 @@ function moveToTrash() {
 
     if [ -e "$p" ]; then
       date=$(/usr/bin/env date "+%Y-%m-%d_%H-%M-%S")
-      /usr/bin/env mkdir -p ~/.Trash/"$p_""$date"/..
-      /usr/bin/env mv "$p" ~/.Trash/"$p_""$date"
+      /usr/bin/env mkdir -p ~/.Trash/"$p"_"$date"/..
+      /usr/bin/env mv "$p" ~/.Trash/"$p"_"$date"
     else
       /usr/bin/env echo "Error: '$p' does not exist."
     fi
@@ -24,14 +26,21 @@ function moveToTrash() {
 }
 alias rm='moveToTrash'
 
-function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@; }
+function gi() {
+  curl -sLw "\n" "https://www.toptal.com/developers/gitignore/api/$*"
+}
 
-function gitbc() { git checkout -q main && git for-each-ref refs/heads/ "--format=%(refname:short)" | while read branch; do mergeBase=$(git merge-base main $branch) && [[ $(git cherry main $(git commit-tree $(git rev-parse "$branch^{tree}") -p $mergeBase -m _)) == "-"* ]] && git branch -D $branch; done; }
+function gitbc() {
+  git checkout -q main && git for-each-ref refs/heads/ "--format=%(refname:short)" | while read -r branch; do
+    mergeBase=$(git merge-base main "$branch") && [[ "$(git cherry main "$(git commit-tree "$(git rev-parse "$branch^{tree}")" -p "$mergeBase" -m _)")" == "-"* ]] && git branch -D "$branch"
+  done
+}
 
 alias gc="ghq get"
 
 function _ghq-fzf() {
-  local src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
+  local src
+  src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
     BUFFER="cursor $(ghq root)/$src"
     zle accept-line
@@ -40,9 +49,10 @@ function _ghq-fzf() {
 }
 
 function ghq-fzf() {
-  local src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
+  local src
+  src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
-    cd $(ghq root)/$src || exit
+    cd "$(ghq root)/$src" || exit
   fi
 }
 
@@ -75,7 +85,8 @@ function y() {
 }
 
 function yazi-cd() {
-  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  local tmp cwd
+  tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
   yazi "$@" --cwd-file="$tmp"
   if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
     builtin cd -- "$cwd" || exit
@@ -88,7 +99,8 @@ alias yazi='yazi-cd'
 alias ghb='gh browse'
 
 _navi_call() {
-  local result="$(navi "$@" < /dev/tty)"
+  local result
+  result="$(navi "$@" < /dev/tty)"
   printf "%s" "$result"
 }
 
@@ -174,7 +186,8 @@ docker-up() {
     else echo 'Error: No shell found.' && exit 1; fi
   "
 
-  local running_containers=$(docker ps --filter "ancestor=$image" --format "{{.ID}}")
+  local running_containers
+  running_containers=$(docker ps --filter "ancestor=$image" --format "{{.ID}}")
   if [[ -n "$running_containers" ]]; then
     echo -e "\033[31mNotice: Containers from $image are still running/exist:\033[0m"
     echo "$running_containers" | xargs -I {} echo "  - {} (Use 'docker rm --force {}' to remove)"
@@ -182,20 +195,22 @@ docker-up() {
 }
 
 docker-stop() {
-  local ids=$(
+  local ids
+  ids=$(
     docker ps --format "{{.ID}}\t{{.Names}}\t{{.Status}}" \
-                                                          | fzf -m --height 40% --reverse --prompt="STOP container(s) > " \
-                                                                  | awk '{print $1}'
+      | fzf -m --height 40% --reverse --prompt="STOP container(s) > " \
+      | awk '{print $1}'
   )
 
   [[ -n "$ids" ]] && echo "$ids" | xargs docker stop
 }
 
 docker-rm() {
-  local ids=$(
+  local ids
+  ids=$(
     docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}" \
-                                                             | fzf -m --height 40% --reverse --prompt="REMOVE container(s) > " \
-                                                                    | awk '{print $1}'
+      | fzf -m --height 40% --reverse --prompt="REMOVE container(s) > " \
+      | awk '{print $1}'
   )
 
   [[ -n "$ids" ]] && echo "$ids" | xargs docker rm --force
@@ -214,10 +229,11 @@ docker-copy() {
     prompt="Copy Image ID > "
   fi
 
-  local id=$(
-    docker $docker_cmd --format "$format" \
-                                          | fzf --height 40% --reverse --prompt="$prompt" \
-                                                  | awk '{print $1}'
+  local id
+  id=$(
+    docker "$docker_cmd" --format "$format" \
+      | fzf --height 40% --reverse --prompt="$prompt" \
+      | awk '{print $1}'
   )
 
   if [[ -n "$id" ]]; then
@@ -230,10 +246,11 @@ docker-logs() {
   local follow=""
   [[ "$1" == "-f" ]] && follow="-f"
 
-  local target=$(
+  local target
+  target=$(
     docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Status}}" \
-                                                             | fzf --height 40% --reverse --prompt="Select Container for logs ${follow} > " \
-                                                                                 | awk '{print $1}'
+      | fzf --height 40% --reverse --prompt="Select Container for logs ${follow} > " \
+      | awk '{print $1}'
   )
 
   [[ -z "$target" ]] && return
@@ -253,14 +270,16 @@ docker-f() {
     "docker-copy -i  : Copy image ID"
   )
 
-  local selected=$(
+  local selected
+  selected=$(
     printf "%s\n" "${choices[@]}" \
-                                  | fzf --height 40% --reverse --prompt="Docker Utils > "
+      | fzf --height 40% --reverse --prompt="Docker Utils > "
   )
 
   [[ -z "$selected" ]] && return
 
-  local cmd=$(echo "$selected" | cut -d ':' -f1 | xargs)
+  local cmd
+  cmd=$(echo "$selected" | cut -d ':' -f1 | xargs)
 
   echo "Running: $cmd"
   eval "$cmd"
