@@ -42,6 +42,7 @@ function _ghq-fzf() {
   local src
   src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
+    # shellcheck disable=SC2034
     BUFFER="cursor $(ghq root)/$src"
     zle accept-line
   fi
@@ -127,6 +128,7 @@ _navi_widget() {
 
   zle kill-whole-line
   LBUFFER="${previous_output}"
+  # shellcheck disable=SC2034
   region_highlight=("P0 100 bold")
   zle redisplay
 }
