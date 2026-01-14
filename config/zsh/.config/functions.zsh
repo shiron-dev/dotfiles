@@ -157,8 +157,8 @@ git-todo() {
 docker-ssh() {
   local target="${1:-$(
     docker ps --format "{{.ID}}\t{{.Names}}\t{{.Image}}" \
-                                                         | fzf --height 40% --reverse \
-                               | awk '{print $1}'
+      | fzf --height 40% --reverse \
+      | awk '{print $1}'
   )}"
 
   [[ -z "$target" ]] && return
@@ -177,8 +177,8 @@ docker-ssh() {
 docker-up() {
   local image="${1:-$(
     docker images --format "{{.Repository}}:{{.Tag}}\t{{.ID}}" \
-                                                               | fzf --height 40% --reverse --prompt="Select an image > " \
-                                                             | awk '{print $2}'
+      | fzf --height 40% --reverse --prompt="Select an image > " \
+      | awk '{print $2}'
   )}"
   [[ -z "$image" ]] && return
 
