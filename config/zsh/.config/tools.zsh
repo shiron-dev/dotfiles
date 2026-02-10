@@ -1,16 +1,9 @@
-# code to cursor
-alias code="cursor"
-
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:/opt/homebrew/lib/"
 
 # sheldon
-if is_cursor; then
-  export SHELDON_PROFILE=cursor
-else
-  export SHELDON_PROFILE=default
-fi
+export SHELDON_PROFILE=default
 eval "$(sheldon source)"
 
 # mise
@@ -26,10 +19,6 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-
-# volta
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
 
 # gnu
 export PATH="$PATH:/opt/homebrew/opt/gawk/libexec/gnubin"
@@ -63,12 +52,7 @@ export PATH="$PATH:/opt/homebrew/opt/mysql-client@8.0/bin"
 alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
 
 # OrbStack
-source ~/.orbstack/shell/init.zsh 2>/dev/null || :
-
-# Golang
-export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
-export PATH=$PATH:$GOBIN
+source ~/.orbstack/shell/init.zsh 2> /dev/null || :
 
 # lazy
 alias lg='lazygit'
@@ -108,6 +92,11 @@ alias lsusb="system_profiler SPUSBDataType"
 alias gic="git clean -Xdf"
 
 alias shfmt="shfmt -i 2 -ci -bn -sr -kp -w"
+
+# My Paths
+
+export PATH="$PATH:$HOME/bin"
+export PATH="$PATH:$HOME/bin/scripts"
 
 # My functions
 source ~/.config/zsh/functions.zsh
