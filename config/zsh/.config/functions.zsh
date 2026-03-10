@@ -26,7 +26,47 @@ alias rm='moveToTrash'
 
 function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@; }
 
-function gitbc() { git checkout -q main && git for-each-ref refs/heads/ "--format=%(refname:short)" | while read branch; do mergeBase=$(git merge-base main $branch) && [[ $(git cherry main $(git commit-tree $(git rev-parse "$branch^{tree}") -p $mergeBase -m _)) == "-"* ]] && git branch -D $branch; done; }
+function gitbc() {
+  local base_branch current_branch branch merge_base tree_id marker
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "gitbc: not a git repository" >&2
+    return 1
+  fi
+
+  base_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
+  base_branch=${base_branch#origin/}
+  if [[ -z "$base_branch" ]]; then
+    if git show-ref --verify --quiet refs/heads/main; then
+      base_branch="main"
+    elif git show-ref --verify --quiet refs/heads/master; then
+      base_branch="master"
+    else
+      echo "gitbc: could not determine base branch (origin/HEAD, main, master)" >&2
+      return 1
+    fi
+  fi
+
+  current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+  if [[ "$current_branch" != "$base_branch" ]]; then
+    if ! git switch "$base_branch" >/dev/null 2>&1; then
+      echo "gitbc: failed to switch to '$base_branch' (commit or stash changes first)" >&2
+      return 1
+    fi
+  fi
+
+  while IFS= read -r branch; do
+    [[ "$branch" == "$base_branch" ]] && continue
+
+    merge_base=$(git merge-base "$base_branch" "$branch" 2>/dev/null) || continue
+    tree_id=$(git rev-parse "$branch^{tree}" 2>/dev/null) || continue
+    marker=$(git commit-tree "$tree_id" -p "$merge_base" -m _ 2>/dev/null) || continue
+
+    if [[ $(git cherry "$base_branch" "$marker") == -* ]]; then
+      git branch -D "$branch"
+    fi
+  done < <(git for-each-ref refs/heads/ --format="%(refname:short)")
+}
 
 alias gc="ghq get"
 
@@ -54,8 +94,11 @@ alias o.='open .'
 alias c.='code .'
 alias ci.='code-insiders .'
 alias cu.='cursor .'
-alias i.='idea .'
-alias g.='goland .'
+# alias i.='idea .'
+# alias g.='goland .'
+alias i.='open -a iTerm .'
+alias g.='ghostty .'
+
 
 function cg() {
   cd "$(git rev-parse --show-toplevel)" || exit
@@ -275,4 +318,48 @@ function git-trim-eof-newlines() {
 
   echo "完了しました。"
 }
+
 alias cai='git-trim-eof-newlines'
+docker-ubuntu() {
+  local image="ubuntu:24.04"
+  local prefix="docker-ubuntu"
+  local rm_flag=""
+  local cmd="bash"
+
+  case "$1" in
+    -ls)
+      docker ps -a --filter "name=${prefix}_" --format "table {{.Names}}\t{{.Status}}"
+      ;;
+
+    -S)
+      local name="${prefix}_$2"
+      shift 2
+
+      if [[ "$1" == "--rm" ]]; then
+        rm_flag="--rm"
+      fi
+
+      docker run -it \
+        --name "$name" \
+        $rm_flag \
+        "$image" \
+        $cmd
+      ;;
+
+    -r)
+      local name="${prefix}_$2"
+      docker attach "$name"
+      ;;
+
+    *)
+      echo "usage:"
+      echo "  docker-ubuntu -S <name> [--rm]   # create session"
+      echo "  docker-ubuntu -r <name>          # reattach"
+      echo "  docker-ubuntu -ls                # list sessions"
+      ;;
+  esac
+}
+
+alias tmpubuntu="docker-ubuntu"
+
+alias ghash="git rev-parse HEAD | pbcopy"

@@ -25,6 +25,9 @@
     "[typescriptreact]": {
         "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
     },
+    "[latex]": {
+        "editor.wordWrap": "on"
+    },
     "auto-close-tag.SublimeText3Mode": true,
     "cSpell.useGitignore": false,
     "cSpell.userWords": [
@@ -176,6 +179,11 @@
                 "match": ".*\\.proto$",
                 "cmd": "buf format -w ${file}",
                 "autoShowOutputPanel": "error"
+            },
+            {
+                "match": ".*\\.secrets\\.[^.]+$",
+                "cmd": "$HOME/.config/zsh/scripts/update-sops-secrets.sh ${file}",
+                "autoShowOutputPanel": "error"
             }
         ]
     },
@@ -247,6 +255,7 @@
     "window.zoomLevel": -1,
     "chat.instructionsFilesLocations": {
         ".github/instructions": true,
+        ".claude/rules": true,
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-collections-post-response.instructions.md": true,
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-collections-pre-request.instructions.md": true,
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-folder-post-response.instructions.md": true,
@@ -285,4 +294,15 @@
         "searchAndCompare": false,
         "launchpad": false
     },
+    "kotlin.languageServer.enabled": false,
+    "kotlin.debugAdapter.enabled": false,
+    "json.schemaDownload.trustedDomains": {
+        "https://schemastore.azurewebsites.net/": true,
+        "https://raw.githubusercontent.com/": true,
+        "https://www.schemastore.org/": true,
+        "https://json.schemastore.org/": true,
+        "https://json-schema.org/": true,
+        "https://biomejs.dev": true
+    },
+    "geminicodeassist.displayInlineContextHint": false,
 }

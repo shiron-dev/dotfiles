@@ -1,5 +1,5 @@
 [tools]
-go = "1.24.4"
+go = "1.25.3"
 java = "corretto-11"
 node = "24"
 "npm:@google/gemini-cli" = "latest"
@@ -7,7 +7,9 @@ pnpm = "latest"
 python = "3.13.3"
 terraform = "latest"
 uv = "latest"
+zellij = "latest"
 
 [settings]
+legacy_version_file = true
 idiomatic_version_file_enable_tools = ["go", "node", "terraform"]
 go_set_gobin = true

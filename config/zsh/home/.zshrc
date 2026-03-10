@@ -1,3 +1,13 @@
+HISTFILE=$HOME/.zsh-history
+HISTSIZE=100000
+SAVEHIST=10000000
+HISTORY_IGNORE="nv"
+setopt inc_append_history
+setopt hist_ignore_dups
+setopt share_history
+setopt AUTO_CD
+setopt AUTO_PARAM_KEYS
+
 source ~/.config/zsh/tools.zsh
 
 # Startup time
