@@ -1,6 +1,6 @@
 module brew-manager
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
