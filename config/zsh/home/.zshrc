@@ -18,3 +18,6 @@ echo zsh startup time "$DIFF" ms
 if (which zprof > /dev/null 2>&1) ;then
   zprof
 fi
+
+# Machine specific setup, provided by profiles/<profile>/zsh/.config/profile.zsh
+[ -f ~/.config/zsh/profile.zsh ] && source ~/.config/zsh/profile.zsh

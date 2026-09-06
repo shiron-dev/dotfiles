@@ -16,9 +16,6 @@ eval "$(sheldon source)"
 # direnv
 eval "$(direnv hook zsh)"
 
-# mise
-eval "$(/opt/homebrew/bin/mise activate zsh)"
-
 # iTerm2
 bindkey "^[[H" beginning-of-line
 bindkey "^[[F" end-of-line
@@ -106,6 +103,7 @@ alias grep="ggrep"
 alias docker-compose-rm="docker compose down --rmi all --volumes --remove-orphans"
 alias lsusb="system_profiler SPUSBDataType"
 alias gic="git clean -Xdf -e .serena/ -e .env*"
+alias gs="git switch"
 
 alias shfmt="shfmt -i 2 -ci -bn -sr -kp -w"
 
@@ -135,3 +133,6 @@ source ~/.config/zsh/functions.zsh
 
 alias brew="HOMEBREW_GITHUB_API_TOKEN=$(gh auth token) brew"
 export PATH="/Applications/Ghostty.app/Contents/MacOS:$PATH"
+
+# mise
+eval "$(/opt/homebrew/bin/mise activate zsh)"

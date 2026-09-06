@@ -1,0 +1,5 @@
+# Private machine specific mise tools.
+# mise merges every ~/.config/mise/conf.d/*.toml on top of config.toml,
+# so tools listed here are installed only on the private profile.
+
+[tools]

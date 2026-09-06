@@ -5,6 +5,10 @@
       "scope": "$1"
     },
     {
+      "pattern": "^profiles/[^/]+/([^/]+)/.*",
+      "scope": "$1"
+    },
+    {
       "pattern": "^scripts/([^/]+)/.*",
       "scope": "$1"
     },

@@ -68,7 +68,8 @@ function gitbc() {
   done < <(git for-each-ref refs/heads/ --format="%(refname:short)")
 }
 
-alias gc="ghq get"
+# alias gc="ghq get"
+alias gget="ghq get"
 
 function _ghq-fzf() {
   local src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
@@ -102,6 +103,17 @@ alias g.='ghostty .'
 
 function cg() {
   cd "$(git rev-parse --show-toplevel)" || exit
+}
+
+function gitr() {
+  local root
+
+  root=$(git rev-parse --show-toplevel 2>/dev/null) || {
+    echo "gitr: not a git repository" >&2
+    return 1
+  }
+
+  cd "$root" || return
 }
 
 function y() {
@@ -363,3 +375,48 @@ docker-ubuntu() {
 alias tmpubuntu="docker-ubuntu"
 
 alias ghash="git rev-parse HEAD | pbcopy"
+
+wifiap() {
+  local wifi_if bssid ip
+
+  wifi_if=$(
+    networksetup -listallhardwareports 2>/dev/null \
+      | awk '
+          /Hardware Port: (Wi-Fi|AirPort)/ {found=1; next}
+          found && /Device:/ {print $2; exit}
+        '
+  )
+
+  if [[ -z "$wifi_if" ]]; then
+    echo "Wi-Fi interface not found"
+    return 1
+  fi
+
+  bssid=$(
+    sudo ipconfig getsummary "$wifi_if" 2>/dev/null \
+      | awk -F' : ' '/ BSSID/ {print tolower($2); exit}'
+  )
+
+  if [[ -z "$bssid" || "$bssid" == "<redacted>" ]]; then
+    echo "BSSID not available"
+    echo "Wi-Fi IF : $wifi_if"
+    return 1
+  fi
+
+  ip=$(
+    arp -an 2>/dev/null \
+      | awk -v b="$bssid" 'tolower($4)==b {gsub(/[()]/,"",$2); print $2; exit}'
+  )
+
+  echo "Wi-Fi IF : $wifi_if"
+  echo "BSSID    : $bssid"
+  echo "AP IP    : ${ip:-not found}"
+}
+findap() {
+  arp -a | while read line; do
+    ip=$(echo $line | awk -F'[()]' '{print $2}')
+    mac=$(echo $line | awk '{print $4}')
+    vendor=$(echo $mac | awk -F: '{print $1":"$2":"$3}')
+    echo "$ip  $mac"
+  done
+}

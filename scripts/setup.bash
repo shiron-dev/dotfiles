@@ -17,7 +17,7 @@ https://github.com/shiron-dev/dotfiles
 EOM
 
 # Check Homebrew
-if ! command -v brew >/dev/null 2>&1; then
+if ! command -v brew > /dev/null 2>&1; then
   echo "[INFO] Homebrew not found. Installing..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else
@@ -25,7 +25,7 @@ else
 fi
 
 # Check git
-if ! command -v git >/dev/null 2>&1; then
+if ! command -v git > /dev/null 2>&1; then
   echo "[INFO] git not found. Installing via Homebrew..."
   brew install git
 else
@@ -41,7 +41,7 @@ else
 fi
 
 # Check Go
-if ! command -v go >/dev/null 2>&1; then
+if ! command -v go > /dev/null 2>&1; then
   echo "[INFO] Go not found. Installing via Homebrew..."
   brew install go
 else
@@ -52,13 +52,32 @@ fi
 echo "[INFO] Installing brew-management..."
 cd "$REPO_PATH/scripts/brew-management" && go install
 
+# Pick the profile for this machine (work / private)
+PROFILE_BIN="$REPO_PATH/scripts/profile.bash"
+CURRENT_PROFILE="$("$PROFILE_BIN" get)"
+if [ -f "$("$PROFILE_BIN" file)" ]; then
+  echo "[INFO] Profile already set to '$CURRENT_PROFILE'."
+else
+  echo ""
+  echo "[INFO] このマシンのプロファイルを選んでください:"
+  "$PROFILE_BIN" list | sed 's/^/  - /'
+  while true; do
+    printf "profile [%s]: " "$CURRENT_PROFILE"
+    read -r chosen_profile </dev/tty || chosen_profile=""
+    if "$PROFILE_BIN" set "${chosen_profile:-$CURRENT_PROFILE}"; then
+      break
+    fi
+  done
+  CURRENT_PROFILE="$("$PROFILE_BIN" get)"
+fi
+
 cat <<EOM
 
-✅ 初期セットアップが完了しました。
+✅ 初期セットアップが完了しました。 (profile: $CURRENT_PROFILE)
 
 次のコマンドを順に実行してください：
 
-brew-management install
+brew-management install --profile $CURRENT_PROFILE
 cd $REPO_PATH/scripts/ansible
 ansible-playbook -i hosts.yml site.yml
 $REPO_PATH/scripts/login_manager.bash check

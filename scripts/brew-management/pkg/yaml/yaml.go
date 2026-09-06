@@ -142,7 +142,7 @@ func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOpt
 			// Deduplicate groups and tags
 			options.Groups = utils.UniqueStrings(append(options.Groups, profile.Groups...))
 			options.Tags = utils.UniqueStrings(append(options.Tags, profile.Tags...))
-			// TODO: Handle profile.ExcludeTags
+			options.ExcludeTags = utils.UniqueStrings(append(options.ExcludeTags, profile.ExcludeTags...))
 		}
 	}
 
@@ -166,7 +166,10 @@ func GetFilteredPackages(config *types.PackageGrouped, options *types.InstallOpt
 				if len(options.Tags) > 0 && !utils.HasIntersection(pkgInfo.Tags, options.Tags) {
 					continue
 				}
-				// TODO: Apply options.ExcludeTags if implemented
+				// Drop packages carrying any excluded tag
+				if len(options.ExcludeTags) > 0 && utils.HasIntersection(pkgInfo.Tags, options.ExcludeTags) {
+					continue
+				}
 
 				allPackages = append(allPackages, types.FilteredPackage{
 					PackageInfo: pkgInfo,

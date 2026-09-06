@@ -19,8 +19,8 @@ get_ip_location() {
     if [ -n "$org" ] && [ "$org" != "undefined" ] && [ "$org" != "null" ]; then
         # AS番号を除いた組織名を抽出（例: "AS12345 Organization Name" -> "Organization Name"）
         as_name=$(echo "$org" | sed 's/^AS[0-9]*[[:space:]]*//')
-        # 先頭5文字を取得
-        as_short=$(echo "$as_name" | cut -c1-5)
+        # 先頭6文字を取得
+        as_short=$(echo "$as_name" | cut -c1-6)
         echo "$ip|$org|$as_short"
     else
         echo "$ip||"

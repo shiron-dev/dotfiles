@@ -1,4 +1,3 @@
-
 # # JetBrains ToolBox配下のファイルを全て取得
 # - name: Find jetbrains files in ~/Library/Application Support/JetBrains/ToolBox
 #   ansible.builtin.find:

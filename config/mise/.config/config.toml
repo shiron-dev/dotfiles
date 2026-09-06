@@ -1,8 +1,11 @@
 [tools]
-go = "1.25.3"
+dotnet-core = "latest"
+go = "1.26.7"
 java = "corretto-11"
 node = "24"
+"npm:@evenrealities/even-terminal" = "latest"
 "npm:@google/gemini-cli" = "latest"
+"npm:firebase-tools" = "latest"
 pnpm = "latest"
 python = "3.13.3"
 terraform = "latest"

@@ -249,19 +249,27 @@
     "cursor.composer.collapsePaneInputBoxPills": true,
     "markdown-preview-enhanced.printBackground": true,
     "workbench.iconTheme": "vscode-icons",
-    "update.releaseTrack": "prerelease",
+    "update.releaseTrack": "stable",
     "docker.extension.enableComposeLanguageServer": false,
     "editor.fontSize": 13,
     "window.zoomLevel": -1,
     "chat.instructionsFilesLocations": {
         ".github/instructions": true,
         ".claude/rules": true,
+        "~/.copilot/instructions": true,
+        "~/.claude/rules": true,
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-collections-post-response.instructions.md": true,
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-collections-pre-request.instructions.md": true,
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-folder-post-response.instructions.md": true,
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-folder-pre-request.instructions.md": true,
         "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-http-request-post-response.instructions.md": true,
-        "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-http-request-pre-request.instructions.md": true
+        "/var/folders/d5/qrwrmbgs60nb4hjybms87x71mpz3l2/T/postman-http-request-pre-request.instructions.md": true,
+        "/private/tmp/postman-collections-post-response.instructions.md": true,
+        "/private/tmp/postman-collections-pre-request.instructions.md": true,
+        "/private/tmp/postman-folder-post-response.instructions.md": true,
+        "/private/tmp/postman-folder-pre-request.instructions.md": true,
+        "/private/tmp/postman-http-request-post-response.instructions.md": true,
+        "/private/tmp/postman-http-request-pre-request.instructions.md": true
     },
     "[dockercompose]": {
         "editor.insertSpaces": true,
@@ -305,4 +313,18 @@
         "https://biomejs.dev": true
     },
     "geminicodeassist.displayInlineContextHint": false,
+    "claudeCode.selectedModel": "default",
+    "git.blame.editorDecoration.enabled": true,
+    "gitlens.currentLine.enabled": false,
+    "window.autoDetectColorScheme": false,
+    "claudeCode.preferredLocation": "panel",
+    "security.promptForLocalFileProtocolHandling": false,
+    "yaml.disableSchemaDetection": [
+        "**/.github/workflows/*.yml",
+        "**/.github/workflows/*.yaml",
+        "**/.gitea/workflows/*.yml",
+        "**/.gitea/workflows/*.yaml",
+        "**/.forgejo/workflows/*.yml",
+        "**/.forgejo/workflows/*.yaml"
+    ],
 }

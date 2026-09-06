@@ -429,8 +429,11 @@
     "when": "hasSearchResult || inSearchEditor"
   },
   {
-    "key": "alt+cmd+s",
-    "command": "workbench.action.toggleUnifiedSidebarFromKeyboard",
-    "when": "cursor.agentIdeUnification.enabled == true && !isAuxiliaryWindowFocusedContext"
-  }
+    "key": "shift+enter",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+        "text": "\u001b\r"
+    },
+    "when": "terminalFocus"
+}
 ]

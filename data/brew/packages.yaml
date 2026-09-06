@@ -391,4 +391,12 @@ groups:
                 - name: productdevbook/tap
                 - name: shiron-dev/tap
                 - name: voicevox/voicevox
-profiles: {}
+profiles:
+    work:
+        description: Work machine - everything except private-only packages
+        exclude_tags:
+            - private-only
+    private:
+        description: Private machine - everything except work-only packages
+        exclude_tags:
+            - work-only
