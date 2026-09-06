@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-      - uses: reviewdog/action-yamllint@f01d8a48fd8d89f89895499fca2cff09f9e9e8c0 # v1.21.0
+      - uses: reviewdog/action-yamllint@de68272fdca5f2a961fb309e0d2e13c2eb186d9e # v1.23.1
         with:
           level: warning
           yamllint_flags: "-c .yamllint ."
@@ -58,11 +58,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-      - uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32.0
+      - uses: reviewdog/action-shellcheck@0722bbdb0d47f04c1b53b8734d2422ac63a45ec6 # v1.32.1
         with:
           level: warning
           fail_on_error: true
-      - uses: reviewdog/action-shfmt@d8f080930b9be5847b4f97e9f4122b81a82aaeac # v1.0.4
+      - uses: reviewdog/action-shfmt@c5e3ba7497c338866921924691aef4fa18bc1fe0 # v1.1.0
         with:
           level: warning
           fail_on_error: true
@@ -72,7 +72,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-      - uses: reviewdog/action-actionlint@83e4ed25b168066ad8f62f5afbb29ebd8641d982 # v1.69.1
+      - uses: reviewdog/action-actionlint@d290e336d5a743810aef4404f757dc862276d2ae # v1.73.4
         with:
           level: warning
           fail_on_error: true
@@ -124,6 +124,6 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-      - uses: checkmarx/kics-github-action@63fca4ca72e56edbb5a599ee756e6af1fdb1e785 # v2.1.18
+      - uses: checkmarx/kics-github-action@05aa5eb70eede1355220f4ca5238d96b397e30a6 # v2.1.20
         with:
           path: .

@@ -2,11 +2,11 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "7.14.1"
+      version = "7.46.0"
     }
   }
 
-  required_version = ">= 1.14.3"
+  required_version = ">= 1.16.1"
 
   backend "gcs" {
     bucket = "shiron-dev-dotfiles-terraform"
