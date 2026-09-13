@@ -18,6 +18,37 @@
   ansible.builtin.set_fact:
     set_facts_config_dir: "{{ vars.set_facts_dotfiles_dir }}/config"
 
+- name: Get active profile
+  ansible.builtin.command:
+    cmd: "{{ vars.set_facts_dotfiles_dir }}/scripts/profile.bash get"
+  check_mode: false
+  changed_when: false
+  register: set_facts_profile_cmd
+
+- name: Set profile
+  ansible.builtin.set_fact:
+    set_facts_profile: "{{ set_facts_profile_cmd.stdout | trim }}"
+
+- name: Set profile dir
+  ansible.builtin.set_fact:
+    set_facts_profile_dir: "{{ vars.set_facts_dotfiles_dir }}/profiles/{{ vars.set_facts_profile }}"
+
+- name: Check profile dir
+  ansible.builtin.stat:
+    path: "{{ vars.set_facts_profile_dir }}"
+  register: set_facts_profile_stat
+
+- name: Fail when the profile does not exist
+  ansible.builtin.fail:
+    msg: >-
+      Unknown dotfiles profile '{{ vars.set_facts_profile }}'.
+      Pick one with: {{ vars.set_facts_dotfiles_dir }}/scripts/profile.bash set <name>
+  when: not set_facts_profile_stat.stat.exists
+
+- name: Show active profile
+  ansible.builtin.debug:
+    msg: "dotfiles profile: {{ vars.set_facts_profile }}"
+
 - name: Set backup dir
   ansible.builtin.set_fact:
     set_facts_backup_dir: "{{ vars.set_facts_dotfiles_dir }}/backup"

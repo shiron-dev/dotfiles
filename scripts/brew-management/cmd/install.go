@@ -15,6 +15,7 @@ import (
 var (
 	groups        string
 	tags          string
+	excludeTags   string
 	profile       string
 	skipTaps      bool
 	skipBrews     bool
@@ -60,6 +61,7 @@ Examples:
 			Verbose:        verbose,
 			Groups:         utils.SplitCommaSeparated(groups),
 			Tags:           utils.SplitCommaSeparated(tags),
+			ExcludeTags:    utils.SplitCommaSeparated(excludeTags),
 			Profile:        profile,
 			SkipTaps:       skipTaps,
 			SkipBrews:      skipBrews,
@@ -180,6 +182,7 @@ func init() {
 	// Installation filters
 	installCmd.Flags().StringVarP(&groups, "groups", "g", "", "Install only specified groups (comma-separated)")
 	installCmd.Flags().StringVarP(&tags, "tags", "t", "", "Install only packages with specified tags (comma-separated)")
+	installCmd.Flags().StringVar(&excludeTags, "exclude-tags", "", "Comma-separated tags to exclude")
 	installCmd.Flags().StringVarP(&profile, "profile", "p", "", "Install using predefined profile")
 
 	// Package type skip flags

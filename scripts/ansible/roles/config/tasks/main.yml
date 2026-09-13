@@ -1,6 +1,13 @@
 ---
 - name: Set all config
-  ansible.builtin.import_tasks: all.yml
+  ansible.builtin.include_tasks: all.yml
+  vars:
+    config_source_dir: "{{ vars.set_facts_config_dir }}"
+
+- name: Set profile config overlay
+  ansible.builtin.include_tasks: all.yml
+  vars:
+    config_source_dir: "{{ vars.set_facts_profile_dir }}"
 
 - name: Set iTerm2
   ansible.builtin.import_tasks: iterm2.yml
@@ -10,9 +17,25 @@
 
 - name: Set vscode
   ansible.builtin.include_tasks: vscode.yml
+  vars:
+    config_vscode_source_dir: "{{ vars.set_facts_config_dir }}"
   with_items:
     - "Code"
     - "Code - Insiders"
     - "Cursor"
   loop_control:
     loop_var: vscode_dir_name
+
+- name: Set vscode profile overlay
+  ansible.builtin.include_tasks: vscode.yml
+  vars:
+    config_vscode_source_dir: "{{ vars.set_facts_profile_dir }}"
+  with_items:
+    - "Code"
+    - "Code - Insiders"
+    - "Cursor"
+  loop_control:
+    loop_var: vscode_dir_name
+
+- name: Set jetbrains
+  ansible.builtin.include_tasks: jetbrains.yml

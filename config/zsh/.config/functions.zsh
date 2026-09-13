@@ -26,14 +26,55 @@ alias rm='moveToTrash'
 
 function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@; }
 
-function gitbc() { git checkout -q main && git for-each-ref refs/heads/ "--format=%(refname:short)" | while read branch; do mergeBase=$(git merge-base main $branch) && [[ $(git cherry main $(git commit-tree $(git rev-parse "$branch^{tree}") -p $mergeBase -m _)) == "-"* ]] && git branch -D $branch; done; }
+function gitbc() {
+  local base_branch current_branch branch merge_base tree_id marker
 
-alias gc="ghq get"
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "gitbc: not a git repository" >&2
+    return 1
+  fi
+
+  base_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
+  base_branch=${base_branch#origin/}
+  if [[ -z "$base_branch" ]]; then
+    if git show-ref --verify --quiet refs/heads/main; then
+      base_branch="main"
+    elif git show-ref --verify --quiet refs/heads/master; then
+      base_branch="master"
+    else
+      echo "gitbc: could not determine base branch (origin/HEAD, main, master)" >&2
+      return 1
+    fi
+  fi
+
+  current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+  if [[ "$current_branch" != "$base_branch" ]]; then
+    if ! git switch "$base_branch" >/dev/null 2>&1; then
+      echo "gitbc: failed to switch to '$base_branch' (commit or stash changes first)" >&2
+      return 1
+    fi
+  fi
+
+  while IFS= read -r branch; do
+    [[ "$branch" == "$base_branch" ]] && continue
+
+    merge_base=$(git merge-base "$base_branch" "$branch" 2>/dev/null) || continue
+    tree_id=$(git rev-parse "$branch^{tree}" 2>/dev/null) || continue
+    marker=$(git commit-tree "$tree_id" -p "$merge_base" -m _ 2>/dev/null) || continue
+
+    if [[ $(git cherry "$base_branch" "$marker") == -* ]]; then
+      git branch -D "$branch"
+    fi
+  done < <(git for-each-ref refs/heads/ --format="%(refname:short)")
+}
+
+# alias gc="ghq get"
+alias gget="ghq get"
 
 function _ghq-fzf() {
   local src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
-    BUFFER="code $(ghq root)/$src"
+    BUFFER="cursor $(ghq root)/$src"
     zle accept-line
   fi
   zle -R -c
@@ -53,9 +94,26 @@ alias pj='ghq-fzf'
 alias o.='open .'
 alias c.='code .'
 alias ci.='code-insiders .'
+alias cu.='cursor .'
+# alias i.='idea .'
+# alias g.='goland .'
+alias i.='open -a iTerm .'
+alias g.='ghostty .'
+
 
 function cg() {
   cd "$(git rev-parse --show-toplevel)" || exit
+}
+
+function gitr() {
+  local root
+
+  root=$(git rev-parse --show-toplevel 2>/dev/null) || {
+    echo "gitr: not a git repository" >&2
+    return 1
+  }
+
+  cd "$root" || return
 }
 
 function y() {
@@ -130,3 +188,235 @@ asn() {
 
 zle -N _navi_widget
 bindkey '^g' _navi_widget
+
+git-todo() {
+  local tool="${1:-code}"
+  shift
+  git log --author="$(git config user.name)" --name-only --pretty=format:"" | sort -u | xargs git grep -l "TODO" | xargs "$tool" "$@"
+}
+
+# ~/.zshrc に以下を追記または修正
+ssh-docker() {
+  # 実行するシェルのリスト
+  local shells_to_try=("/bin/bash" "/bin/sh")
+  local shell_to_exec=""
+
+  # 実行対象のコンテナIDを格納する変数
+  local target_container=""
+
+  if [ -n "$1" ]; then
+    # --- 引数が指定されている場合 ---
+    target_container=$1
+  else
+    # --- 引数が指定されていない場合 (fzfで選択) ---
+    target_container=$(docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" | sed 1d | fzf --height 40% --layout=reverse --prompt="Select a container > " | awk '{print $1}')
+  fi
+
+  # コンテナが選択されている場合のみ実行
+  if [ -n "$target_container" ]; then
+    # コンテナ内で利用可能なシェルを探す
+    for shell in "${shells_to_try[@]}"; do
+      if docker exec -i "$target_container" test -x "$shell" 2>/dev/null; then
+        shell_to_exec=$shell
+        break
+      fi
+    done
+
+    # 利用可能なシェルがあれば実行、なければエラーメッセージ
+    if [ -n "$shell_to_exec" ]; then
+      docker exec -it "$target_container" "$shell_to_exec"
+    else
+      echo "Error: Could not find a valid shell (/bin/bash or /bin/sh) in the container."
+      return 1
+    fi
+  fi
+}
+# ~/.zshrc に以下を追記
+docker-up() {
+  local image
+  # docker images の結果から fzf でイメージを選択し、IMAGE ID を取得
+  image=$(docker images --format "table {{.Repository}}:{{.Tag}}\t{{.ID}}" | sed 1d | fzf --height 40% --layout=reverse --prompt="Select an image to run > " | awk '{print $2}')
+
+  # イメージが選択された場合のみコンテナを起動
+  if [ -n "$image" ]; then
+    echo "Starting a new container from image: $image"
+    docker run -it "$image" /bin/sh -c "([ -x /bin/bash ] && exec /bin/bash) || exec /bin/sh"
+
+    # Show in red if the container is not stopped, and guide how to stop it
+    docker ps -a --filter "id=$image" --format "{{.ID}}\t{{.Status}}" | while read id status; do
+      if [[ "$status" != *"Exited"* ]]; then
+      echo -e "\033[31mContainer is not stopped. You can stop it with: docker rm --force $id\033[0m"
+      fi
+    done
+  fi
+}
+# ~/.zshrc に以下を追記
+# docker-stop: Select and stop one or more running containers
+docker-stop() {
+  local containers
+  containers=$(docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" | sed 1d | fzf -m --height 40% --layout=reverse --prompt="Select container(s) to STOP > " | awk '{print $1}')
+
+  if [ -n "$containers" ]; then
+    echo "$containers" | xargs docker stop
+  fi
+}
+
+# docker-rm: Select and forcibly remove one or more containers (stops them if running)
+docker-rm() {
+  local containers
+  containers=$(docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" | sed 1d | fzf -m --height 40% --layout=reverse --prompt="Select container(s) to REMOVE > " | awk '{print $1}')
+
+  if [ -n "$containers" ]; then
+    echo "$containers" | xargs docker rm --force
+  fi
+}
+# docker-c: fzfでコンテナIDをクリップボードにコピー
+function docker-c() {
+  local container_id
+  container_id=$(docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" | fzf --height 40% --reverse)
+
+  if [[ -n "$container_id" ]]; then
+    # fzfで選択した行からID部分（先頭の単語）のみを抽出
+    echo -n "$container_id" | awk '{print $1}' | pbcopy
+    echo "Copied container ID to clipboard: $(echo -n "$container_id" | awk '{print $1}')"
+  else
+    echo "No container selected."
+  fi
+}
+# docker-i: fzfでイメージIDをクリップボードにコピー
+function docker-i() {
+  local image_id
+  image_id=$(docker images --format "{{.ID}}\t{{.Repository}}:{{.Tag}}\t{{.Size}}" | fzf --height 40% --reverse)
+
+  if [[ -n "$image_id" ]]; then
+    # fzfで選択した行からID部分（先頭の単語）のみを抽出
+    echo -n "$image_id" | awk '{print $1}' | pbcopy
+    echo "Copied image ID to clipboard: $(echo -n "$image_id" | awk '{print $1}')"
+  else
+    echo "No image selected."
+  fi
+}
+
+function git-trim-eof-newlines() {
+  local all_files=false
+  if [[ "$1" == "-a" ]]; then
+    all_files=true
+  fi
+
+  local files
+  if [[ "$all_files" == true ]]; then
+    files=(${(f)"$(git ls-files)"})
+  else
+    files=(${(f)"$(git diff --name-only && git diff --cached --name-only | sort -u)"})
+  fi
+
+  if [[ -z "$files" ]]; then
+    if [[ "$all_files" == true ]]; then
+      echo "git管理されているファイルは見つかりませんでした。"
+    else
+      echo "変更されたファイルは見つかりませんでした。"
+    fi
+    return 0
+  fi
+
+  for file in $files; do
+    if [[ -f "$file" ]]; then
+      if file "$file" | grep -q "text"; then
+        perl -i -0777 -pe 's/\n+\z/\n/' "$file"
+        echo "Trimmed EOF: $file"
+      fi
+    fi
+  done
+
+  echo "完了しました。"
+}
+
+alias cai='git-trim-eof-newlines'
+docker-ubuntu() {
+  local image="ubuntu:24.04"
+  local prefix="docker-ubuntu"
+  local rm_flag=""
+  local cmd="bash"
+
+  case "$1" in
+    -ls)
+      docker ps -a --filter "name=${prefix}_" --format "table {{.Names}}\t{{.Status}}"
+      ;;
+
+    -S)
+      local name="${prefix}_$2"
+      shift 2
+
+      if [[ "$1" == "--rm" ]]; then
+        rm_flag="--rm"
+      fi
+
+      docker run -it \
+        --name "$name" \
+        $rm_flag \
+        "$image" \
+        $cmd
+      ;;
+
+    -r)
+      local name="${prefix}_$2"
+      docker attach "$name"
+      ;;
+
+    *)
+      echo "usage:"
+      echo "  docker-ubuntu -S <name> [--rm]   # create session"
+      echo "  docker-ubuntu -r <name>          # reattach"
+      echo "  docker-ubuntu -ls                # list sessions"
+      ;;
+  esac
+}
+
+alias tmpubuntu="docker-ubuntu"
+
+alias ghash="git rev-parse HEAD | pbcopy"
+
+wifiap() {
+  local wifi_if bssid ip
+
+  wifi_if=$(
+    networksetup -listallhardwareports 2>/dev/null \
+      | awk '
+          /Hardware Port: (Wi-Fi|AirPort)/ {found=1; next}
+          found && /Device:/ {print $2; exit}
+        '
+  )
+
+  if [[ -z "$wifi_if" ]]; then
+    echo "Wi-Fi interface not found"
+    return 1
+  fi
+
+  bssid=$(
+    sudo ipconfig getsummary "$wifi_if" 2>/dev/null \
+      | awk -F' : ' '/ BSSID/ {print tolower($2); exit}'
+  )
+
+  if [[ -z "$bssid" || "$bssid" == "<redacted>" ]]; then
+    echo "BSSID not available"
+    echo "Wi-Fi IF : $wifi_if"
+    return 1
+  fi
+
+  ip=$(
+    arp -an 2>/dev/null \
+      | awk -v b="$bssid" 'tolower($4)==b {gsub(/[()]/,"",$2); print $2; exit}'
+  )
+
+  echo "Wi-Fi IF : $wifi_if"
+  echo "BSSID    : $bssid"
+  echo "AP IP    : ${ip:-not found}"
+}
+findap() {
+  arp -a | while read line; do
+    ip=$(echo $line | awk -F'[()]' '{print $2}')
+    mac=$(echo $line | awk '{print $4}')
+    vendor=$(echo $mac | awk -F: '{print $1":"$2":"$3}')
+    echo "$ip  $mac"
+  done
+}

@@ -1,7 +1,7 @@
 [core]
 	autocrlf = input
 	excludesFile = ~/.config/git/ignore
-	editor = cursor --wait
+	editor = code --wait
 	ignorecase = true
 
 [gpg]
@@ -55,3 +55,8 @@
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
+
+# Machine specific settings, provided by profiles/<profile>/git/.config/config-local.
+# Included last so the active profile can override anything above.
+[include]
+	path = ~/.config/git/config-local

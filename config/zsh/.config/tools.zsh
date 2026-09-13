@@ -1,20 +1,20 @@
 # code to cursor
-alias code="cursor"
+# alias code="cursor"
 
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:/opt/homebrew/lib/"
 
 # sheldon
-if is_cursor; then
-  export SHELDON_PROFILE=cursor
-else
-  export SHELDON_PROFILE=default
-fi
+# if is_cursor; then
+#   export SHELDON_PROFILE=cursor
+# else
+export SHELDON_PROFILE=default
+# fi
 eval "$(sheldon source)"
 
-# mise
-eval "$(/opt/homebrew/bin/mise activate zsh)"
+# direnv
+eval "$(direnv hook zsh)"
 
 # iTerm2
 bindkey "^[[H" beginning-of-line
@@ -26,10 +26,6 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-
-# volta
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
 
 # gnu
 export PATH="$PATH:/opt/homebrew/opt/gawk/libexec/gnubin"
@@ -48,7 +44,7 @@ alias python="python3"
 alias pip="pip3"
 
 # adb
-export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
+# export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
 
 # Jetbrains Toolbox
 export PATH="$PATH:$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
@@ -66,9 +62,10 @@ alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
 source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
 # Golang
-export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
-export PATH=$PATH:$GOBIN
+# export GOPATH=$HOME/go
+# export GOBIN=$GOPATH/bin
+# export PATH=$PATH:$GOBIN
+export GOTOOLCHAIN=local
 
 # lazy
 alias lg='lazygit'
@@ -81,8 +78,8 @@ source <(fzf --zsh)
 eval "$(zoxide init zsh)"
 
 # Android
-export ANDROID_HOME="/Users/$USER/Library/Android/sdk"
-export PATH="$PATH":"$ANDROID_HOME/tools":"$ANDROID_HOME/build-tools/35.0.0"
+# export ANDROID_HOME="/Users/$USER/Library/Android/sdk"
+# export PATH="$PATH":"$ANDROID_HOME/tools":"$ANDROID_HOME/build-tools/35.0.0"
 
 # pipx
 export PATH="$PATH:$HOME/.local/bin"
@@ -105,9 +102,37 @@ alias grep="ggrep"
 
 alias docker-compose-rm="docker compose down --rmi all --volumes --remove-orphans"
 alias lsusb="system_profiler SPUSBDataType"
-alias gic="git clean -Xdf"
+alias gic="git clean -Xdf -e .serena/ -e .env*"
+alias gs="git switch"
 
 alias shfmt="shfmt -i 2 -ci -bn -sr -kp -w"
 
+# My Paths
+
+export PATH="$PATH:$HOME/bin"
+export PATH="$PATH:$HOME/bin/scripts"
+export PATH="$PATH:$HOME/.config/zsh/scripts"
+
+mkdir -p $HOME/bin/scripts
+
+if [ ! -f "$HOME/bin/scripts/pnpx" ]; then
+  cat <<'EOF' > $HOME/bin/scripts/pnpx
+#!/bin/sh
+pnpm dlx "$@"
+EOF
+  chmod +x $HOME/bin/scripts/pnpx 
+fi
+
+alias sqlite="sqlcipher"
+alias sqlite3="sqlcipher"
+
 # My functions
+export PATH="$PATH:$HOME/.config/zsh/scripts"
+
 source ~/.config/zsh/functions.zsh
+
+alias brew="HOMEBREW_GITHUB_API_TOKEN=$(gh auth token) brew"
+export PATH="/Applications/Ghostty.app/Contents/MacOS:$PATH"
+
+# mise
+eval "$(/opt/homebrew/bin/mise activate zsh)"
