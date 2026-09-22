@@ -36,14 +36,14 @@ for file_path in "$ABS_SRC_DIR"/{.,}*; do
     # 1. 基本的な除外
     if [ "$filename" == "." ] || [ "$filename" == ".." ] || [ "$filename" == "*" ]; then
         continue
-    fi
+  fi
 
     # 2. .git の除外 (第一の防壁)
     # ここで除外すれば、下の処理には一切進みません
     if [ "$filename" == ".git" ]; then
         # echo "無視: .git ディレクトリは触りません"
         continue
-    fi
+  fi
 
     target_path="$ABS_DEST_DIR/$filename"
 
@@ -51,36 +51,36 @@ for file_path in "$ABS_SRC_DIR"/{.,}*; do
 
     # ケースA: リンク先に「実体」があり、かつ「リンクではない」場合
     if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
-        
+
         # ★★★ 【重要】 二重の安全装置 (Fail-Safe) ★★★
         # 万が一、上の除外漏れがあってもここで .git の破壊を阻止します
         if [ "$filename" == ".git" ]; then
             echo "警告: .git の上書きを検知しました。処理を緊急スキップします。"
             continue
-        fi
-        
+    fi
+
         echo "衝突検知: $filename は先に実体があります。"
-        
+
         # Aにある元ファイルを削除
         rm -rf "$file_path"
-        
+
         # Bの実体をAに移動
         mv "$target_path" "$file_path"
         echo "  -> 先(B)の実体を 元(A)へ移動(上書き)しました。"
-        
+
         # リンクを作成
         ln -s "$file_path" "$target_path"
         echo "  -> リンク作成: $filename -> $target_path"
 
     # ケースB: リンク先にすでに「シンボリックリンク」が存在する場合
-    elif [ -L "$target_path" ]; then
+  elif   [ -L "$target_path" ]; then
         echo "スキップ (リンク済): $filename"
 
     # ケースC: リンク先に何もない場合
-    else
+  else
         ln -s "$file_path" "$target_path"
         echo "リンク作成: $filename -> $target_path"
-    fi
+  fi
 done
 
 # --- 先(B)にだけ存在するファイルを元(A)に回収してリンクを張る ---
@@ -93,12 +93,12 @@ for target_path in "$ABS_DEST_DIR"/{.,}*; do
     # 1. 基本的な除外
     if [ "$filename" == "." ] || [ "$filename" == ".." ] || [ "$filename" == "*" ]; then
         continue
-    fi
+  fi
 
     # 2. .git の除外
     if [ "$filename" == ".git" ]; then
         continue
-    fi
+  fi
 
     file_path="$ABS_SRC_DIR/$filename"
 
@@ -113,7 +113,7 @@ for target_path in "$ABS_DEST_DIR"/{.,}*; do
         # リンクを作成
         ln -s "$file_path" "$target_path"
         echo "  -> リンク作成: $filename -> $target_path"
-    fi
+  fi
 done
 
 echo "--- 完了しました ---"

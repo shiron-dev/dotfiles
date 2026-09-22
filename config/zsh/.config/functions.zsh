@@ -29,12 +29,12 @@ function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$
 function gitbc() {
   local base_branch current_branch branch merge_base tree_id marker
 
-  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     echo "gitbc: not a git repository" >&2
     return 1
   fi
 
-  base_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
+  base_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null)
   base_branch=${base_branch#origin/}
   if [[ -z "$base_branch" ]]; then
     if git show-ref --verify --quiet refs/heads/main; then
@@ -47,9 +47,9 @@ function gitbc() {
     fi
   fi
 
-  current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+  current_branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
   if [[ "$current_branch" != "$base_branch" ]]; then
-    if ! git switch "$base_branch" >/dev/null 2>&1; then
+    if ! git switch "$base_branch" > /dev/null 2>&1; then
       echo "gitbc: failed to switch to '$base_branch' (commit or stash changes first)" >&2
       return 1
     fi
@@ -58,9 +58,9 @@ function gitbc() {
   while IFS= read -r branch; do
     [[ "$branch" == "$base_branch" ]] && continue
 
-    merge_base=$(git merge-base "$base_branch" "$branch" 2>/dev/null) || continue
-    tree_id=$(git rev-parse "$branch^{tree}" 2>/dev/null) || continue
-    marker=$(git commit-tree "$tree_id" -p "$merge_base" -m _ 2>/dev/null) || continue
+    merge_base=$(git merge-base "$base_branch" "$branch" 2> /dev/null) || continue
+    tree_id=$(git rev-parse "$branch^{tree}" 2> /dev/null) || continue
+    marker=$(git commit-tree "$tree_id" -p "$merge_base" -m _ 2> /dev/null) || continue
 
     if [[ $(git cherry "$base_branch" "$marker") == -* ]]; then
       git branch -D "$branch"
@@ -100,7 +100,6 @@ alias cu.='cursor .'
 alias i.='open -a iTerm .'
 alias g.='ghostty .'
 
-
 function cg() {
   cd "$(git rev-parse --show-toplevel)" || exit
 }
@@ -108,7 +107,7 @@ function cg() {
 function gitr() {
   local root
 
-  root=$(git rev-parse --show-toplevel 2>/dev/null) || {
+  root=$(git rev-parse --show-toplevel 2> /dev/null) || {
     echo "gitr: not a git repository" >&2
     return 1
   }
@@ -143,7 +142,7 @@ alias yazi='yazi-cd'
 alias ghb='gh browse'
 
 _navi_call() {
-  local result="$(navi "$@" </dev/tty)"
+  local result="$(navi "$@" < /dev/tty)"
   printf "%s" "$result"
 }
 
@@ -216,7 +215,7 @@ ssh-docker() {
   if [ -n "$target_container" ]; then
     # コンテナ内で利用可能なシェルを探す
     for shell in "${shells_to_try[@]}"; do
-      if docker exec -i "$target_container" test -x "$shell" 2>/dev/null; then
+      if docker exec -i "$target_container" test -x "$shell" 2> /dev/null; then
         shell_to_exec=$shell
         break
       fi
@@ -245,7 +244,7 @@ docker-up() {
     # Show in red if the container is not stopped, and guide how to stop it
     docker ps -a --filter "id=$image" --format "{{.ID}}\t{{.Status}}" | while read id status; do
       if [[ "$status" != *"Exited"* ]]; then
-      echo -e "\033[31mContainer is not stopped. You can stop it with: docker rm --force $id\033[0m"
+        echo -e "\033[31mContainer is not stopped. You can stop it with: docker rm --force $id\033[0m"
       fi
     done
   fi
@@ -380,7 +379,7 @@ wifiap() {
   local wifi_if bssid ip
 
   wifi_if=$(
-    networksetup -listallhardwareports 2>/dev/null \
+    networksetup -listallhardwareports 2> /dev/null \
       | awk '
           /Hardware Port: (Wi-Fi|AirPort)/ {found=1; next}
           found && /Device:/ {print $2; exit}
@@ -393,7 +392,7 @@ wifiap() {
   fi
 
   bssid=$(
-    sudo ipconfig getsummary "$wifi_if" 2>/dev/null \
+    sudo ipconfig getsummary "$wifi_if" 2> /dev/null \
       | awk -F' : ' '/ BSSID/ {print tolower($2); exit}'
   )
 
@@ -404,7 +403,7 @@ wifiap() {
   fi
 
   ip=$(
-    arp -an 2>/dev/null \
+    arp -an 2> /dev/null \
       | awk -v b="$bssid" 'tolower($4)==b {gsub(/[()]/,"",$2); print $2; exit}'
   )
 

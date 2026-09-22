@@ -11,7 +11,7 @@ OUTPUT=$($TOOL_PATH)
 if [ "$OUTPUT" == "OFF" ]; then
   # ここで「使われていない時の表示」を設定
   # 例: マイクアイコンに斜線など (SF Symbolsが使える場合は :mic.slash: など)
-  echo ":mic.slash:" 
+  echo ":mic.slash:"
   echo "---"
   echo "Status: Microphone is inactive"
   exit 0

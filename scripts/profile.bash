@@ -19,7 +19,7 @@ PROFILE_FILE="${DOTFILES_PROFILE_FILE:-$HOME/.config/dotfiles/profile}"
 DEFAULT_PROFILE="private"
 
 usage() {
-  cat <<EOM
+  cat << EOM
 Usage: profile.bash <command>
 
 Commands:

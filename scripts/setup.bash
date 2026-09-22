@@ -5,7 +5,7 @@ set -e
 REPO_URL="https://github.com/shiron-dev/dotfiles.git"
 REPO_PATH="$HOME/projects/github.com/shiron-dev/dotfiles"
 
-cat <<EOM
+cat << EOM
 
 # shiron-dev dotfiles
 
@@ -63,7 +63,7 @@ else
   "$PROFILE_BIN" list | sed 's/^/  - /'
   while true; do
     printf "profile [%s]: " "$CURRENT_PROFILE"
-    read -r chosen_profile </dev/tty || chosen_profile=""
+    read -r chosen_profile < /dev/tty || chosen_profile=""
     if "$PROFILE_BIN" set "${chosen_profile:-$CURRENT_PROFILE}"; then
       break
     fi
@@ -71,7 +71,7 @@ else
   CURRENT_PROFILE="$("$PROFILE_BIN" get)"
 fi
 
-cat <<EOM
+cat << EOM
 
 ✅ 初期セットアップが完了しました。 (profile: $CURRENT_PROFILE)
 

@@ -36,11 +36,11 @@ confirm_proceed() {
         if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
             echo "ユーザーにより中断されました。"
             exit 1
-        fi
-    else
+    fi
+  else
         echo "エラー: 手元に更新があるため中断しました。解決するか -f を使用してください。"
         exit 1
-    fi
+  fi
 }
 
 # --- 安全チェック ---
@@ -50,7 +50,7 @@ check_local_safety() {
         echo "【警告】コピー先($REMOTE_DIR)に同期マーカーが見つかりません。"
         confirm_proceed
         return
-    fi
+  fi
 
     echo "--- 手元の安全チェック開始 (基準: コピー先のマーカー) ---"
 
@@ -64,7 +64,7 @@ check_local_safety() {
         echo "$LOCAL_MODIFIED"
         echo "------------------------------------------------"
         confirm_proceed
-    fi
+  fi
 
     # 2. 「手元」の方が「コピー先」よりタイムスタンプが新しいファイルがあるか
     REVERSE_NEWER=$(rsync -n -avu --exclude='.git' --exclude="$MARKER" --out-format="%n" "$LOCAL_PATH" "$REMOTE_PATH" \
@@ -76,22 +76,22 @@ check_local_safety() {
         echo "$REVERSE_NEWER"
         echo "------------------------------------------------"
         confirm_proceed
-    fi
+  fi
     echo "チェック完了: 手元に競合はありません。"
 }
 
 # --- メイン処理 ---
 case "$MODE" in
     "clone")
-        if [ -d "$REMOTE_DIR" ] && [ "$(ls -A "$REMOTE_DIR" 2>/dev/null)" ]; then
+        if [ -d "$REMOTE_DIR" ] && [ "$(ls -A "$REMOTE_DIR" 2> /dev/null)" ]; then
             echo "【エラー】コピー先ディレクトリが空ではありません。"
             confirm_proceed
-        fi
-        
+    fi
+
         echo "Clone: 手元($LOCAL_PATH) --> コピー先($REMOTE_PATH)"
         mkdir -p "$REMOTE_DIR"
         rsync -av --exclude='.git' "$LOCAL_PATH" "$REMOTE_PATH"
-        
+
         # 同期完了マーカーを【コピー先】に作成
         touch "$MARKER_PATH"
         echo "マーカーをコピー先に作成しました: $MARKER_PATH"
@@ -101,15 +101,15 @@ case "$MODE" in
         if [ ! -d "$REMOTE_DIR" ]; then
             echo "【エラー】コピー先($REMOTE_DIR)が存在しません。"
             exit 1
-        fi
-        
+    fi
+
         # 手元の状態を、コピー先のマーカーと比較してチェック
         check_local_safety
-        
+
         echo "Pull: コピー先($REMOTE_PATH) --> 手元($LOCAL_PATH)"
         # マーカー自体は手元にコピーしないよう exclude する
         rsync -av --exclude='.git' --exclude="$MARKER" "$REMOTE_PATH" "$LOCAL_PATH"
-        
+
         # Pull成功後、コピー先のマーカーを更新
         touch "$MARKER_PATH"
         echo "コピー先のマーカーを更新しました。"

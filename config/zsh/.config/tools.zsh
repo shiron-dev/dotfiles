@@ -59,7 +59,7 @@ export PATH="$PATH:/opt/homebrew/opt/mysql-client@8.0/bin"
 alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
 
 # OrbStack
-source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+source ~/.orbstack/shell/init.zsh 2> /dev/null || :
 
 # Golang
 # export GOPATH=$HOME/go
@@ -116,11 +116,11 @@ export PATH="$PATH:$HOME/.config/zsh/scripts"
 mkdir -p $HOME/bin/scripts
 
 if [ ! -f "$HOME/bin/scripts/pnpx" ]; then
-  cat <<'EOF' > $HOME/bin/scripts/pnpx
+  cat << 'EOF' > $HOME/bin/scripts/pnpx
 #!/bin/sh
 pnpm dlx "$@"
 EOF
-  chmod +x $HOME/bin/scripts/pnpx 
+  chmod +x $HOME/bin/scripts/pnpx
 fi
 
 alias sqlite="sqlcipher"

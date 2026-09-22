@@ -35,7 +35,7 @@ fi
 filepath=$(cd "$(dirname "$filepath")" && pwd)/$(basename "$filepath")
 
 # Check if we're in a git repository and get project root
-if ! project_root=$(git -C "$(dirname "$filepath")" rev-parse --show-toplevel 2>/dev/null); then
+if ! project_root=$(git -C "$(dirname "$filepath")" rev-parse --show-toplevel 2> /dev/null); then
   echo "Error: '$filepath' is not in a git repository" >&2
   exit 1
 fi
