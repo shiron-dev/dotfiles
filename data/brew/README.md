@@ -2,6 +2,23 @@
 
 BrewfileのようにYAMLファイルからHomebrew packages（tap、brew、cask、MAS）をインストールするためのスクリプト群です。
 
+## プロファイル（仕事用 / 趣味用）
+
+マシンごとに入れるパッケージを分けたい場合は tag を付けます。
+
+| tag | 意味 |
+| --- | --- |
+| `work-only` | 仕事用 PC にだけ入れる |
+| `private-only` | 趣味用 PC にだけ入れる |
+| (tag なし) | 両方に入れる |
+
+```bash
+brew-management install --profile "$(../../scripts/profile.bash get)"
+brew-management install --profile work --dry-run
+```
+
+プロファイルの仕組み全体は [profiles/README.md](../../profiles/README.md) を参照してください。
+
 ## 概要
 
 このツールセットには以下のコンポーネントが含まれています：

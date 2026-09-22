@@ -1,0 +1,3 @@
+# Private machine specific git settings.
+# Loaded last from ~/.config/git/config, so anything here wins over the common config.
+# The common config already carries the personal identity, so this is empty by default.

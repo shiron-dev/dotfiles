@@ -195,3 +195,14 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/macOS,Windows,VisualStudioCode,Intellij
 
 .env
+
+# serena
+
+.serena/
+
+**/.claude/settings.local.json
+**/.cursor/rules/ig-*
+shiron-ig-*
+_shiron-ig-*
+.envrc
+*.kdl

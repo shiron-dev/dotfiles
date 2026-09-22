@@ -1,0 +1,19 @@
+# Work machine specific git settings.
+# Loaded last from ~/.config/git/config, so anything here wins over the common config.
+
+[core]
+  sshCommand = ssh -i ~/.ssh/github.pub
+
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+
+[includeIf "gitdir:~/projects/github.com/Aureon-inc/"]
+  path = ~/.config/git/aureon-config
+
+[includeIf "gitdir:~/projects/github.com/KieiAI/"]
+  path = ~/.config/git/aureon-config

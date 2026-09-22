@@ -68,7 +68,7 @@ while IFS= read -r file; do
 
   if [ -n "$matched_scope" ]; then
     # Add to required_scopes if not already present
-    if [[ ! " ${required_scopes[*]} " =~  ${matched_scope}  ]]; then
+    if [[ ! " ${required_scopes[*]} " =~ ${matched_scope}   ]]; then
       required_scopes+=("$matched_scope")
     fi
   else
@@ -102,7 +102,7 @@ for req_scope in "${required_scopes[@]}"; do
     fi
   done
   if [ "$is_covered" == false ]; then
-    if [[ ! " ${pr_scopes[*]} " =~  $req_scope  ]]; then
+    if [[ ! " ${pr_scopes[*]} " =~ $req_scope   ]]; then
       missing_scopes+=("$req_scope")
     fi
   fi
@@ -123,7 +123,7 @@ if [ ${#missing_scopes[@]} -gt 0 ]; then
     # Build comma-separated list for suggestion_scopes
     for missing_scope in "${missing_scopes[@]}"; do
       if [ -n "$suggestion_scopes" ]; then
-        suggestion_scopes+=",";
+        suggestion_scopes+=","
       fi
       suggestion_scopes+="$missing_scope"
     done

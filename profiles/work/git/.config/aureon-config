@@ -1,0 +1,8 @@
+
+[user]
+	name = shiron
+	email = "shireona@aureon-info.jp"
+  signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAvmPNbN1G8FTsBRBVOqR2K4owWx2jNtLWA7+tK9u3vn"
+
+[core]
+  sshCommand = ssh -i ~/.ssh/GitHub-for-aureon.pub
