@@ -29,14 +29,23 @@ domains:
 exclude:
     "*":
         - last-analytics-stamp
+        # Window and panel geometry.
         - NSWindow Frame *
+        - NSSplitView Subview Frames *
         - NSNavPanelExpandedSizeFor*
         - NSNavLastRootDirectory
         - NSNavLastUserSetHideExtensionButtonState
+    NSGlobalDomain:
+        # Device attestation marker - identifies this Mac.
+        - _AKBAACertMarkerKey
+        - ACDMonthlyAnalyticsLastPosted
+        - NSLinguisticDataAssetsRequestTime
     com.apple.dock:
         - mod-count
         - lastShowIndicatorTime
         - trash-full
+        # Whatever was open lately, rewritten constantly.
+        - recent-apps
     com.apple.screencapture:
         - last-selection
         - last-selection-display
@@ -47,9 +56,23 @@ exclude:
         - GoToFieldHistory
         - RecentMoveAndCopyDestinations
         - SearchRecents
+        # Last server connected to, and the bookmark of the last open/save
+        # directory - the latter carries this Mac's boot volume UUID.
+        - FXConnectToLastURL
+        - FXConnectToBounds
+        - NSOSPLastRootDirectory
+        - DataSeparatedDisplayNameCache
+        - "*ProgressWindowLocation"
+        - "*.Location"
+        - _FXInputMethodLocation
     com.stonerl.Thaw:
         # Per-display layout, keyed by the UUIDs of the screens plugged in here.
         - KnownDisplays
         - DisplayIceBarConfigurations
         # The set of menu bar items Thaw has happened to see so far.
         - MenuBarItemManager.*
+        # Where each control item sits, which depends on the other items.
+        - NSStatusItem Preferred Position *
+        # Sparkle's per-install update bookkeeping.
+        - SULastCheckTime
+        - SUUpdateGroupIdentifier
