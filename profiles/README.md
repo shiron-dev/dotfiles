@@ -86,10 +86,10 @@ groups:
             cask:
                 - name: steam
                   tags:
-                    - private-only
+                      - private-only
                 - name: cloudflare-warp
                   tags:
-                    - work-only
+                      - work-only
 ```
 
 インストール時にプロファイルを渡します。

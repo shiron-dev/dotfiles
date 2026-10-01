@@ -3,3 +3,6 @@
 
 *.secrets.*
 !*.secrets.*.sops
+
+# zellij's config is tracked here, despite the global *.kdl ignore.
+!config/zellij/.config/config.kdl

@@ -18,6 +18,9 @@ groups:
                 - name: arp-scan
                 - name: atlas
                 - name: awscli
+                - name: awslogs
+                  tags:
+                      - work-only
                 - name: azure-cli
                 - name: bat
                 - name: bmon
@@ -29,10 +32,17 @@ groups:
                 - name: cairo
                 - name: certifi
                 - name: cffi
+                - name: checkov
+                  tags:
+                      - work-only
                 - name: cjson
                 - name: clang-format
+                - name: cliclick
                 - name: cloud-sql-proxy
                 - name: cloudflared
+                - name: cocoapods
+                  tags:
+                      - work-only
                 - name: confuse
                 - name: consul-template
                 - name: coreutils
@@ -42,8 +52,11 @@ groups:
                 - name: dav1d
                 - name: delve
                 - name: deno
+                - name: direnv
+                - name: docker
                 - name: docker-buildx
                 - name: exiftool
+                - name: eza
                 - name: fd
                 - name: ffmpeg
                 - name: flac
@@ -75,6 +88,7 @@ groups:
                 - name: goreleaser
                 - name: gpgme
                 - name: gpgmepp
+                - name: gping
                 - name: graphite2
                 - name: graphviz
                 - name: grep
@@ -99,6 +113,12 @@ groups:
                 - name: jq
                 - name: json-c
                 - name: just
+                - name: k9s
+                  tags:
+                      - work-only
+                - name: ko
+                  tags:
+                      - work-only
                 - name: krb5
                 - name: ktlint
                 - name: kubernetes-cli
@@ -193,7 +213,9 @@ groups:
                 - name: npth
                 - name: nspr
                 - name: nss
+                - name: ollama
                 - name: oniguruma
+                - name: opencode
                 - name: opencore-amr
                 - name: openexr
                 - name: openjdk
@@ -202,6 +224,7 @@ groups:
                 - name: openssl@3
                 - name: opus
                 - name: p11-kit
+                - name: p7zip
                 - name: pack
                 - name: pango
                 - name: parallel
@@ -221,12 +244,17 @@ groups:
                 - name: python@3.14
                 - name: qpdf
                 - name: rav1e
+                - name: rclone
                 - name: readline
                 - name: rename
                 - name: rpds-py
+                - name: rtk
                 - name: rtmpdump
                 - name: rubberband
                 - name: rust
+                - name: scrcpy
+                  tags:
+                      - work-only
                 - name: sdl2
                 - name: shared-mime-info
                 - name: sheldon
@@ -237,6 +265,7 @@ groups:
                 - name: sops
                 - name: speedtest-cli
                 - name: speex
+                - name: sqlcipher
                 - name: sqlfluff
                 - name: sqlite
                 - name: srt
@@ -246,8 +275,14 @@ groups:
                 - name: terraform-ls
                 - name: tesseract
                 - name: tflint
+                - name: tfsec
+                  tags:
+                      - work-only
                 - name: theora
                 - name: tree
+                - name: trivy
+                  tags:
+                      - work-only
                 - name: ttyd
                 - name: unbound
                 - name: usage
@@ -275,8 +310,15 @@ groups:
                 - name: zstd
             cask:
                 - name: 1password
+                - name: 1password-cli
                 - name: adobe-acrobat-reader
                 - name: aivis-speech
+                  tags:
+                      - private-only
+                - name: alt-tab
+                - name: android-platform-tools
+                  tags:
+                      - work-only
                 - name: antigravity
                 - name: arc
                 - name: arduino-ide
@@ -285,38 +327,66 @@ groups:
                 - name: bambu-studio
                 - name: battery
                 - name: betterdisplay
+                - name: bitwarden
+                  tags:
+                      - private-only
                 - name: blender
                 - name: brave-browser
+                - name: chatgpt
                 - name: claude
                 - name: cloudflare-warp
+                - name: codex
+                - name: codex-app
                 - name: commander-one
                 - name: cursor
                 - name: discord
                 - name: discord@canary
+                  tags:
+                      - private-only
                 - name: dmm-game-player
+                  tags:
+                      - private-only
                 - name: docker
                 - name: docker-desktop
+                - name: elgato-control-center
+                  tags:
+                      - private-only
+                - name: elgato-stream-deck
+                  tags:
+                      - private-only
                 - name: figma
                 - name: figma-agent
                 - name: finicky
                 - name: firefox@developer-edition
                 - name: flutter
+                - name: font-ipafont
+                - name: font-jetbrains-mono
+                - name: font-line-seed-jp
                 - name: font-roboto-mono-nerd-font
                 - name: fujitsu-scansnap-home
+                  tags:
+                      - private-only
                 - name: gcloud-cli
+                - name: ghostty
                 - name: gimp
                 - name: github
                 - name: gitify
                 - name: google-chrome
+                - name: google-chrome@canary
                 - name: google-cloud-sdk
+                - name: hhkb-studio
                 - name: inkscape
+                - name: insta360-link-controller
                 - name: iterm2
                 - name: itsycal
                 - name: jetbrains-toolbox
                 - name: jordanbaird-ice
+                - name: karabiner-elements
                 - name: keycastr
                 - name: kicad
+                - name: logi-options+
                 - name: ltspice
+                - name: macfuse
                 - name: macs-fan-control
                 - name: master-pdf-editor
                 - name: meetingbar
@@ -331,6 +401,9 @@ groups:
                 - name: onyx
                 - name: openinterminal
                 - name: orbstack
+                - name: orca
+                  tags:
+                      - work-only
                 - name: pgadmin4
                 - name: portkiller
                 - name: postman
@@ -339,16 +412,27 @@ groups:
                 - name: rwts-pdfwriter
                 - name: session-manager-plugin
                 - name: slack
+                - name: slack-cli
+                  tags:
+                      - work-only
                 - name: sourcetree
                 - name: spotify
                 - name: stats
                 - name: steam
+                  tags:
+                      - private-only
                 - name: swiftbar
                 - name: tailscale
                 - name: tailscale-app
                 - name: termius
+                - name: thaw
+                - name: thunderbird
+                  tags:
+                      - private-only
                 - name: timemachinestatus
                 - name: tor-browser
+                  tags:
+                      - private-only
                 - name: unity-hub
                 - name: utm
                 - name: vb-cable
@@ -359,6 +443,8 @@ groups:
                 - name: voicevox
                 - name: wakatime
                 - name: webtorrent
+                  tags:
+                      - private-only
                 - name: wireshark
                 - name: wireshark-app
                 - name: zoom
@@ -382,14 +468,25 @@ groups:
                 - name: Xcode              (16.4)
                   id: 497799835
             tap:
+                - name: ariga/tap
                 - name: atlassian/acli
                 - name: buildpacks/tap
                 - name: cycloud-io/tap
+                - name: derailed/k9s
+                  tags:
+                      - work-only
                 - name: hashicorp/tap
                 - name: homebrew/core
                 - name: kismetwireless/kismet
+                - name: mobile-dev-inc/tap
+                  tags:
+                      - work-only
                 - name: productdevbook/tap
                 - name: shiron-dev/tap
+                - name: stablyai/orca
+                  tags:
+                      - work-only
+                - name: steipete/tap
                 - name: voicevox/voicevox
 profiles:
     work:
