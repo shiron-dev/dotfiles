@@ -6,8 +6,10 @@
 # catch a change made in a GUI.
 
 domains:
+    # com.apple.dock is deliberately absent: its persistent-apps entries
+    # embed macOS bookmark blobs carrying this Mac's boot volume UUID, and
+    # dropping those takes the Dock layout with them.
     - NSGlobalDomain
-    - com.apple.dock
     - com.apple.finder
     - com.apple.screencapture
     - com.apple.menuextra.clock
@@ -40,12 +42,6 @@ exclude:
         - _AKBAACertMarkerKey
         - ACDMonthlyAnalyticsLastPosted
         - NSLinguisticDataAssetsRequestTime
-    com.apple.dock:
-        - mod-count
-        - lastShowIndicatorTime
-        - trash-full
-        # Whatever was open lately, rewritten constantly.
-        - recent-apps
     com.apple.screencapture:
         - last-selection
         - last-selection-display
