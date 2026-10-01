@@ -1,0 +1,68 @@
+ACDMonthlyAnalyticsLastPosted: 811277814.211645
+AKLastIDMSEnvironment: 0
+AKLastLocale: ja_US
+AppleAntiAliasingThreshold: 4
+AppleEnableSwipeNavigateWithScrolls: false
+AppleKeyboardUIMode: 1
+AppleLanguages:
+- ja-JP
+AppleLanguagesSchemaVersion: 5400
+AppleLocale: ja_US
+AppleMeasurementUnits: Centimeters
+AppleMenuBarVisibleInFullscreen: true
+AppleMetricUnits: true
+AppleMiniaturizeOnDoubleClick: false
+AppleShowAllExtensions: true
+AppleTemperatureUnit: Celsius
+KB_DoubleQuoteOption: “abc”
+KB_SingleQuoteOption: ‘abc’
+KB_SpellingLanguage:
+  KB_SpellingLanguageIsAutomatic: true
+NSAutomaticCapitalizationEnabled: true
+NSAutomaticPeriodSubstitutionEnabled: true
+NSLinguisticDataAssetsRequestLastInterval: 86400.0
+NSLinguisticDataAssetsRequestTime: 2026-10-01 01:34:58
+NSLinguisticDataAssetsRequested:
+- ja
+- ja_JP
+- en
+- en_US
+- de
+- da
+- mul
+- mul_Hani
+- fr
+NSLinguisticDataAssetsRequestedByChecker:
+- en
+- de
+- da
+- fr
+NSNavPanelFileLastListModeForOpenModeKey: 3
+NSNavPanelFileListModeForOpenMode2: 3
+NSPreferredWebServices:
+  NSWebServicesProviderWebSearch:
+    NSDefaultDisplayName: Google
+    NSProviderIdentifier: com.google.www
+NSSpellCheckerContainerTransitionComplete: true
+NSSpellCheckerDictionaryContainerTransitionComplete: true
+NSUserDictionaryReplacementItems: []
+NSUserQuotesArray:
+- “
+- ”
+- ‘
+- ’
+_AKBAACertMarkerKey: !!binary |
+  XIXC/mOIUJ6PHMNoLwI+bGuI9GPNQ1H01KLFjLz+sII=
+com.apple.finder.SyncExtensions:
+  collaborationMap:
+    wang.jianing.app.OpenInTerminal.OpenInTerminalFinderExtension: false
+  dirMap:
+    wang.jianing.app.OpenInTerminal.OpenInTerminalFinderExtension:
+    - file:///
+com.apple.keyboard.fnState: true
+com.apple.sound.beep.flash: 0
+com.apple.springing.delay: 0.5
+com.apple.springing.enabled: true
+com.apple.trackpad.forceClick: false
+com.apple.trackpad.scaling: 3.0
+shouldShowRSVPDataDetectors: false

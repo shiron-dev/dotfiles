@@ -1,0 +1,15 @@
+---
+# The CI yaml-lint job has always run `yamllint -c .yamllint .` without this
+# file existing. Writing it down makes the rules explicit, and gives the
+# generated macOS defaults somewhere to be exempt from them.
+extends: default
+
+ignore: |
+  # Written by scripts/macos-defaults.py from the live plists; its shape is
+  # whatever macOS put there, not something to style.
+  data/macos/defaults/
+
+rules:
+  # data/brew/packages.yaml has carried both of these from the start.
+  document-start: disable
+  line-length: disable

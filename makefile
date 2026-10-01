@@ -1,4 +1,4 @@
-.PHONY: sops-encrypt sops-decrypt sops-ci kics
+.PHONY: sops-encrypt sops-decrypt sops-ci kics macos-export macos-import macos-diff
 
 sops-encrypt:
 	@echo "Encrypting with SOPS..."; \
@@ -79,3 +79,12 @@ sops-ci:
 
 kics:
 	docker run -t -v $(PWD):/path checkmarx/kics:latest scan -p /path
+
+macos-export:
+	@scripts/macos-defaults.py export
+
+macos-import:
+	@scripts/macos-defaults.py import
+
+macos-diff:
+	@scripts/macos-defaults.py diff
