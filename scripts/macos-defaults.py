@@ -19,6 +19,12 @@ copied onto another machine.
     scripts/macos-defaults.py import   # YAML -> live defaults
     scripts/macos-defaults.py diff     # what changed since the last export
 
+Nothing watches the live defaults, so a setting changed in a GUI is only
+noticed when `diff` is run. It exits 1 when anything differs, so a hook can
+do the running.
+
+Needs python3 with PyYAML, which comes along with ansible.
+
 Round-tripping is lossless: plist data becomes YAML `!!binary`, plist dates
 become YAML timestamps, and keys are sorted so a rewrite that only reorders a
 domain is not a diff.
