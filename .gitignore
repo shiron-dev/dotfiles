@@ -6,3 +6,6 @@
 
 # zellij's config is tracked here, despite the global *.kdl ignore.
 !config/zellij/.config/config.kdl
+
+# Python bytecode from scripts/ and the Claude hooks.
+__pycache__/
