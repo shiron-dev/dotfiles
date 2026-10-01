@@ -56,6 +56,14 @@
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 
+# Strips the machine-written parts of ~/.claude/settings.json on the way into
+# git. `required` so a missing jq fails the commit instead of quietly letting
+# the raw file through. See scripts/claude-settings-clean.sh.
+[filter "claude-settings"]
+	clean = ~/projects/github.com/shiron-dev/dotfiles/scripts/claude-settings-clean.sh
+	smudge = cat
+	required = true
+
 # Machine specific settings, provided by profiles/<profile>/git/.config/config-local.
 # Included last so the active profile can override anything above.
 [include]

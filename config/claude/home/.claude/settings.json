@@ -1,4 +1,43 @@
 {
+  "effortLevel": "medium",
+  "enabledPlugins": {
+    "atlassian@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "/Users/s28628/.claude/hooks/block-force-push.py",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "/Users/s28628/.claude/hooks/block-cloud-mutations.py",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "rtk hook claude",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ]
+  },
+  "model": "opus",
   "permissions": {
     "allow": [
       "Bash(pnpm lint:*)",
@@ -18,38 +57,10 @@
       "Bash(ansible-playbook -i hosts.yml site.yml --check)",
       "Bash(ssh -F /Users/s28628/projects/github.com/shiron-dev/infrastructure/compose/hosts/home-ep/ssh_config home-ep \"id shiron && docker ps -a --filter name=zigbee2mqtt\")",
       "Bash(ssh -F /Users/s28628/projects/github.com/shiron-dev/infrastructure/compose/hosts/home-ep/ssh_config home-ep \"docker logs zigbee2mqtt 2>&1 | tail -30\")"
-    ]
+    ],
+    "defaultMode": "auto"
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/s28628/.claude/hooks/block-force-push.py"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "rtk hook claude"
-          }
-        ]
-      }
-    ]
-  },
-  "enabledPlugins": {
-    "gopls-lsp@claude-plugins-official": true,
-    "swift-lsp@claude-plugins-official": true,
-    "atlassian@claude-plugins-official": true
-  },
-  "effortLevel": "medium",
-  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "model": "opus[1m]"
+  "tui": "fullscreen"
 }

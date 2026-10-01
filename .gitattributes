@@ -1,0 +1,4 @@
+# ~/.claude/settings.json is a symlink into this repository, and Orca and
+# Claude Code both write machine-specific content into it. The clean filter
+# strips that on the way into git; see scripts/claude-settings-clean.sh.
+config/claude/home/.claude/settings.json filter=claude-settings
