@@ -1,0 +1,55 @@
+# Which macOS `defaults` domains this repository mirrors, and which keys it
+# leaves alone. See scripts/macos-defaults.py.
+#
+# Whole domains are mirrored on purpose: a hand-picked list of keys only ever
+# notices the settings someone already thought of, and the point here is to
+# catch a change made in a GUI.
+
+domains:
+    - NSGlobalDomain
+    - com.apple.dock
+    - com.apple.finder
+    - com.apple.screencapture
+    - com.apple.menuextra.clock
+    - com.apple.keyboard.preferences
+    - com.apple.AppleMultitouchTrackpad
+    - com.apple.AppleMultitouchMouse
+    - com.stonerl.Thaw
+
+# Keys skipped on export and left untouched on import. Shell-style globs,
+# matched against top-level keys. `*` applies to every domain.
+#
+# Two kinds belong here and nothing else:
+#   - volatile state that changes without anyone deciding anything
+#     (timestamps, counters, window geometry, last-used values)
+#   - values that are true of this machine only (display UUIDs, device ids)
+#
+# A setting worth having on another machine does NOT belong here, however
+# noisy it is - that noise is the feature.
+exclude:
+    "*":
+        - last-analytics-stamp
+        - NSWindow Frame *
+        - NSNavPanelExpandedSizeFor*
+        - NSNavLastRootDirectory
+        - NSNavLastUserSetHideExtensionButtonState
+    com.apple.dock:
+        - mod-count
+        - lastShowIndicatorTime
+        - trash-full
+    com.apple.screencapture:
+        - last-selection
+        - last-selection-display
+    com.apple.finder:
+        - FXDesktopVolumePositions
+        - FXRecentFolders
+        - GoToField
+        - GoToFieldHistory
+        - RecentMoveAndCopyDestinations
+        - SearchRecents
+    com.stonerl.Thaw:
+        # Per-display layout, keyed by the UUIDs of the screens plugged in here.
+        - KnownDisplays
+        - DisplayIceBarConfigurations
+        # The set of menu bar items Thaw has happened to see so far.
+        - MenuBarItemManager.*
