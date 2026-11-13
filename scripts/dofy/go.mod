@@ -1,6 +1,6 @@
 module github.com/shiron-dev/dotfiles/scripts/dofy
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/cweill/gotests v1.9.0
