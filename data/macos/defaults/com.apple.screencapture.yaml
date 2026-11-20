@@ -1,0 +1,6 @@
+location: ~/Pictures/Screenshots
+location-last: ~/Pictures/Screenshots
+showsClicks: true
+style: selection
+target: file
+video: true
