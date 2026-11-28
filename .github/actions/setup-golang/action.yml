@@ -5,7 +5,7 @@ runs:
   using: composite
   steps:
     - name: Set up Go
-      uses: actions/setup-go@v6
+      uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
       with:
         go-version-file: scripts/dofy/go.mod
         cache-dependency-path: scripts/dofy/go.sum
